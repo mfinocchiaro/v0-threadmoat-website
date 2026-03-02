@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
+
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -23,6 +24,7 @@ export default function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get('redirect') || '/dashboard'
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     const supabase = createClient()
@@ -42,11 +44,12 @@ export default function LoginPage() {
       setIsLoading(false)
     }
   }
+
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm">
-        <div className="flex flex-col gap-6"
-                    <div className="flex justify-center mb-2">
+        <div className="flex flex-col gap-6">
+          <div className="flex justify-center mb-2">
             <Link href="/">
               <Image
                 src="https://threadmoat.vercel.app/finocchiaro-logo.png"
@@ -95,7 +98,7 @@ export default function LoginPage() {
                   </Button>
                 </div>
                 <div className="mt-4 text-center text-sm">
-                  Don't have an account?{' '}
+                  Don&apos;t have an account?{' '}
                   <Link
                     href="/auth/sign-up"
                     className="underline underline-offset-4"
