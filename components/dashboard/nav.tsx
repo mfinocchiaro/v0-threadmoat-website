@@ -30,7 +30,7 @@ export function DashboardNav({ user }: { user: SupabaseUser }) {
         <Link href="/" className="flex items-center gap-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/finocchiaro-logo.png"
+                        src="https://threadmoat.vercel.app/finocchiaro-logo.png"
             alt="ThreadMoat"
             className="h-8 w-auto"
           />
