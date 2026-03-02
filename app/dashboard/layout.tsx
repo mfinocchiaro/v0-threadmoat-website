@@ -17,11 +17,22 @@ export default async function DashboardLayout({
     redirect("/auth/login?redirect=/dashboard")
   }
 
-  const subscription = await getUserSubscription()
+  // Check if user is an admin (bypass paywall)
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", user.id)
+    .single()
 
-  // Show paywall if no active subscription
-  if (!subscription.hasActiveSubscription) {
-    return <Paywall user={user} />
+  const isAdmin = profile?.is_admin === true
+
+  if (!isAdmin) {
+    const subscription = await getUserSubscription()
+
+    // Show paywall if no active subscription
+    if (!subscription.hasActiveSubscription) {
+      return <Paywall user={user} />
+    }
   }
 
   return (
