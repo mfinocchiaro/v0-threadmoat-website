@@ -48,8 +48,8 @@ export default function HomePage() {
           <span className="text-primary">Industrial AI &amp; Engineering Software</span>
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg text-muted-foreground">
-          Leverage 35+ years of market expertise, exclusive access to nearly 300 startups, and warm
-          introductions to 100+ founders to build your portfolio with tomorrow&apos;s unicorns.
+          Leverage 35+ years of market expertise, exclusive access to 500+ startups, and warm
+          introductions to ~150 founders to build your portfolio with tomorrow&apos;s unicorns.
         </p>
         <div className="mt-10 flex items-center justify-center gap-4">
           <Link href="/dashboard">
@@ -85,8 +85,8 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto mt-16 text-center">
             <div><p className="text-4xl font-bold text-primary">35+</p><p className="text-sm text-muted-foreground mt-1">Years of Market Experience</p></div>
-            <div><p className="text-4xl font-bold text-primary">~300</p><p className="text-sm text-muted-foreground mt-1">Startups in Database</p></div>
-            <div><p className="text-4xl font-bold text-primary">~100</p><p className="text-sm text-muted-foreground mt-1">Warm Founder Introductions</p></div>
+            <div><p className="text-4xl font-bold text-primary">500+</p><p className="text-sm text-muted-foreground mt-1">Startups in Database</p></div>
+            <div><p className="text-4xl font-bold text-primary">~150</p><p className="text-sm text-muted-foreground mt-1">Warm Founder Introductions</p></div>
           </div>
         </div>
       </section>
@@ -104,13 +104,13 @@ export default function HomePage() {
             {
               icon: <Database className="h-6 w-6" />,
               title: "Market Intelligence",
-              desc: "Access our curated database of nearly 300 engineering software and Industrial AI startups.",
+              desc: "Access our curated database of 500+ engineering software and Industrial AI startups.",
               features: ["Comprehensive startup profiles", "Market trend analysis", "Investment readiness assessments"],
             },
             {
               icon: <Users className="h-6 w-6" />,
               title: "Founder Introductions",
-              desc: "Leverage our extensive network to secure warm introductions to nearly 100 founders.",
+              desc: "Leverage our extensive network to secure warm introductions to ~150 founders.",
               features: ["Pre-vetted founder relationships", "Facilitated meetings", "Ongoing relationship management"],
             },
             {
@@ -168,10 +168,11 @@ export default function HomePage() {
               </Card>
             ))}
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto mt-16 text-center">
-            <div><p className="text-3xl font-bold text-primary">300+</p><p className="text-xs text-muted-foreground mt-1">Startups Tracked</p></div>
-            <div><p className="text-3xl font-bold text-primary">Series A-C</p><p className="text-xs text-muted-foreground mt-1">Growth Stage</p></div>
-            <div><p className="text-3xl font-bold text-primary">Seed</p><p className="text-xs text-muted-foreground mt-1">Early Stage</p></div>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 max-w-4xl mx-auto mt-16 text-center">
+            <div><p className="text-3xl font-bold text-primary">500+</p><p className="text-xs text-muted-foreground mt-1">Startups Tracked</p></div>
+            <div><p className="text-3xl font-bold text-primary">Series B-C</p><p className="text-xs text-muted-foreground mt-1">Growth / Expansion Stage</p></div>
+            <div><p className="text-3xl font-bold text-primary">Series A</p><p className="text-xs text-muted-foreground mt-1">Early Stage</p></div>
+            <div><p className="text-3xl font-bold text-primary">Seed</p><p className="text-xs text-muted-foreground mt-1">Seed Stage</p></div>
             <div><p className="text-3xl font-bold text-primary">Pre-Seed</p><p className="text-xs text-muted-foreground mt-1">Emerging</p></div>
           </div>
         </div>

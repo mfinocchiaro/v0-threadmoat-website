@@ -8,7 +8,7 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: 'ThreadMoat - Industrial AI & Engineering Software Intelligence',
-  description: 'Navigate the future of Industrial AI & Engineering Software. Access 300+ startup profiles, 35+ years of PLM market expertise, and warm introductions to 100+ founders.',
+  description: 'Navigate the future of Industrial AI & Engineering Software. Access 500+ startup profiles, 35+ years of PLM market expertise, and warm introductions to ~150 founders.',
   icons: {
     icon: [
       {
