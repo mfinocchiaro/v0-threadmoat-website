@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Check, , LockLock } from "lucide-react"
+import { Check, Lock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { PRODUCTS } from "@/lib/products"
 import { CheckoutButton } from "@/components/checkout/checkout-button"
