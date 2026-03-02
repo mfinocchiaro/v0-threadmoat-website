@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Shield, Check, Lock } from "lucide-react"
+import { Check, Check, Lock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { PRODUCTS } from "@/lib/products"
 import { CheckoutButton } from "@/components/checkout/checkout-button"
@@ -12,9 +12,9 @@ export function Paywall({ user }: { user: User }) {
       <header className="border-b border-border/40">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-2">
-            <Shield className="h-8 w-8 text-primary" />
-            <span className="text-xl font-bold">ThreadMoat</span>
-          </Link>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="https://threadmoat.vercel.app/finocchiaro-logo.png" alt="ThreadMoat" className="h-8 w-auto" />
+            </Link>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span>{user.email}</span>
           </div>
