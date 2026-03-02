@@ -1,5 +1,5 @@
 import React from "react"
-import { Database, Search, AlertTriangle, Shield, TrendingUp, Clock } from "lucide-react"
+import { Database, TrendingUp, Clock, Users, Building2, Search } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -9,9 +9,9 @@ export default function DashboardPage() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold">Threat Database</h1>
+        <h1 className="text-3xl font-bold">Thread Database</h1>
         <p className="mt-2 text-muted-foreground">
-          Search and explore the ThreadMoat threat intelligence database.
+          Search and explore the ThreadMoat Industrial AI &amp; Engineering Software database.
         </p>
       </div>
 
@@ -20,7 +20,7 @@ export default function DashboardPage() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search threats, IPs, domains, hashes..."
+            placeholder="Search startups, companies, technologies..."
             className="pl-10"
           />
         </div>
@@ -31,62 +31,60 @@ export default function DashboardPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           icon={<Database className="h-5 w-5" />}
-          title="Total Threats"
-          value="2,847,392"
-          description="Tracked indicators"
+          title="Total Startups"
+          value="500+"
+          description="Tracked companies"
         />
         <StatsCard
-          icon={<AlertTriangle className="h-5 w-5" />}
-          title="Active Threats"
-          value="12,847"
-          description="Last 24 hours"
+          icon={<Users className="h-5 w-5" />}
+          title="Founders"
+          value="100+"
+          description="Warm introductions available"
         />
         <StatsCard
           icon={<TrendingUp className="h-5 w-5" />}
-          title="Trending"
-          value="+847"
-          description="New today"
+          title="VC Funding"
+          value="$13.2B+"
+          description="Total investment tracked"
         />
         <StatsCard
           icon={<Clock className="h-5 w-5" />}
           title="Last Updated"
-          value="2 min ago"
+          value="Today"
           description="Real-time sync"
         />
       </div>
 
-      {/* Recent Threats Table */}
+      {/* Recent Entries Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Recent Threats</CardTitle>
-          <CardDescription>Latest threat indicators added to the database</CardDescription>
+          <CardTitle>Recent Database Entries</CardTitle>
+          <CardDescription>Latest startups and companies added to the database</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="rounded-md border">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="p-3 text-left font-medium">Indicator</th>
-                  <th className="p-3 text-left font-medium">Type</th>
-                  <th className="p-3 text-left font-medium">Severity</th>
-                  <th className="p-3 text-left font-medium">Source</th>
+                  <th className="p-3 text-left font-medium">Company</th>
+                  <th className="p-3 text-left font-medium">Category</th>
+                  <th className="p-3 text-left font-medium">Stage</th>
+                  <th className="p-3 text-left font-medium">Funding</th>
                   <th className="p-3 text-left font-medium">Added</th>
                 </tr>
               </thead>
               <tbody>
-                {mockThreats.map((threat, i) => (
-                  <tr key={i} className="border-b last:border-0">
-                    <td className="p-3 font-mono text-xs">{threat.indicator}</td>
+                {mockCompanies.map((company, i) => (
+                  <tr key={i} className="border-b last:border-0 hover:bg-muted/30">
+                    <td className="p-3 font-medium">{company.name}</td>
+                    <td className="p-3 text-muted-foreground">{company.category}</td>
                     <td className="p-3">
-                      <span className="rounded bg-muted px-2 py-1 text-xs">
-                        {threat.type}
+                      <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">
+                        {company.stage}
                       </span>
                     </td>
-                    <td className="p-3">
-                      <SeverityBadge severity={threat.severity} />
-                    </td>
-                    <td className="p-3 text-muted-foreground">{threat.source}</td>
-                    <td className="p-3 text-muted-foreground">{threat.added}</td>
+                    <td className="p-3 text-muted-foreground">{company.funding}</td>
+                    <td className="p-3 text-muted-foreground">{company.added}</td>
                   </tr>
                 ))}
               </tbody>
@@ -112,36 +110,23 @@ function StatsCard({
   return (
     <Card>
       <CardContent className="pt-6">
-        <div className="flex items-center gap-2 text-muted-foreground">
-          {icon}
-          <span className="text-sm font-medium">{title}</span>
+        <div className="flex items-center gap-3">
+          <div className="rounded-md bg-primary/10 p-2 text-primary">{icon}</div>
+          <div>
+            <p className="text-sm text-muted-foreground">{title}</p>
+            <p className="text-2xl font-bold">{value}</p>
+            <p className="text-xs text-muted-foreground">{description}</p>
+          </div>
         </div>
-        <p className="mt-2 text-2xl font-bold">{value}</p>
-        <p className="text-xs text-muted-foreground">{description}</p>
       </CardContent>
     </Card>
   )
 }
 
-function SeverityBadge({ severity }: { severity: "critical" | "high" | "medium" | "low" }) {
-  const colors = {
-    critical: "bg-red-500/10 text-red-500",
-    high: "bg-orange-500/10 text-orange-500",
-    medium: "bg-yellow-500/10 text-yellow-500",
-    low: "bg-green-500/10 text-green-500",
-  }
-  
-  return (
-    <span className={`rounded px-2 py-1 text-xs font-medium ${colors[severity]}`}>
-      {severity}
-    </span>
-  )
-}
-
-const mockThreats = [
-  { indicator: "192.168.1.100", type: "IP", severity: "critical" as const, source: "Honeypot", added: "2 min ago" },
-  { indicator: "malware.example.com", type: "Domain", severity: "high" as const, source: "OSINT", added: "5 min ago" },
-  { indicator: "a3f2c8d9e1b4...", type: "Hash", severity: "medium" as const, source: "Sandbox", added: "12 min ago" },
-  { indicator: "10.0.0.55", type: "IP", severity: "high" as const, source: "IDS", added: "18 min ago" },
-  { indicator: "phishing.test.net", type: "Domain", severity: "critical" as const, source: "Report", added: "25 min ago" },
+const mockCompanies = [
+  { name: "Aras Corporation", category: "PLM", stage: "Growth", funding: "$40M", added: "Today" },
+  { name: "Physna", category: "CAD AI", stage: "Series B", funding: "$56M", added: "Today" },
+  { name: "Symbio Robotics", category: "Manufacturing AI", stage: "Series B", funding: "$63M", added: "Yesterday" },
+  { name: "Vention", category: "Automation", stage: "Series C", funding: "$95M", added: "Yesterday" },
+  { name: "Hadrian", category: "Precision Machining", stage: "Series B", funding: "$117M", added: "2 days ago" },
 ]
