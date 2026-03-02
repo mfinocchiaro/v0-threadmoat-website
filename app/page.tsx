@@ -2,7 +2,6 @@ import React from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Database, TrendingUp, Users, Lightbulb } from "lucide-react"
-
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
@@ -23,7 +22,6 @@ export default function HomePage() {
           </nav>
         </div>
       </header>
-
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-24 text-center">
         <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-6xl">
@@ -32,7 +30,7 @@ export default function HomePage() {
           <span className="text-primary">Industrial AI & Engineering Software</span>
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg text-muted-foreground">
-          Leverage 35+ years of market expertise, exclusive access to nearly 450 startups, and warm
+          Leverage 35+ years of market expertise, exclusive access to over 500 startups backed by $13.2B+ in VC investment, and warm
           introductions to 100+ founders to build your portfolio with tomorrow{"'"}s unicorns.
         </p>
         <div className="mt-10 flex items-center justify-center gap-4">
@@ -49,7 +47,6 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
-
       {/* Features Section */}
       <section className="border-t border-border/40 bg-muted/30">
         <div className="container mx-auto px-4 py-24">
@@ -58,7 +55,7 @@ export default function HomePage() {
             <FeatureCard
               icon={<Database className="h-10 w-10" />}
               title="Comprehensive Startup Database"
-              description="Access detailed profiles on 300+ AI-driven CAD, CAM, and PLM startups reshaping industrial software."
+              description="Access detailed profiles on 500+ AI-driven CAD, CAM, and PLM startups reshaping industrial software."
             />
             <FeatureCard
               icon={<TrendingUp className="h-10 w-10" />}
@@ -73,7 +70,23 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
+      {/* Stats Section */}
+      <section className="container mx-auto px-4 py-16 text-center">
+        <div className="grid gap-8 sm:grid-cols-3">
+          <div>
+            <p className="text-4xl font-bold text-primary">500+</p>
+            <p className="mt-2 text-muted-foreground">Startups Tracked</p>
+          </div>
+          <div>
+            <p className="text-4xl font-bold text-primary">$13.2B+</p>
+            <p className="mt-2 text-muted-foreground">VC Investment (as of March 2026)</p>
+          </div>
+          <div>
+            <p className="text-4xl font-bold text-primary">35+</p>
+            <p className="mt-2 text-muted-foreground">Years of Market Expertise</p>
+          </div>
+        </div>
+      </section>
       {/* CTA Section */}
       <section className="container mx-auto px-4 py-24 text-center">
         <h2 className="text-3xl font-bold">Ready to discover your next investment?</h2>
@@ -86,11 +99,10 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
-
       {/* Footer */}
       <footer className="border-t border-border/40">
         <div className="container mx-auto flex h-16 items-center justify-between px-4 text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} ThreadMoat. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} ThreadMoat. All rights reserved.</p>
           <div className="flex gap-4">
             <Link href="/pricing" className="hover:text-foreground">
               Pricing
@@ -104,7 +116,6 @@ export default function HomePage() {
     </div>
   )
 }
-
 function FeatureCard({
   icon,
   title,
