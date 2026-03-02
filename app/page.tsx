@@ -11,10 +11,11 @@ export default function HomePage() {
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-2">
             <Image
-              src="/logo.png"              width={40}
+              src="/logo.png"
+              alt="ThreadMoat"
+              width={40}
               height={40}
               className="rounded-sm"
-              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
             />
             <span className="text-xl font-bold">ThreadMoat</span>
           </div>
@@ -32,11 +33,11 @@ export default function HomePage() {
       <section className="container mx-auto px-4 py-24 text-center">
         <div className="flex justify-center mb-8">
           <Image
-src="/logo.png"            alt="ThreadMoat Logo"
-            width={120}
-            height={120}
+            src="/logo.png"
+            alt="ThreadMoat Logo"
+            width={320}
+            height={80}
             className="rounded-xl shadow-lg"
-            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
           />
         </div>
         <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-6xl">
