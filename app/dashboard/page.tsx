@@ -38,8 +38,8 @@ export default function DashboardPage() {
         <StatsCard
           icon={<Users className="h-5 w-5" />}
           title="Founders"
-          value="100+"
-          description="Warm introductions available"
+          value="150+"
+          description="Introductions available"
         />
         <StatsCard
           icon={<TrendingUp className="h-5 w-5" />}
