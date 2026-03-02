@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+import { sql } from "@/lib/db"
 
 export type SubscriptionStatus = "active" | "trialing" | "past_due" | "canceled" | "incomplete" | "none"
 
@@ -8,12 +8,8 @@ export interface UserSubscription {
   currentPeriodEnd: Date | null
 }
 
-export async function getUserSubscription(): Promise<UserSubscription> {
-  const supabase = await createClient()
-  
-  const { data: { user } } = await supabase.auth.getUser()
-  
-  if (!user) {
+export async function getUserSubscription(userId: string): Promise<UserSubscription> {
+  if (!userId) {
     return {
       hasActiveSubscription: false,
       status: "none",
@@ -21,13 +17,14 @@ export async function getUserSubscription(): Promise<UserSubscription> {
     }
   }
 
-  const { data: subscription } = await supabase
-    .from("subscriptions")
-    .select("*")
-    .eq("user_id", user.id)
-    .single()
+  const subscriptions = await sql`
+    SELECT * FROM subscriptions
+    WHERE user_id = ${userId}
+    ORDER BY created_at DESC
+    LIMIT 1
+  `
 
-  if (!subscription) {
+  if (subscriptions.length === 0) {
     return {
       hasActiveSubscription: false,
       status: "none",
@@ -35,6 +32,7 @@ export async function getUserSubscription(): Promise<UserSubscription> {
     }
   }
 
+  const subscription = subscriptions[0]
   const activeStatuses: SubscriptionStatus[] = ["active", "trialing"]
   
   return {
@@ -44,18 +42,14 @@ export async function getUserSubscription(): Promise<UserSubscription> {
   }
 }
 
-export async function getUserProfile() {
-  const supabase = await createClient()
-  
-  const { data: { user } } = await supabase.auth.getUser()
-  
-  if (!user) return null
+export async function getUserProfile(userId: string) {
+  if (!userId) return null
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single()
+  const users = await sql`
+    SELECT id, email, company_name, title, phone, profile_type, is_admin
+    FROM users
+    WHERE id = ${userId}
+  `
 
-  return profile
+  return users[0] || null
 }

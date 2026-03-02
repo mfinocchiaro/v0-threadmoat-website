@@ -1,33 +1,26 @@
 import React from "react"
 import { redirect } from "next/navigation"
-import { createClient } from "@/lib/supabase/server"
-import { getUserSubscription } from "@/lib/subscription"
+import { getCurrentUser } from "@/lib/auth"
 import { DashboardNav } from "@/components/dashboard/nav"
 import { Paywall } from "@/components/dashboard/paywall"
+import { getUserSubscription } from "@/lib/subscription"
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const user = await getCurrentUser()
 
   if (!user) {
     redirect("/auth/login?redirect=/dashboard")
   }
 
   // Check if user is an admin (bypass paywall)
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("is_admin")
-    .eq("id", user.id)
-    .single()
-
-  const isAdmin = profile?.is_admin === true
+  const isAdmin = user.is_admin === true
 
   if (!isAdmin) {
-    const subscription = await getUserSubscription()
+    const subscription = await getUserSubscription(user.id)
 
     // Show paywall if no active subscription
     if (!subscription.hasActiveSubscription) {
