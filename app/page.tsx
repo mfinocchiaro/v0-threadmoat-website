@@ -1,7 +1,8 @@
 import React from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Database, TrendingUp, Users, Lightbulb } from "lucide-react"
+import { Database, TrendingUp, Users } from "lucide-react"
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
@@ -9,7 +10,14 @@ export default function HomePage() {
       <header className="border-b border-border/40">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-2">
-            <Lightbulb className="h-8 w-8 text-primary" />
+            <Image
+              src="/logo.jpg"
+              alt="ThreadMoat"
+              width={40}
+              height={40}
+              className="rounded-sm"
+              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+            />
             <span className="text-xl font-bold">ThreadMoat</span>
           </div>
           <nav className="flex items-center gap-4">
@@ -24,6 +32,16 @@ export default function HomePage() {
       </header>
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-24 text-center">
+        <div className="flex justify-center mb-8">
+          <Image
+            src="/logo.jpg"
+            alt="ThreadMoat Logo"
+            width={120}
+            height={120}
+            className="rounded-xl shadow-lg"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+          />
+        </div>
         <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-6xl">
           Navigate the Future of
           <br />
