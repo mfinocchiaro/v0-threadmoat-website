@@ -2,7 +2,8 @@
 
 import { getStripe } from "@/lib/stripe"
 import { getProduct } from "@/lib/products"
-import { createClient } from "@/lib/supabase/server"
+import { getCurrentUser } from "@/lib/auth"
+import { sql } from "@/lib/db"
 
 export async function createCheckoutSession(productId: string, userEmail: string) {
   const product = getProduct(productId)
@@ -11,37 +12,32 @@ export async function createCheckoutSession(productId: string, userEmail: string
     throw new Error("Product not found")
   }
 
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const user = await getCurrentUser()
   
   if (!user) {
     throw new Error("User not authenticated")
   }
 
   // Check if user already has a Stripe customer ID
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("stripe_customer_id")
-    .eq("id", user.id)
-    .single()
-
-  let customerId = profile?.stripe_customer_id
+  const profiles = await sql`
+    SELECT stripe_customer_id FROM users WHERE id = ${user.id}
+  `
+  let customerId = profiles[0]?.stripe_customer_id
 
   // Create Stripe customer if doesn't exist
   if (!customerId) {
     const customer = await getStripe().customers.create({
       email: userEmail,
       metadata: {
-        supabase_user_id: user.id,
+        user_id: user.id,
       },
     })
     customerId = customer.id
 
-    // Save customer ID to profile
-    await supabase
-      .from("profiles")
-      .update({ stripe_customer_id: customerId })
-      .eq("id", user.id)
+    // Save customer ID to user
+    await sql`
+      UPDATE users SET stripe_customer_id = ${customerId} WHERE id = ${user.id}
+    `
   }
 
   // Get the base URL
@@ -72,7 +68,7 @@ export async function createCheckoutSession(productId: string, userEmail: string
     success_url: `${baseUrl}/dashboard?checkout=success`,
     cancel_url: `${baseUrl}/dashboard?checkout=canceled`,
     metadata: {
-      supabase_user_id: user.id,
+      user_id: user.id,
       product_id: productId,
     },
   })
@@ -81,20 +77,17 @@ export async function createCheckoutSession(productId: string, userEmail: string
 }
 
 export async function createBillingPortalSession() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const user = await getCurrentUser()
   
   if (!user) {
     throw new Error("User not authenticated")
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("stripe_customer_id")
-    .eq("id", user.id)
-    .single()
+  const profiles = await sql`
+    SELECT stripe_customer_id FROM users WHERE id = ${user.id}
+  `
 
-  if (!profile?.stripe_customer_id) {
+  if (!profiles[0]?.stripe_customer_id) {
     throw new Error("No subscription found")
   }
 
@@ -102,7 +95,7 @@ export async function createBillingPortalSession() {
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000")
 
   const session = await getStripe().billingPortal.sessions.create({
-    customer: profile.stripe_customer_id,
+    customer: profiles[0].stripe_customer_id,
     return_url: `${baseUrl}/dashboard/settings`,
   })
 

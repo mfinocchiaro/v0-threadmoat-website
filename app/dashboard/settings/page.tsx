@@ -1,12 +1,23 @@
-import { createClient } from "@/lib/supabase/server"
+import { getCurrentUser } from "@/lib/auth"
 import { getUserSubscription } from "@/lib/subscription"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { ManageSubscriptionButton } from "@/components/checkout/manage-subscription-button"
+import { redirect } from "next/navigation"
+
+const PROFILE_TYPE_LABELS: Record<string, string> = {
+  startup_founder: "Startup / Founder",
+  vc_pe_investor: "VC / PE / Investor",
+  oem_enterprise: "OEM / Enterprise",
+  isv_platform: "ISV / Platform",
+}
 
 export default async function SettingsPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const user = await getCurrentUser()
+  
+  if (!user) {
+    redirect("/auth/login")
+  }
+
   const subscription = await getUserSubscription()
 
   return (
@@ -27,11 +38,27 @@ export default async function SettingsPage() {
         <CardContent className="space-y-4">
           <div>
             <p className="text-sm text-muted-foreground">Email</p>
-            <p className="font-medium">{user?.email}</p>
+            <p className="font-medium">{user.email}</p>
+          </div>
+          {user.company_name && (
+            <div>
+              <p className="text-sm text-muted-foreground">Company</p>
+              <p className="font-medium">{user.company_name}</p>
+            </div>
+          )}
+          {user.title && (
+            <div>
+              <p className="text-sm text-muted-foreground">Title</p>
+              <p className="font-medium">{user.title}</p>
+            </div>
+          )}
+          <div>
+            <p className="text-sm text-muted-foreground">Profile Type</p>
+            <p className="font-medium">{PROFILE_TYPE_LABELS[user.profile_type] || user.profile_type}</p>
           </div>
           <div>
             <p className="text-sm text-muted-foreground">User ID</p>
-            <p className="font-mono text-sm">{user?.id}</p>
+            <p className="font-mono text-sm">{user.id}</p>
           </div>
         </CardContent>
       </Card>
@@ -40,7 +67,7 @@ export default async function SettingsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Subscription</CardTitle>
-          <CardDescription>Manage your ThreadMoat Pro subscription</CardDescription>
+          <CardDescription>Manage your ThreadMoat Analytics subscription</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
