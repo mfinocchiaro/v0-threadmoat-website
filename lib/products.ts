@@ -9,29 +9,31 @@ export interface Product {
 
 export const PRODUCTS: Product[] = [
   {
-    id: "threadmoat-pro-monthly",
-    name: "ThreadMoat Pro",
-    description: "Full access to the ThreadMoat database with monthly billing",
-    priceInCents: 2999, // $29.99/month
+    id: "threadmoat-analytics-monthly",
+    name: "Analytics",
+    description: "Full access to curated market intelligence and analytics dashboards",
+    priceInCents: 19900, // $199/month
     interval: "month",
     features: [
-      "Unlimited database access",
-      "Real-time thread intelligence",
-      "API access",
-      "Priority support",
+      "All dashboards + filters + saved views",
+      "Watchlists + alerts (weekly digest email)",
+      "Exports: charts + aggregated tables",
+      "Weekly release notes (\"what changed\")",
+      "500+ curated company profiles",
     ],
   },
   {
-    id: "threadmoat-pro-yearly",
-    name: "ThreadMoat Pro (Annual)",
-    description: "Full access to the ThreadMoat database with annual billing - save 20%",
-    priceInCents: 28788, // $287.88/year ($23.99/month equivalent)
+    id: "threadmoat-analytics-yearly",
+    name: "Analytics (Annual)",
+    description: "Full access with annual billing - save $389/year",
+    priceInCents: 199900, // $1,999/year
     interval: "year",
     features: [
-      "Unlimited database access",
-      "Real-time thread intelligence",
-      "API access",
-      "Priority support",
+      "All dashboards + filters + saved views",
+      "Watchlists + alerts (weekly digest email)",
+      "Exports: charts + aggregated tables",
+      "Weekly release notes (\"what changed\")",
+      "500+ curated company profiles",
       "2 months free",
     ],
   },
