@@ -20,7 +20,6 @@ export function Paywall({ user }: { user: User }) {
           </div>
         </div>
       </header>
-
       {/* Paywall Content */}
       <main className="container mx-auto px-4 py-16">
         <div className="mx-auto max-w-2xl text-center">
@@ -30,10 +29,9 @@ export function Paywall({ user }: { user: User }) {
           <h1 className="mt-6 text-3xl font-bold">Subscribe to Access the Database</h1>
           <p className="mt-4 text-muted-foreground">
             You&apos;re signed in as {user.email}. Subscribe to ThreadMoat Pro to unlock
-            full access to the threat intelligence database.
+            full access to the Industrial AI &amp; Engineering Software thread database.
           </p>
         </div>
-
         {/* Pricing Cards */}
         <div className="mx-auto mt-12 grid max-w-4xl gap-8 md:grid-cols-2">
           {PRODUCTS.map((product) => (
@@ -63,7 +61,6 @@ export function Paywall({ user }: { user: User }) {
             </div>
           ))}
         </div>
-
         {/* Back Link */}
         <div className="mt-12 text-center">
           <Link href="/">
