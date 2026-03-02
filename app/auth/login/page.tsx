@@ -1,6 +1,6 @@
 'use client'
 import React from "react"
-import Image from 'next/image'
+import { Shield } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import {
@@ -50,15 +50,9 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         <div className="flex flex-col gap-6">
           <div className="flex justify-center mb-2">
-            <Link href="/">
-              <Image
-                src="https://threadmoat.vercel.app/finocchiaro-logo.png"
-                alt="ThreadMoat"
-                width={120}
-                height={32}
-                className="h-8 w-auto"
-                unoptimized
-              />
+            <Link href="/" className="flex items-center gap-2">
+              <Shield className="h-8 w-8 text-primary" />
+              <span className="text-xl font-bold">ThreadMoat</span>
             </Link>
           </div>
           <Card>
