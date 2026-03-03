@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { loginAction } from '@/app/actions/auth'
 
 function LoginForm() {
   const [email, setEmail] = useState('')
@@ -29,34 +30,20 @@ function LoginForm() {
     setIsLoading(true)
     setError(null)
     
-    console.log('[v0] Login attempt started for:', email)
-    console.log('[v0] Will redirect to:', redirectTo)
-    
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-        credentials: 'include',
-      })
+      // Use Server Action - this properly sets HTTP-only cookies
+      const result = await loginAction(email, password)
 
-      console.log('[v0] Response status:', response.status)
-      const data = await response.json()
-      console.log('[v0] Response data:', JSON.stringify(data))
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to login')
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to login')
       }
 
-      console.log('[v0] Login successful, redirecting now')
       setSuccess(true)
       setIsLoading(false)
-      // Wait for cookie to be set, then do a full page navigation
-      setTimeout(() => {
-        window.location.href = redirectTo
-      }, 500)
+      // Redirect after cookie is set by server action
+      router.push(redirectTo)
+      router.refresh()
     } catch (error: unknown) {
-      console.log('[v0] Login error caught:', error)
       setError(error instanceof Error ? error.message : 'An error occurred')
       setIsLoading(false)
     }
