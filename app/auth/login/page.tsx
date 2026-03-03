@@ -19,6 +19,7 @@ function LoginForm() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get('redirect') || '/dashboard'
@@ -48,9 +49,10 @@ function LoginForm() {
       }
 
       console.log('[v0] Login successful, calling router.push')
-      router.refresh()
-      router.push(redirectTo)
-      console.log('[v0] router.push called')
+      setSuccess(true)
+      // Small delay to ensure cookie is set before navigation
+      await new Promise(resolve => setTimeout(resolve, 100))
+      window.location.href = redirectTo
     } catch (error: unknown) {
       console.log('[v0] Login error caught:', error)
       setError(error instanceof Error ? error.message : 'An error occurred')
@@ -107,6 +109,7 @@ function LoginForm() {
                     />
                   </div>
                   {error && <p className="text-sm text-destructive">{error}</p>}
+                  {success && <p className="text-sm text-green-600">Login successful! Redirecting...</p>}
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? 'Logging in...' : 'Login'}
                   </Button>
