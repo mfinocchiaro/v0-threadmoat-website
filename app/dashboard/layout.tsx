@@ -3,8 +3,16 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
 import { sql } from '@/lib/db'
 import { getUserSubscription } from '@/lib/subscription'
-import { DashboardNav } from '@/components/dashboard/nav'
+import { SidebarShell } from '@/components/dashboard/sidebar-shell'
 import { Paywall } from '@/components/dashboard/paywall'
+
+type ProfileRow = {
+  is_admin?: boolean
+  full_name?: string
+  company?: string
+  title?: string
+  profile_type?: string
+}
 
 export default async function DashboardLayout({
   children,
@@ -19,10 +27,17 @@ export default async function DashboardLayout({
 
   const user = session.user
 
-  // Check if user is an admin (bypasses paywall)
-  // Also supports ADMIN_EMAILS env var as a fallback for dev/testing
-  const rows = await sql`SELECT is_admin FROM profiles WHERE id = ${user.id}`
-  const profile = rows[0]
+  let profile: ProfileRow | undefined
+  try {
+    const rows = await sql`
+      SELECT is_admin, full_name, company, title, profile_type
+      FROM profiles
+      WHERE id = ${user.id}
+    `
+    profile = rows[0] as ProfileRow | undefined
+  } catch {
+    // DB unavailable — fall through to ADMIN_EMAILS check below
+  }
 
   const adminEmails = (process.env.ADMIN_EMAILS || '')
     .split(',')
@@ -32,16 +47,21 @@ export default async function DashboardLayout({
   const isAdmin = profile?.is_admin === true || adminEmails.includes(user.email || '')
 
   if (!isAdmin) {
-    const subscription = await getUserSubscription(user.id)
-    if (!subscription.hasActiveSubscription) {
+    let hasSubscription = false
+    try {
+      const subscription = await getUserSubscription(user.id)
+      hasSubscription = subscription.hasActiveSubscription
+    } catch {
+      // DB unavailable
+    }
+    if (!hasSubscription) {
       return <Paywall user={user} />
     }
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <DashboardNav user={user} />
-      <main className="container mx-auto px-4 py-8">{children}</main>
-    </div>
+    <SidebarShell user={user} profile={profile}>
+      {children}
+    </SidebarShell>
   )
 }

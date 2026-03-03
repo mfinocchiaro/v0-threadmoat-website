@@ -11,27 +11,27 @@ export const PRODUCTS: Product[] = [
   {
     id: "analytics-monthly",
     name: "Analytics — Monthly",
-    description: "Self-serve analytics access, billed monthly",
+    description: "Premium written analysis and updates. (Analytics access only; dataset access sold separately.)",
     priceInCents: 19900, // $199/month
     interval: "month",
     features: [
       "All dashboards + filters + saved views",
       "Watchlists + alerts (weekly digest email)",
       "Exports: charts + aggregated tables (no directory dump)",
-      "Weekly release notes ("what changed")",
+      "Weekly release notes (\u201cwhat changed\u201d)",
     ],
   },
   {
     id: "analytics-yearly",
     name: "Analytics — Annual",
-    description: "Self-serve analytics access, billed annually — save ~$389",
+    description: "Premium written analysis and updates, billed annually — save ~$389. (Analytics access only; dataset access sold separately.)",
     priceInCents: 199900, // $1,999/year
     interval: "year",
     features: [
       "All dashboards + filters + saved views",
       "Watchlists + alerts (weekly digest email)",
       "Exports: charts + aggregated tables (no directory dump)",
-      "Weekly release notes ("what changed")",
+      "Weekly release notes (\u201cwhat changed\u201d)",
       "Two months free vs. monthly",
     ],
   },

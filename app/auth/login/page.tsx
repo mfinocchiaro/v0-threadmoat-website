@@ -51,11 +51,11 @@ export default function LoginPage() {
           <div className="flex justify-center mb-2">
             <Link href="/">
               <Image
-                src="https://threadmoat.vercel.app/finocchiaro-logo.png"
+                src="/logo.png"
                 alt="ThreadMoat"
-                width={120}
-                height={32}
-                className="h-8 w-auto"
+                width={160}
+                height={42}
+                className="h-10 w-auto"
                 unoptimized
               />
             </Link>

@@ -1,0 +1,467 @@
+"use client"
+
+import React, { createContext, useContext, useState, useCallback, useMemo, useEffect, useRef, ReactNode } from "react"
+import { Company } from "@/lib/company-data"
+import { useFilter } from "@/contexts/filter-context"
+
+// ── Constants ──────────────────────────────────────────────
+
+export const FUNDING_STAGES = [
+  "Bootstrapped", "Pre-Seed", "Seed", "Series A", "Series B", "Series C", "Series D+", "Growth", "Mature",
+] as const
+
+export const DEAL_SIZE_BRACKETS = [
+  "<$1M", "$1-5M", "$5-20M", "$20-50M", "$50-100M", "$100M+",
+] as const
+
+export const SCORE_DIMENSIONS = [
+  { key: "marketOpportunity", label: "Market Opportunity" },
+  { key: "teamExecution", label: "Team & Execution" },
+  { key: "techDifferentiation", label: "Tech Differentiation" },
+  { key: "fundingEfficiency", label: "Funding Efficiency" },
+  { key: "growthMetrics", label: "Growth Metrics" },
+  { key: "industryImpact", label: "Industry Impact" },
+  { key: "competitiveMoat", label: "Competitive Moat" },
+] as const
+
+export const OEM_COVERAGE_OPTIONS = ["commercial", "customized", "homegrown", "none"] as const
+
+// ── Types ──────────────────────────────────────────────────
+
+export type ScoreDimensionKey = (typeof SCORE_DIMENSIONS)[number]["key"]
+
+export interface VCThesis {
+  fundingStages: string[]
+  dealSizeBrackets: string[]
+  investmentLists: string[]
+  countries: string[]
+  scoreWeights: Record<ScoreDimensionKey, number>
+}
+
+export interface ISVThesis {
+  coveredInvestmentLists: string[]
+  coveredLifecycles: string[]
+  targetIndustries: string[]
+}
+
+export type OEMCoverage = "commercial" | "customized" | "homegrown" | "none"
+
+export interface OEMThesis {
+  coverageMap: Record<string, OEMCoverage>
+}
+
+export type ThesisType = "founder" | "vc" | "isv" | "oem"
+
+// ── Per-profile config ─────────────────────────────────────
+
+export interface ProfileThesisConfig {
+  buttonText: string
+  sheetTitle: string
+  sheetDescription: string
+  thesisType: ThesisType
+  tabLabel: string
+  indicatorLabel: string
+  resultTitle: string
+}
+
+export const PROFILE_THESIS_CONFIG: Record<string, ProfileThesisConfig> = {
+  startup_founder: {
+    buttonText: "Set Competitive Moat",
+    sheetTitle: "Define Your Competitive Moat",
+    sheetDescription: "Identify competitors and understand your positioning in the market.",
+    thesisType: "founder",
+    tabLabel: "Founder",
+    indicatorLabel: "Competitive Moat Active",
+    resultTitle: "Competitive Landscape",
+  },
+  vc_investor: {
+    buttonText: "Set Investment Thesis",
+    sheetTitle: "Define Your Investment Thesis",
+    sheetDescription: "Set your investment criteria to discover and rank opportunities.",
+    thesisType: "vc",
+    tabLabel: "Investor",
+    indicatorLabel: "Investment Thesis Active",
+    resultTitle: "Investment Thesis Match",
+  },
+  isv_platform: {
+    buttonText: "Set Whitespace Analysis",
+    sheetTitle: "Define Your Whitespace Analysis",
+    sheetDescription: "Identify gaps in the market where your solutions are needed.",
+    thesisType: "isv",
+    tabLabel: "ISV",
+    indicatorLabel: "Whitespace Analysis Active",
+    resultTitle: "Market Opportunity Analysis",
+  },
+  oem_enterprise: {
+    buttonText: "Set Coverage Analysis",
+    sheetTitle: "Define Your Coverage Analysis",
+    sheetDescription: "Map your software landscape and identify replacement opportunities.",
+    thesisType: "oem",
+    tabLabel: "OEM",
+    indicatorLabel: "Coverage Analysis Active",
+    resultTitle: "Software Coverage Analysis",
+  },
+}
+
+export const ADMIN_THESIS_CONFIG: ProfileThesisConfig = {
+  buttonText: "Set Focus",
+  sheetTitle: "Set Investment Focus",
+  sheetDescription: "Define your criteria to filter and rank companies across the dashboard.",
+  thesisType: "vc",
+  tabLabel: "All",
+  indicatorLabel: "Focus Active",
+  resultTitle: "Focus Results",
+}
+
+export interface ScoredCompany {
+  company: Company
+  score: number
+  label: string
+}
+
+interface ThesisContextType {
+  activeThesis: ThesisType | null
+  activeConfig: ProfileThesisConfig | null
+  vcThesis: VCThesis
+  isvThesis: ISVThesis
+  oemThesis: OEMThesis
+  applyThesis: (type: ThesisType, drafts?: { vc?: VCThesis; isv?: ISVThesis; oem?: OEMThesis }) => void
+  clearThesis: () => void
+  setVCThesis: React.Dispatch<React.SetStateAction<VCThesis>>
+  setISVThesis: React.Dispatch<React.SetStateAction<ISVThesis>>
+  setOEMThesis: React.Dispatch<React.SetStateAction<OEMThesis>>
+  scoredCompanies: ScoredCompany[]
+  scoreCompanies: (companies: Company[]) => ScoredCompany[]
+  profileType?: string
+}
+
+// ── Defaults ───────────────────────────────────────────────
+
+const DEFAULT_SCORE_WEIGHTS: Record<ScoreDimensionKey, number> = {
+  marketOpportunity: 5,
+  teamExecution: 5,
+  techDifferentiation: 5,
+  fundingEfficiency: 5,
+  growthMetrics: 5,
+  industryImpact: 5,
+  competitiveMoat: 5,
+}
+
+const DEFAULT_VC: VCThesis = {
+  fundingStages: [],
+  dealSizeBrackets: [],
+  investmentLists: [],
+  countries: [],
+  scoreWeights: { ...DEFAULT_SCORE_WEIGHTS },
+}
+
+const DEFAULT_ISV: ISVThesis = {
+  coveredInvestmentLists: [],
+  coveredLifecycles: [],
+  targetIndustries: [],
+}
+
+const DEFAULT_OEM: OEMThesis = {
+  coverageMap: {},
+}
+
+// ── Scoring helpers ────────────────────────────────────────
+
+function dealSizeMatch(amount: number, brackets: string[]): boolean {
+  if (brackets.length === 0) return true
+  for (const b of brackets) {
+    if (b === "<$1M" && amount < 1_000_000) return true
+    if (b === "$1-5M" && amount >= 1_000_000 && amount < 5_000_000) return true
+    if (b === "$5-20M" && amount >= 5_000_000 && amount < 20_000_000) return true
+    if (b === "$20-50M" && amount >= 20_000_000 && amount < 50_000_000) return true
+    if (b === "$50-100M" && amount >= 50_000_000 && amount < 100_000_000) return true
+    if (b === "$100M+" && amount >= 100_000_000) return true
+  }
+  return false
+}
+
+function scoreVC(company: Company, thesis: VCThesis): number {
+  let score = 0
+
+  // Stage match (20pts)
+  if (thesis.fundingStages.length === 0) {
+    score += 20
+  } else {
+    const round = company.latestFundingRound || company.startupLifecyclePhase || ""
+    if (thesis.fundingStages.some(s => round.toLowerCase().includes(s.toLowerCase()))) {
+      score += 20
+    }
+  }
+
+  // Deal size (15pts)
+  if (thesis.dealSizeBrackets.length === 0) {
+    score += 15
+  } else {
+    const amount = company.lastFundingAmount || company.totalFunding || 0
+    if (dealSizeMatch(amount, thesis.dealSizeBrackets)) score += 15
+  }
+
+  // Sector (15pts)
+  if (thesis.investmentLists.length === 0) {
+    score += 15
+  } else {
+    if (thesis.investmentLists.includes(company.investmentList)) score += 15
+  }
+
+  // Geography (10pts)
+  if (thesis.countries.length === 0) {
+    score += 10
+  } else {
+    if (thesis.countries.includes(company.country)) score += 10
+  }
+
+  // Weighted scores (40pts)
+  const totalWeight = Object.values(thesis.scoreWeights).reduce((a, b) => a + b, 0)
+  if (totalWeight > 0) {
+    let weightedSum = 0
+    for (const dim of SCORE_DIMENSIONS) {
+      const companyVal = (company[dim.key as keyof Company] as number) || 0
+      const weight = thesis.scoreWeights[dim.key]
+      weightedSum += (companyVal / 10) * (weight / 10)
+    }
+    score += (weightedSum / SCORE_DIMENSIONS.length) * 40
+  } else {
+    score += 40
+  }
+
+  return Math.round(score)
+}
+
+function scoreISV(company: Company, thesis: ISVThesis): { score: number; label: string } {
+  const coveredList = thesis.coveredInvestmentLists.length === 0
+    || thesis.coveredInvestmentLists.includes(company.investmentList)
+
+  const phase = company.lifecyclePhase || company.startupLifecyclePhase || ""
+  const coveredPhase = thesis.coveredLifecycles.length === 0
+    || thesis.coveredLifecycles.includes(phase)
+
+  const coveredIndustry = thesis.targetIndustries.length === 0
+    || company.industriesServed?.some(ind => thesis.targetIndustries.includes(ind))
+
+  if (!coveredList && !coveredPhase) {
+    return { score: 100, label: "Whitespace" }
+  }
+  if (!coveredList || !coveredPhase || !coveredIndustry) {
+    return { score: 60, label: "Adjacent" }
+  }
+  return { score: 20, label: "Covered" }
+}
+
+function scoreOEM(company: Company, thesis: OEMThesis): { score: number; label: string } {
+  const coverage = thesis.coverageMap[company.investmentList]
+  if (!coverage || coverage === "none") {
+    return { score: 80, label: "Coverage Gap" }
+  }
+  if (coverage === "customized" || coverage === "homegrown") {
+    return { score: 100, label: "Replacement Candidate" }
+  }
+  return { score: 20, label: "Commercial" }
+}
+
+// ── Context ────────────────────────────────────────────────
+
+const ThesisContext = createContext<ThesisContextType | undefined>(undefined)
+
+// ── Persistence helpers ────────────────────────────────────
+
+interface SavedThesis {
+  activeThesis: ThesisType | null
+  vc: VCThesis
+  isv: ISVThesis
+  oem: OEMThesis
+}
+
+function saveThesisToAPI(data: SavedThesis) {
+  fetch("/api/profile/thesis", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ thesis_config: data }),
+  }).catch(() => {})
+}
+
+export function ThesisProvider({ children, profileType }: { children: ReactNode; profileType?: string }) {
+  const { setFilters } = useFilter()
+  const [activeThesis, setActiveThesis] = useState<ThesisType | null>(null)
+  const [vcThesis, setVCThesis] = useState<VCThesis>(DEFAULT_VC)
+  const [isvThesis, setISVThesis] = useState<ISVThesis>(DEFAULT_ISV)
+  const [oemThesis, setOEMThesis] = useState<OEMThesis>(DEFAULT_OEM)
+  const [scoredCompanies, setScoredCompanies] = useState<ScoredCompany[]>([])
+  const loaded = useRef(false)
+
+  // Load saved thesis on mount
+  useEffect(() => {
+    if (loaded.current) return
+    loaded.current = true
+    fetch("/api/profile/thesis")
+      .then(r => r.json())
+      .then(({ thesis_config }) => {
+        if (!thesis_config) return
+        const saved = thesis_config as SavedThesis
+        if (saved.vc) setVCThesis(saved.vc)
+        if (saved.isv) setISVThesis(saved.isv)
+        if (saved.oem) setOEMThesis(saved.oem)
+        if (saved.activeThesis) {
+          setActiveThesis(saved.activeThesis)
+          // Re-apply filters
+          setTimeout(() => {
+            const vc = saved.vc ?? DEFAULT_VC
+            setFilters(prev => {
+              const next = { ...prev }
+              switch (saved.activeThesis) {
+                case "founder":
+                case "vc":
+                  if (vc.investmentLists.length > 0) next.investmentLists = vc.investmentLists
+                  if (vc.countries.length > 0) next.countries = vc.countries
+                  if (vc.fundingStages.length > 0) next.fundingRound = vc.fundingStages
+                  break
+                case "oem": {
+                  const oem = saved.oem ?? DEFAULT_OEM
+                  const lists = Object.entries(oem.coverageMap)
+                    .filter(([, v]) => v !== "commercial")
+                    .map(([k]) => k)
+                  if (lists.length > 0) next.investmentLists = lists
+                  break
+                }
+              }
+              return next
+            })
+          }, 0)
+        }
+      })
+      .catch(() => {})
+  }, [setFilters])
+
+  const scoreCompanies = useCallback((companies: Company[]): ScoredCompany[] => {
+    if (!activeThesis) return []
+
+    let results: ScoredCompany[]
+    switch (activeThesis) {
+      case "founder":
+      case "vc":
+        results = companies.map(c => ({
+          company: c,
+          score: scoreVC(c, vcThesis),
+          label: `${scoreVC(c, vcThesis)}%`,
+        }))
+        break
+      case "isv":
+        results = companies.map(c => {
+          const { score, label } = scoreISV(c, isvThesis)
+          return { company: c, score, label }
+        })
+        break
+      case "oem":
+        results = companies.map(c => {
+          const { score, label } = scoreOEM(c, oemThesis)
+          return { company: c, score, label }
+        })
+        break
+    }
+
+    return results.sort((a, b) => b.score - a.score)
+  }, [activeThesis, vcThesis, isvThesis, oemThesis])
+
+  const applyThesis = useCallback((type: ThesisType, drafts?: { vc?: VCThesis; isv?: ISVThesis; oem?: OEMThesis }) => {
+    // Apply drafts first if provided (from panel)
+    const vc = drafts?.vc ?? vcThesis
+    const isv = drafts?.isv ?? isvThesis
+    const oem = drafts?.oem ?? oemThesis
+    if (drafts?.vc) setVCThesis(drafts.vc)
+    if (drafts?.isv) setISVThesis(drafts.isv)
+    if (drafts?.oem) setOEMThesis(drafts.oem)
+
+    setActiveThesis(type)
+    saveThesisToAPI({ activeThesis: type, vc, isv, oem })
+
+    // Push relevant filters into FilterContext
+    setFilters(prev => {
+      const next = { ...prev }
+      switch (type) {
+        case "founder":
+        case "vc":
+          if (vc.investmentLists.length > 0) next.investmentLists = vc.investmentLists
+          if (vc.countries.length > 0) next.countries = vc.countries
+          if (vc.fundingStages.length > 0) next.fundingRound = vc.fundingStages
+          break
+        case "isv":
+          // ISV doesn't push filters — it scores based on what's NOT covered
+          break
+        case "oem": {
+          // OEM filters to investment lists that have non-commercial coverage
+          const relevantLists = Object.entries(oem.coverageMap)
+            .filter(([, v]) => v === "customized" || v === "homegrown" || v === "none")
+            .map(([k]) => k)
+          if (relevantLists.length > 0) next.investmentLists = relevantLists
+          break
+        }
+      }
+      return next
+    })
+  }, [vcThesis, isvThesis, oemThesis, setFilters])
+
+  const clearThesis = useCallback(() => {
+    setActiveThesis(null)
+    setScoredCompanies([])
+    saveThesisToAPI({ activeThesis: null, vc: vcThesis, isv: isvThesis, oem: oemThesis })
+    setFilters({
+      search: "",
+      investmentLists: [],
+      industries: [],
+      countries: [],
+      subsegments: [],
+      lifecycle: [],
+      fundingRound: [],
+      metrics: "totalFunding",
+    })
+  }, [setFilters])
+
+  const activeConfig = useMemo<ProfileThesisConfig | null>(() => {
+    if (!activeThesis) return null
+    // Find config by matching thesisType — prefer the current profileType's config
+    if (profileType && PROFILE_THESIS_CONFIG[profileType]?.thesisType === activeThesis) {
+      return PROFILE_THESIS_CONFIG[profileType]
+    }
+    // Fallback: find any config with this thesis type
+    const entry = Object.values(PROFILE_THESIS_CONFIG).find(c => c.thesisType === activeThesis)
+    return entry ?? ADMIN_THESIS_CONFIG
+  }, [activeThesis, profileType])
+
+  const value = useMemo(() => ({
+    activeThesis,
+    activeConfig,
+    vcThesis,
+    isvThesis,
+    oemThesis,
+    applyThesis,
+    clearThesis,
+    setVCThesis,
+    setISVThesis,
+    setOEMThesis,
+    scoredCompanies,
+    scoreCompanies,
+    profileType,
+  }), [activeThesis, activeConfig, vcThesis, isvThesis, oemThesis, applyThesis, clearThesis, scoredCompanies, scoreCompanies, profileType])
+
+  return (
+    <ThesisContext.Provider value={value}>
+      {children}
+    </ThesisContext.Provider>
+  )
+}
+
+export function useThesis() {
+  const context = useContext(ThesisContext)
+  if (context === undefined) {
+    throw new Error("useThesis must be used within a ThesisProvider")
+  }
+  return context
+}
+
+export function useThesisOptional() {
+  return useContext(ThesisContext) ?? null
+}
