@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verifyPassword, createSession, setSessionCookie } from '@/lib/auth'
+import { verifyPassword, createSession, SESSION_COOKIE_NAME, SESSION_DURATION_DAYS } from '@/lib/auth'
 import { sql } from '@/lib/db'
 
 export async function POST(request: NextRequest) {
@@ -42,11 +42,8 @@ export async function POST(request: NextRequest) {
     // Create session
     const session = await createSession(user.id)
 
-    // Set cookie
-    await setSessionCookie(session.token, session.expiresAt)
-
-    // Return response
-    return NextResponse.json({
+    // Build response with Set-Cookie header
+    const response = NextResponse.json({
       success: true,
       user: {
         id: user.id,
@@ -56,6 +53,18 @@ export async function POST(request: NextRequest) {
         title: user.title,
       },
     })
+
+    // Explicitly set the cookie on the response
+    const expires = session.expiresAt || new Date(Date.now() + SESSION_DURATION_DAYS * 24 * 60 * 60 * 1000)
+    response.cookies.set(SESSION_COOKIE_NAME, session.token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      expires: expires,
+      path: '/',
+    })
+
+    return response
   } catch (error: unknown) {
     console.error('Login error:', error)
     return NextResponse.json(

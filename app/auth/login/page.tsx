@@ -13,7 +13,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { loginAction } from '@/app/actions/auth'
 
 function LoginForm() {
   const [email, setEmail] = useState('')
@@ -31,18 +30,24 @@ function LoginForm() {
     setError(null)
     
     try {
-      // Use Server Action - this properly sets HTTP-only cookies
-      const result = await loginAction(email, password)
+      // Use API route with response.cookies.set
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+        credentials: 'include', // Important for cookies
+      })
 
-      if (!result.success) {
+      const result = await response.json()
+
+      if (!response.ok || !result.success) {
         throw new Error(result.error || 'Failed to login')
       }
 
       setSuccess(true)
       setIsLoading(false)
-      // Redirect after cookie is set by server action
-      router.push(redirectTo)
-      router.refresh()
+      // Full page reload to ensure cookie is read
+      window.location.href = redirectTo
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : 'An error occurred')
       setIsLoading(false)

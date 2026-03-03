@@ -3,8 +3,8 @@ import bcrypt from 'bcryptjs'
 import { cookies } from 'next/headers'
 import { randomBytes } from 'crypto'
 
-const SESSION_COOKIE_NAME = 'threadmoat_session'
-const SESSION_DURATION_DAYS = 30
+export const SESSION_COOKIE_NAME = 'threadmoat_session'
+export const SESSION_DURATION_DAYS = 30
 
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 12)
