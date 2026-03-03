@@ -51,9 +51,10 @@ function LoginForm() {
       console.log('[v0] Login successful, redirecting now')
       setSuccess(true)
       setIsLoading(false)
-      // Use replace to avoid back button going to login
-      window.location.replace(redirectTo)
-      return // Stop execution here
+      // Wait for cookie to be set, then do a full page navigation
+      setTimeout(() => {
+        window.location.href = redirectTo
+      }, 500)
     } catch (error: unknown) {
       console.log('[v0] Login error caught:', error)
       setError(error instanceof Error ? error.message : 'An error occurred')

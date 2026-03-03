@@ -8,7 +8,7 @@ export async function GET() {
   try {
     const cookieStore = await cookies()
     const allCookies = cookieStore.getAll()
-    const sessionToken = cookieStore.get('session_token')?.value
+    const sessionToken = cookieStore.get('threadmoat_session')?.value
     
     let sessionInfo = null
     if (sessionToken) {
