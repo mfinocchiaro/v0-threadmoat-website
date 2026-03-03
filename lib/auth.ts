@@ -51,7 +51,7 @@ export async function findUserById(id: string): Promise<User | null> {
   return result[0] as User | null
 }
 
-export async function createSession(userId: string): Promise<string> {
+export async function createSession(userId: string): Promise<{ token: string; expiresAt: Date }> {
   const token = generateSessionToken()
   const expiresAt = new Date()
   expiresAt.setDate(expiresAt.getDate() + SESSION_DURATION_DAYS)
@@ -61,17 +61,15 @@ export async function createSession(userId: string): Promise<string> {
     VALUES (${userId}, ${token}, ${expiresAt.toISOString()})
   `
   
-  // Set HTTP-only cookie
-  const cookieStore = await cookies()
-  cookieStore.set(SESSION_COOKIE_NAME, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    expires: expiresAt,
-    path: '/',
-  })
-  
-  return token
+  return { token, expiresAt }
+}
+
+export function setSessionCookie(response: Response, token: string, expiresAt?: Date): void {
+  const expires = expiresAt || new Date(Date.now() + SESSION_DURATION_DAYS * 24 * 60 * 60 * 1000)
+  response.headers.append(
+    'Set-Cookie',
+    `${SESSION_COOKIE_NAME}=${token}; HttpOnly; Path=/; SameSite=Lax; ${process.env.NODE_ENV === 'production' ? 'Secure; ' : ''}Expires=${expires.toUTCString()}`
+  )
 }
 
 export async function getSession(): Promise<{ user: User } | null> {

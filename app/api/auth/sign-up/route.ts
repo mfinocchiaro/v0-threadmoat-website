@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     // Set cookie
     const response = NextResponse.json({ success: true, user: { id: user.id, email: user.email } })
-    setSessionCookie(response, session.token)
+    setSessionCookie(response, session.token, session.expiresAt)
 
     return response
   } catch (error: unknown) {

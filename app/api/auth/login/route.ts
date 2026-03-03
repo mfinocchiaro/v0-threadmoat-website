@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
         title: user.title,
       },
     })
-    setSessionCookie(response, session.token)
+    setSessionCookie(response, session.token, session.expiresAt)
 
     return response
   } catch (error: unknown) {
