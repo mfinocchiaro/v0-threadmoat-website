@@ -64,12 +64,16 @@ export async function createSession(userId: string): Promise<{ token: string; ex
   return { token, expiresAt }
 }
 
-export function setSessionCookie(response: Response, token: string, expiresAt?: Date): void {
+export async function setSessionCookie(token: string, expiresAt?: Date): Promise<void> {
   const expires = expiresAt || new Date(Date.now() + SESSION_DURATION_DAYS * 24 * 60 * 60 * 1000)
-  response.headers.append(
-    'Set-Cookie',
-    `${SESSION_COOKIE_NAME}=${token}; HttpOnly; Path=/; SameSite=Lax; ${process.env.NODE_ENV === 'production' ? 'Secure; ' : ''}Expires=${expires.toUTCString()}`
-  )
+  const cookieStore = await cookies()
+  cookieStore.set(SESSION_COOKIE_NAME, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    expires: expires,
+    path: '/',
+  })
 }
 
 export async function getSession(): Promise<{ user: User } | null> {

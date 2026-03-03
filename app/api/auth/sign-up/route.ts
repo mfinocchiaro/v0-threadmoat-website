@@ -45,10 +45,9 @@ export async function POST(request: NextRequest) {
     const session = await createSession(user.id)
 
     // Set cookie
-    const response = NextResponse.json({ success: true, user: { id: user.id, email: user.email } })
-    setSessionCookie(response, session.token, session.expiresAt)
+    await setSessionCookie(session.token, session.expiresAt)
 
-    return response
+    return NextResponse.json({ success: true, user: { id: user.id, email: user.email } })
   } catch (error: unknown) {
     console.error('Sign-up error:', error)
     
