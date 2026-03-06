@@ -248,7 +248,7 @@ export function NetworkGraph({ data, className }: NetworkGraphProps) {
           Reset View
         </Button>
       </div>
-      <div ref={containerRef} className="flex-1 w-full min-h-0 relative overflow-hidden bg-background">
+      <div ref={containerRef} className="flex-1 w-full min-h-0 relative overflow-hidden bg-background border-b">
         <svg ref={svgRef} className="w-full h-full block" />
         {data.length === 0 && (
           <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
@@ -256,6 +256,9 @@ export function NetworkGraph({ data, className }: NetworkGraphProps) {
           </div>
         )}
       </div>
+      <p className="px-4 py-2 text-[10px] text-muted-foreground/60 text-right">
+        Moat Map inspired by Blake Courter — thank you for the idea and encouragement.
+      </p>
     </Card>
   )
 }

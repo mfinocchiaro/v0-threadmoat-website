@@ -25,14 +25,14 @@ export default function AboutPage() {
             <Link href="/#services" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Services</Link>
             <Link href="/#expertise" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Expertise</Link>
             <Link href="/about" className="text-sm font-medium text-foreground transition-colors">About</Link>
-            <Link href="/#contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Contact</Link>
+            <Link href="/about#contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Contact Us</Link>
           </nav>
           <div className="flex items-center gap-3">
             <Link href="/auth/login">
               <Button variant="ghost" size="sm">Sign In</Button>
             </Link>
             <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-              <a href="mailto:fino@demystifyingplm.com">Schedule Call</a>
+              <a href="https://calendly.com/mfinocchiaro/15min" target="_blank" rel="noopener noreferrer">Schedule Call</a>
             </Button>
           </div>
         </div>
@@ -68,15 +68,33 @@ export default function AboutPage() {
               ))}
             </div>
           </div>
-          <div className="shrink-0 md:w-[480px]">
-            <Image
-              src="/threadmoat-screenshot.jpg"
-              alt="ThreadMoat Dashboard — Network Graph visualization"
-              width={480}
-              height={360}
-              className="rounded-lg border border-border/40 shadow-lg"
-              unoptimized
-            />
+          <div className="shrink-0 md:w-[480px] relative overflow-hidden rounded-lg border border-border/40 shadow-lg">
+            <div className="flex animate-screenshot-cycle" style={{ width: "300%" }}>
+              <Image
+                src="/threadmoat-screenshot.jpg"
+                alt="ThreadMoat Dashboard — Network Graph visualization"
+                width={480}
+                height={360}
+                className="w-1/3 shrink-0 object-cover"
+                unoptimized
+              />
+              <Image
+                src="/threadmoat-screenshot-periodic.jpg"
+                alt="ThreadMoat Dashboard — Periodic Table of Startups"
+                width={480}
+                height={360}
+                className="w-1/3 shrink-0 object-cover"
+                unoptimized
+              />
+              <Image
+                src="/threadmoat-screenshot-investor.jpg"
+                alt="ThreadMoat Dashboard — Investor Statistics"
+                width={480}
+                height={360}
+                className="w-1/3 shrink-0 object-cover"
+                unoptimized
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -337,7 +355,7 @@ export default function AboutPage() {
       </section>
 
       {/* Section 5: Where to connect with me */}
-      <section className="container mx-auto px-4 py-16">
+      <section id="contact" className="container mx-auto px-4 py-16">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-2xl font-bold mb-8">Where to connect with me</h2>
           <div className="flex flex-wrap justify-center gap-4">

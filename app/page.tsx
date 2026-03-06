@@ -25,14 +25,14 @@ export default function HomePage() {
             <a href="#services" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Services</a>
             <a href="#expertise" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Expertise</a>
             <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">About</Link>
-            <a href="#contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Contact</a>
+            <Link href="/about#contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Contact Us</Link>
           </nav>
           <div className="flex items-center gap-3">
             <Link href="/auth/login">
               <Button variant="ghost" size="sm">Sign In</Button>
             </Link>
             <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-              <a href="mailto:fino@demystifyingplm.com">Schedule Call</a>
+              <a href="https://calendly.com/mfinocchiaro/15min" target="_blank" rel="noopener noreferrer">Schedule Call</a>
             </Button>
           </div>
         </div>
@@ -226,7 +226,7 @@ export default function HomePage() {
         </p>
         <div className="flex items-center justify-center gap-4">
           <Button asChild size="lg" className="gap-2">
-            <a href="mailto:fino@demystifyingplm.com">
+            <a href="https://calendly.com/mfinocchiaro/15min" target="_blank" rel="noopener noreferrer">
               <Mail className="h-5 w-5" />
               Schedule a Call
             </a>

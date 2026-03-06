@@ -121,3 +121,14 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes screenshot-cycle {
+  0%, 27% { transform: translateX(0); }
+  33%, 60% { transform: translateX(-33.333%); }
+  66%, 93% { transform: translateX(-66.666%); }
+  100% { transform: translateX(0); }
+}
+
+.animate-screenshot-cycle {
+  animation: screenshot-cycle 12s ease-in-out infinite;
+}
