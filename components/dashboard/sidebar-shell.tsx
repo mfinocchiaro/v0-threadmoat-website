@@ -41,9 +41,9 @@ export function SidebarShell({
       <Sidebar collapsed={collapsed} onToggle={toggle} />
       <div className="flex flex-1 flex-col overflow-hidden">
         <TopBar user={user} profile={profile} />
-        <main className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto">
           <div className="container mx-auto px-6 py-6">{children}</div>
-        </main>
+        </div>
       </div>
     </div>
   );
