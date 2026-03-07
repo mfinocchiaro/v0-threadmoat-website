@@ -1,67 +1,65 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useEffect, useState } from "react"
 import Link from "next/link"
-import { Company, formatCurrency } from "@/lib/company-data"
+import { Company, formatCurrency, loadCompanyData } from "@/lib/company-data"
 import { INVESTMENT_LIST_COLORS } from "@/lib/investment-colors"
-import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
-import { FocusPrompt } from "@/components/dashboard/focus-prompt"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card } from "@/components/ui/card"
 import { ArrowRight } from "lucide-react"
 
-// Domain descriptions and representative icons (Lucide icon names mapped to emoji for simplicity)
+// Domain descriptions and representative icons
 const DOMAIN_META: Record<string, { description: string; icon: string }> = {
   "Design Intelligence (CAD)": {
     description:
       "Next-generation computer-aided design tools using AI-driven generative geometry, real-time collaboration, and cloud-native parametric modeling. These startups are redefining how engineers create, iterate, and optimize product designs.",
-    icon: "✏️",
+    icon: "\u270F\uFE0F",
   },
   "Extreme Analysis (CAE, CFD, FEA, QC)": {
     description:
       "Simulation and analysis platforms spanning computational fluid dynamics, finite element analysis, and quality control. GPU-accelerated solvers and AI surrogates are collapsing iteration cycles from days to minutes.",
-    icon: "🔬",
+    icon: "\uD83D\uDD2C",
   },
   "Adaptive Manufacturing (AM, CAM, CNC)": {
     description:
       "Additive manufacturing, CNC optimization, and hybrid production systems. From metal 3D printing to AI-powered toolpath generation, these companies are bridging the digital-to-physical gap.",
-    icon: "🏭",
+    icon: "\uD83C\uDFED",
   },
   "Cognitive Thread (PLM, MBSE, DT)": {
     description:
-      "Product lifecycle management, model-based systems engineering, and digital thread platforms. The connective tissue of engineering data — linking requirements, models, and configurations across the enterprise.",
-    icon: "🧬",
+      "Product lifecycle management, model-based systems engineering, and digital thread platforms. The connective tissue of engineering data \u2014 linking requirements, models, and configurations across the enterprise.",
+    icon: "\uD83E\uDDEC",
   },
   "Factory Futures (MES, IIOT)": {
     description:
       "Manufacturing execution systems and industrial IoT platforms enabling smart factory operations. Real-time production monitoring, predictive maintenance, and edge computing for the shop floor.",
-    icon: "⚙️",
+    icon: "\u2699\uFE0F",
   },
   "Augmented Operations (MOM, CMMS, AR/VR, SLM)": {
     description:
       "Operations management, maintenance systems, AR/VR-assisted workflows, and service lifecycle management. These tools close the loop between engineering intent and field reality.",
-    icon: "🥽",
+    icon: "\uD83E\uDD7D",
   },
   "Streamlined Supply Chain (SCM)": {
     description:
       "Supply chain management platforms using AI for demand forecasting, supplier risk scoring, and logistics optimization. Critical infrastructure for resilient, data-driven procurement.",
-    icon: "🔗",
+    icon: "\uD83D\uDD17",
   },
   "Bleeding Edge BIM (AEC/BIM)": {
     description:
-      "Architecture, engineering, and construction technology — BIM authoring, clash detection, generative building design, and digital twin platforms for the built environment.",
-    icon: "🏗️",
+      "Architecture, engineering, and construction technology \u2014 BIM authoring, clash detection, generative building design, and digital twin platforms for the built environment.",
+    icon: "\uD83C\uDFD7\uFE0F",
   },
   "SW+HW=Innovation (Robotics, Drones)": {
     description:
       "Hardware-software convergence: autonomous robotics, drone platforms, sensor fusion, and embodied AI. Companies building the physical intelligence layer for industry.",
-    icon: "🤖",
+    icon: "\uD83E\uDD16",
   },
   "Knowledge Engineering (R&D, Learning)": {
     description:
       "Engineering education, R&D knowledge management, and AI-powered learning platforms. Accelerating how teams capture, share, and apply deep technical expertise.",
-    icon: "🎓",
+    icon: "\uD83C\uDF93",
   },
 }
 
@@ -79,7 +77,12 @@ interface DomainStats {
 }
 
 function LandscapeIntroInner() {
-  const { companies, isLoading, hasThesis } = useThesisGatedData()
+  const [companies, setCompanies] = useState<Company[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    loadCompanyData().then(data => { setCompanies(data); setIsLoading(false) })
+  }, [])
 
   const domains = useMemo(() => {
     const grouped = new Map<string, Company[]>()
@@ -106,7 +109,7 @@ function LandscapeIntroInner() {
         .slice(0, 5)
         .map((c) => ({ name: c.name, score: c.weightedScore || 0 }))
 
-      const meta = DOMAIN_META[name] || { description: "", icon: "📊" }
+      const meta = DOMAIN_META[name] || { description: "", icon: "\uD83D\uDCCA" }
 
       result.push({
         name,
@@ -144,22 +147,6 @@ function LandscapeIntroInner() {
             <Skeleton key={i} className="h-64 rounded-xl" />
           ))}
         </div>
-      </div>
-    )
-  }
-
-  if (!hasThesis) {
-    return (
-      <div className="space-y-8">
-        <div className="max-w-3xl">
-          <h1 className="text-3xl font-bold tracking-tight">Investment Landscape</h1>
-          <p className="text-muted-foreground mt-3 text-base leading-relaxed">
-            ThreadMoat maps the engineering software ecosystem across ten domains spanning design,
-            simulation, manufacturing, operations, supply chain, AEC, robotics, and research systems.
-            Each startup is categorized within one primary investment domain.
-          </p>
-        </div>
-        <FocusPrompt label="Set Focus" description="Configure your thesis on the main dashboard to unlock this visualization." />
       </div>
     )
   }
@@ -211,18 +198,16 @@ function LandscapeIntroInner() {
         ))}
       </div>
 
-      {/* Domain cards — 2-column grid */}
+      {/* Domain cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {domains.map((d) => (
           <Card
             key={d.name}
             className="overflow-hidden hover:shadow-lg transition-shadow"
           >
-            {/* Color accent bar */}
             <div className="h-1.5" style={{ backgroundColor: d.color }} />
 
             <div className="p-6 space-y-4">
-              {/* Title row */}
               <div className="flex items-start gap-3">
                 <span className="text-3xl">{d.icon}</span>
                 <div className="flex-1 min-w-0">
@@ -233,7 +218,6 @@ function LandscapeIntroInner() {
                 </div>
               </div>
 
-              {/* Stats row */}
               <div className="grid grid-cols-4 gap-3 text-center">
                 <div>
                   <p className="text-xl font-bold" style={{ color: d.color }}>
@@ -261,7 +245,6 @@ function LandscapeIntroInner() {
                 </div>
               </div>
 
-              {/* Top companies */}
               <div>
                 <p className="text-xs font-medium text-muted-foreground mb-2">
                   Top-Rated Startups
