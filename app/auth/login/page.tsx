@@ -82,7 +82,12 @@ export default function LoginPage() {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="password">Password</Label>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="password">Password</Label>
+                      <Link href="/auth/forgot-password" className="text-xs underline underline-offset-4 text-muted-foreground hover:text-foreground">
+                        Forgot password?
+                      </Link>
+                    </div>
                     <Input
                       id="password"
                       type="password"
@@ -91,7 +96,14 @@ export default function LoginPage() {
                       onChange={e => setPassword(e.target.value)}
                     />
                   </div>
-                  {error && <p className="text-sm text-red-500">{error}</p>}
+                  {error && (
+                    <div className="space-y-1">
+                      <p className="text-sm text-red-500">{error}</p>
+                      <p className="text-xs text-muted-foreground">
+                        If you haven&apos;t verified your email yet, check your inbox for a verification link.
+                      </p>
+                    </div>
+                  )}
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? 'Logging in...' : 'Login'}
                   </Button>

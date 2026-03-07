@@ -20,7 +20,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const sql = neon(process.env.DATABASE_URL!)
         const rows = await sql`
-          SELECT id, email, password_hash
+          SELECT id, email, password_hash, email_verified
           FROM users
           WHERE email = ${email}
         `
@@ -32,6 +32,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           user.password_hash as string,
         )
         if (!valid) return null
+
+        // Block login if email not verified
+        if (user.email_verified === false) return null
 
         return { id: user.id as string, email: user.email as string }
       },

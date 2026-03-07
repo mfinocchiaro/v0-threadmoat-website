@@ -65,6 +65,7 @@ export default function SignUpPage() {
     companySize: '' as RegisterData['companySize'] | '',
     password: '',
     repeatPassword: '',
+    inviteCode: '',
   })
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -104,6 +105,7 @@ export default function SignUpPage() {
         phone: form.phone || undefined,
         linkedinUrl: form.linkedinUrl || undefined,
         companySize: (form.companySize as RegisterData['companySize']) || undefined,
+        inviteCode: form.inviteCode || undefined,
       })
       router.push('/auth/sign-up-success')
     } catch (err: unknown) {
@@ -252,6 +254,22 @@ export default function SignUpPage() {
                       maxLength={500}
                       value={form.linkedinUrl}
                       onChange={set('linkedinUrl')}
+                    />
+                  </div>
+
+                  {/* Invite Code */}
+                  <div className="grid gap-2">
+                    <Label htmlFor="invite-code">
+                      Invite Code <span className="text-muted-foreground text-xs">(optional)</span>
+                    </Label>
+                    <Input
+                      id="invite-code"
+                      type="text"
+                      placeholder="e.g. THREADED2026"
+                      maxLength={50}
+                      value={form.inviteCode}
+                      onChange={set('inviteCode')}
+                      className="uppercase"
                     />
                   </div>
 
