@@ -398,12 +398,12 @@ export function MapChart({ data = [], className, preview = false }: MapChartProp
   return (
     <div
       className={cn(
-        "relative w-full h-full bg-slate-950 rounded-lg overflow-hidden group/map",
+        "relative w-full bg-slate-950 rounded-lg overflow-hidden group/map min-h-[500px]",
         className,
       )}
       ref={containerRef}
     >
-      <svg ref={svgRef} className="w-full h-full block" />
+      <svg ref={svgRef} className="w-full block" style={{ minHeight: 500 }} />
 
       <div className="absolute top-4 right-4 opacity-0 group-hover/map:opacity-100 transition-opacity pointer-events-none">
         <Button

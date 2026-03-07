@@ -68,14 +68,12 @@ function DashboardInner({ companies, isLoading, profileType, onSelectProfile }: 
   return (
     <>
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <h2 className="text-lg font-semibold">
-            {scenarioData?.label ?? "Dashboard"}
-          </h2>
-        </div>
+        <h2 className="text-lg font-semibold">
+          {scenarioData?.label ?? "Dashboard"}
+        </h2>
         <Button variant="outline" size="sm" onClick={() => setThesisPanelOpen(true)}>
           <Focus className="mr-2 h-4 w-4" />
-          {config?.buttonText ?? "Set Focus"}
+          {config?.buttonText ?? "Configure Filters"}
         </Button>
       </div>
 

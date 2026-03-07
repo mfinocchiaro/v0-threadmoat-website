@@ -134,10 +134,8 @@ export function Sidebar({ collapsed, onToggle, onSelectScenario, activeScenario 
   const hasThesis = !!thesis?.activeThesis;
   const [focusMenuOpen, setFocusMenuOpen] = useState(false);
 
-  // Before thesis is set, only show Investment Landscape
-  const visibleVizItems = hasThesis
-    ? VIZ_ITEMS
-    : VIZ_ITEMS.filter(item => item.href === "/dashboard/landscape-intro");
+  // Always show all viz items below Investment Landscape
+  const visibleVizItems = VIZ_ITEMS;
 
   const activeScenarioData = FOCUS_SCENARIOS.find(s => s.key === activeScenario);
 
@@ -174,7 +172,7 @@ export function Sidebar({ collapsed, onToggle, onSelectScenario, activeScenario 
             >
               <Focus className="h-4 w-4 text-primary shrink-0" />
               <span className="truncate flex-1 text-left">
-                {activeScenarioData ? activeScenarioData.shortLabel : "Set Focus"}
+                {activeScenarioData ? activeScenarioData.shortLabel : "Choose Research Focus"}
               </span>
               <ChevronDown className={cn("h-3.5 w-3.5 text-muted-foreground transition-transform", focusMenuOpen && "rotate-180")} />
             </button>
@@ -227,7 +225,7 @@ export function Sidebar({ collapsed, onToggle, onSelectScenario, activeScenario 
                 </button>
               </TooltipTrigger>
               <TooltipContent side="right" className="text-xs">
-                {activeScenarioData ? activeScenarioData.label : "Set Focus"}
+                {activeScenarioData ? activeScenarioData.label : "Choose Research Focus"}
               </TooltipContent>
             </Tooltip>
           </div>

@@ -10,6 +10,9 @@ import {
   SCORE_DIMENSIONS, ScoreDimensionKey,
 } from "@/contexts/thesis-context"
 import { getInvestmentColor } from "@/lib/investment-colors"
+import { AlertCircle } from "lucide-react"
+
+const MAX_INVESTMENT_LISTS = 3
 
 interface VCStepProps {
   thesis: VCThesis
@@ -143,11 +146,18 @@ export function VCStep({ thesis, onChange, companies, variant = "investor" }: VC
 
           {/* Sector (Investment List) */}
           <section>
-            <h4 className="text-sm font-medium mb-2">Your Investment List</h4>
+            <h4 className="text-sm font-medium mb-2">Your Investment List <span className="text-muted-foreground font-normal">(max {MAX_INVESTMENT_LISTS})</span></h4>
+            {(thesis.investmentLists ?? []).length >= MAX_INVESTMENT_LISTS && (
+              <div className="flex items-center gap-1.5 text-xs text-amber-600 mb-2"><AlertCircle className="size-3.5" /> Maximum {MAX_INVESTMENT_LISTS} selected.</div>
+            )}
             <CheckboxGrid
               items={investmentLists}
               selected={thesis.investmentLists ?? []}
-              onToggle={item => onChange({ ...thesis, investmentLists: toggleItem(thesis.investmentLists ?? [], item) })}
+              onToggle={item => {
+                const cur = thesis.investmentLists ?? []
+                if (!cur.includes(item) && cur.length >= MAX_INVESTMENT_LISTS) return
+                onChange({ ...thesis, investmentLists: toggleItem(cur, item) })
+              }}
               showColorDot
             />
           </section>
@@ -242,11 +252,18 @@ export function VCStep({ thesis, onChange, companies, variant = "investor" }: VC
 
           {/* Sectors */}
           <section>
-            <h4 className="text-sm font-medium mb-2">Investment Lists</h4>
+            <h4 className="text-sm font-medium mb-2">Investment Lists <span className="text-muted-foreground font-normal">(max {MAX_INVESTMENT_LISTS})</span></h4>
+            {(thesis.investmentLists ?? []).length >= MAX_INVESTMENT_LISTS && (
+              <div className="flex items-center gap-1.5 text-xs text-amber-600 mb-2"><AlertCircle className="size-3.5" /> Maximum {MAX_INVESTMENT_LISTS} selected.</div>
+            )}
             <CheckboxGrid
               items={investmentLists}
               selected={thesis.investmentLists ?? []}
-              onToggle={item => onChange({ ...thesis, investmentLists: toggleItem(thesis.investmentLists ?? [], item) })}
+              onToggle={item => {
+                const cur = thesis.investmentLists ?? []
+                if (!cur.includes(item) && cur.length >= MAX_INVESTMENT_LISTS) return
+                onChange({ ...thesis, investmentLists: toggleItem(cur, item) })
+              }}
               showColorDot
             />
           </section>

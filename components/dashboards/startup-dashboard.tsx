@@ -10,53 +10,47 @@ import { LandscapeChart } from "@/components/charts/landscape-chart";
 import { BarChart } from "@/components/charts/bar-chart";
 import { PeriodicTable } from "@/components/charts/periodic-table";
 import { QuadrantChart } from "@/components/charts/quadrant-chart";
+import { NetworkGraph } from "@/components/charts/network-graph";
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
 import { Badge } from "@/components/ui/badge";
 import { DollarSign, Globe, TrendingUp, Users } from "lucide-react";
-import { FocusPrompt } from "@/components/dashboard/focus-prompt";
 import { useMemo } from "react";
 
 export function StartupDashboard({ data, isLoading }: { data: Company[]; isLoading: boolean }) {
     const { filterCompany } = useFilter();
-    const { activeThesis, activeConfig, scoreCompanies } = useThesis();
+    const { activeThesis, scoreCompanies } = useThesis();
 
     const hasThesis = activeThesis === "founder";
     const scored = useMemo(() => scoreCompanies(data), [scoreCompanies, data]);
     const matches = useMemo(() => scored.filter(r => r.score >= 50), [scored]);
-    const displayData = useMemo(() => hasThesis ? matches.map(r => r.company) : data, [hasThesis, matches, data]);
+    const displayData = useMemo(() => hasThesis ? matches.map(r => r.company) : [], [hasThesis, matches]);
     const filtered = displayData.filter(filterCompany);
 
     if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading ecosystem data...</div>;
 
-    const focusLabel = activeConfig?.buttonText ?? "Set Competitive Moat";
     const totalFunding = filtered.reduce((s, c) => s + (c.totalFunding || 0), 0);
-    const avgCompetitorScore = matches.length > 0
+    const avgScore = matches.length > 0
         ? (matches.reduce((s, r) => s + (r.company.weightedScore || 0), 0) / matches.length).toFixed(1)
-        : "0";
+        : "\u2014";
     const totalHeadcount = filtered.reduce((s, c) => s + (c.headcount || 0), 0);
     const countries = new Set(filtered.map(c => c.country).filter(Boolean)).size;
-
     const topCompetitors = matches.slice(0, 5);
 
     return (
         <div className="space-y-6">
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">Startup Intelligence</h1>
-                <p className="text-muted-foreground">{matches.length} competitors from {data.length} companies.</p>
+                <p className="text-muted-foreground">{hasThesis ? `${matches.length} competitors found.` : "Configure your competitive moat to see results."}</p>
             </div>
-
-            {!hasThesis && <FocusPrompt label={focusLabel} description="Define your competitive space to reveal competitors, benchmark your positioning, and uncover market gaps." />}
 
             {hasThesis && <VizFilterBar companies={displayData} />}
 
-            {hasThesis && (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <KPICard title="Competitors Found" value={matches.length.toString()} subtitle={`from ${data.length} companies`} trend="up" icon={<DollarSign className="size-4" />} />
-                <KPICard title="Avg. Competitor Score" value={avgCompetitorScore} subtitle="Weighted moat score" icon={<TrendingUp className="size-4" />} />
-                <KPICard title="Total Headcount" value={totalHeadcount.toLocaleString()} subtitle="Competitor talent pool" trend="stable" icon={<Users className="size-4" />} />
-                <KPICard title="Market Reach" value={String(countries)} subtitle="Countries active" icon={<Globe className="size-4" />} />
+                <KPICard title="Competitors Found" value={hasThesis ? matches.length.toString() : "\u2014"} subtitle={hasThesis ? `from ${data.length} companies` : "Set focus to populate"} icon={<DollarSign className="size-4" />} />
+                <KPICard title="Avg. Competitor Score" value={hasThesis ? avgScore : "\u2014"} subtitle="Weighted moat score" icon={<TrendingUp className="size-4" />} />
+                <KPICard title="Total Headcount" value={hasThesis ? totalHeadcount.toLocaleString() : "\u2014"} subtitle="Competitor talent pool" icon={<Users className="size-4" />} />
+                <KPICard title="Market Reach" value={hasThesis ? String(countries) : "\u2014"} subtitle="Countries active" icon={<Globe className="size-4" />} />
             </div>
-            )}
 
             {hasThesis && topCompetitors.length > 0 && (
                 <WidgetCard title="Top Competitors" subtitle="Highest-scoring companies matching your competitive moat">
@@ -88,7 +82,6 @@ export function StartupDashboard({ data, isLoading }: { data: Company[]; isLoadi
                                             <div><span className="text-muted-foreground">Revenue:</span> {formatCurrency(c.estimatedRevenue || 0)}</div>
                                             <div><span className="text-muted-foreground">Moat:</span> {c.weightedScore?.toFixed(0) || "\u2014"}</div>
                                         </div>
-                                        {c.strengths && <p className="text-xs line-clamp-2"><span className="text-muted-foreground">Strengths:</span> {c.strengths}</p>}
                                     </div>
                                 </HoverCardContent>
                             </HoverCard>
@@ -97,21 +90,26 @@ export function StartupDashboard({ data, isLoading }: { data: Company[]; isLoadi
                 </WidgetCard>
             )}
 
-            <WidgetCard title="Competitive Landscape" subtitle={`${filtered.length} competitors`} href="/dashboard/landscape">
-                <LandscapeChart data={filtered} className="min-h-[500px]" />
+            <WidgetCard title="Ecosystem Network" subtitle={`${data.length} companies`}>
+                <NetworkGraph data={data} className="min-h-[500px]" />
             </WidgetCard>
 
-            <WidgetCard title="Periodic Table" subtitle={`${filtered.length} competitors`} href="/dashboard/periodic-table">
-                <PeriodicTable data={filtered} compact={true} />
-            </WidgetCard>
-
-            <WidgetCard title="Competitive Quadrant" subtitle="Market momentum vs execution" href="/dashboard/quadrant">
-                <QuadrantChart data={filtered} className="h-[500px]" />
-            </WidgetCard>
-
-            <WidgetCard title="Top Rankings" subtitle={`Top from ${filtered.length} competitors`} href="/dashboard/bar-chart">
-                <BarChart data={filtered} />
-            </WidgetCard>
+            {hasThesis && filtered.length > 0 && (
+                <>
+                    <WidgetCard title="Competitive Landscape" subtitle={`${filtered.length} competitors`}>
+                        <LandscapeChart data={filtered} className="min-h-[500px]" />
+                    </WidgetCard>
+                    <WidgetCard title="Periodic Table" subtitle={`${filtered.length} competitors`}>
+                        <PeriodicTable data={filtered} compact={true} />
+                    </WidgetCard>
+                    <WidgetCard title="Competitive Quadrant" subtitle="Market momentum vs execution">
+                        <QuadrantChart data={filtered} className="h-[500px]" />
+                    </WidgetCard>
+                    <WidgetCard title="Top Rankings" subtitle={`Top from ${filtered.length} competitors`}>
+                        <BarChart data={filtered} />
+                    </WidgetCard>
+                </>
+            )}
         </div>
     );
 }

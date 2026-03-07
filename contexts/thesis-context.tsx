@@ -46,6 +46,7 @@ export interface ISVThesis {
   coveredInvestmentLists: string[]
   coveredLifecycles: string[]
   targetIndustries: string[]
+  operatingModelTags: string[]
 }
 
 export type OEMCoverage = "commercial" | "customized" | "homegrown" | "none"
@@ -167,6 +168,7 @@ const DEFAULT_ISV: ISVThesis = {
   coveredInvestmentLists: [],
   coveredLifecycles: [],
   targetIndustries: [],
+  operatingModelTags: [],
 }
 
 const DEFAULT_OEM: OEMThesis = {
