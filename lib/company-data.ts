@@ -19,6 +19,8 @@ export interface Company {
   subsegment: string
   sectorFocus: string
   tags: string[]
+  categoryTags: string[]
+  differentiationTags: string[]
   operatingModelTags: string[]
   manufacturingType: string
   industriesServed: string[]

@@ -17,19 +17,21 @@ import { useMemo } from "react";
 
 export function OEMDashboard({ data, isLoading }: { data: Company[]; isLoading: boolean }) {
     const { filterCompany } = useFilter();
-    const { activeThesis, scoreCompanies, oemThesis } = useThesis();
-    const filtered = data.filter(filterCompany);
+    const { activeThesis, activeConfig, scoreCompanies, oemThesis } = useThesis();
 
     const hasThesis = activeThesis === "oem";
     const scored = useMemo(() => scoreCompanies(data), [scoreCompanies, data]);
 
-    // When thesis is active, widgets show only scored/relevant companies
-    const displayData = hasThesis
-        ? scored.filter(r => r.label !== "Filtered Out" && r.label !== "Commercial").map(r => r.company)
-        : filtered;
-
     const replacementCandidates = useMemo(() => scored.filter(r => r.label === "Replacement Candidate"), [scored]);
     const coverageGaps = useMemo(() => scored.filter(r => r.label === "Coverage Gap"), [scored]);
+
+    // Display data = everything except "Filtered Out" and "Commercial"
+    const displayData = useMemo(() =>
+        hasThesis
+            ? scored.filter(r => r.label !== "Filtered Out" && r.label !== "Commercial").map(r => r.company)
+            : []
+    , [hasThesis, scored]);
+    const filtered = displayData.filter(filterCompany);
 
     // Threats: replacement candidates with high weighted scores
     const threats = useMemo(() =>
@@ -47,56 +49,67 @@ export function OEMDashboard({ data, isLoading }: { data: Company[]; isLoading: 
             : []
     , [hasThesis, coverageGaps]);
 
-    // Capability gaps count: investment lists marked "none" in thesis
+    // Capability gaps: subcategories marked "none" in coverage map
     const gapCount = useMemo(() =>
         hasThesis ? Object.values(oemThesis.coverageMap).filter(v => v === "none").length : 0
     , [hasThesis, oemThesis]);
 
     if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading OEM intelligence…</div>;
 
+    const focusLabel = activeConfig?.buttonText ?? "Set Coverage Analysis";
+
+    // No thesis = no data
+    if (!hasThesis) {
+        return (
+            <div className="space-y-6">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight">OEM Intelligence</h1>
+                    <p className="text-muted-foreground">Competitive landscape, threat detection, and M&A opportunities.</p>
+                </div>
+                <FocusPrompt label={focusLabel} description="Map your software landscape to reveal threats, acquisition targets, and capability gaps." />
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-6">
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">OEM Intelligence</h1>
-                <p className="text-muted-foreground">Competitive landscape, threat detection, and M&A opportunities.</p>
+                <p className="text-muted-foreground">{displayData.length} relevant companies from {data.length} total.</p>
             </div>
 
-            <VizFilterBar companies={data} />
+            <VizFilterBar companies={displayData} />
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <KPICard
                     title="Active Threats"
-                    value={hasThesis ? threats.length.toString() : "—"}
-                    subtitle={hasThesis ? "High-score replacement targets" : "Set coverage analysis first"}
-                    trend={hasThesis && threats.length > 0 ? "up" : undefined}
+                    value={threats.length.toString()}
+                    subtitle="High-score replacement targets"
+                    trend={threats.length > 0 ? "up" : undefined}
                     icon={<Radar className="size-5" />}
                 />
                 <KPICard
                     title="Acquisition Targets"
-                    value={hasThesis ? acquisitionTargets.length.toString() : "—"}
-                    subtitle={hasThesis ? "Early-stage, high tech diff." : "Set coverage analysis first"}
+                    value={acquisitionTargets.length.toString()}
+                    subtitle="Early-stage, high tech diff."
                     icon={<ShoppingCart className="size-5" />}
                 />
                 <KPICard
                     title="Capability Gaps"
-                    value={hasThesis ? gapCount.toString() : "—"}
-                    subtitle={hasThesis ? "Uncovered categories" : "Set coverage analysis first"}
-                    trend={hasThesis && gapCount > 0 ? "down" : undefined}
+                    value={gapCount.toString()}
+                    subtitle="Uncovered subcategories"
+                    trend={gapCount > 0 ? "down" : undefined}
                     icon={<AlertCircle className="size-5" />}
                 />
                 <KPICard
-                    title={hasThesis ? "Replacement Candidates" : "Companies in View"}
-                    value={hasThesis ? replacementCandidates.length.toString() : filtered.length.toString()}
-                    subtitle={hasThesis ? "Customized/homegrown software" : "Total ecosystem"}
+                    title="Replacement Candidates"
+                    value={replacementCandidates.length.toString()}
+                    subtitle="Customized/homegrown software"
                     icon={<Handshake className="size-5" />}
                 />
             </div>
 
-            {!hasThesis && (
-                <FocusPrompt label="Set Coverage Analysis" description="Map your software landscape to reveal threats, acquisition targets, and capability gaps." />
-            )}
-
-            {hasThesis && threats.length > 0 && (
+            {threats.length > 0 && (
                 <div className="grid md:grid-cols-2 gap-4">
                     <WidgetCard title="Threat Radar" subtitle="Replacement candidates with highest scores">
                         <div className="space-y-3">
@@ -138,19 +151,19 @@ export function OEMDashboard({ data, isLoading }: { data: Company[]; isLoading: 
             )}
 
             <div className="grid md:grid-cols-3 gap-6">
-                <WidgetCard title="Ecosystem Network" subtitle={hasThesis ? `${displayData.length} relevant companies` : "Industry & segment connectivity"} className="md:col-span-1" href="/dashboard/network">
-                    <NetworkGraph data={displayData} className="min-h-[400px]" />
+                <WidgetCard title="Ecosystem Network" subtitle={`${filtered.length} companies`} className="md:col-span-1" href="/dashboard/network">
+                    <NetworkGraph data={filtered} className="min-h-[400px]" />
                 </WidgetCard>
-                <WidgetCard title="Market Breakdown" subtitle={hasThesis ? `${displayData.length} relevant companies` : "Investment List hierarchy"} className="md:col-span-1" href="/dashboard/sunburst">
-                    <SunburstChart data={displayData} className="min-h-[400px]" />
+                <WidgetCard title="Market Breakdown" subtitle={`${filtered.length} companies`} className="md:col-span-1" href="/dashboard/sunburst">
+                    <SunburstChart data={filtered} className="min-h-[400px]" />
                 </WidgetCard>
-                <WidgetCard title="Competitive Dynamics" subtitle={hasThesis ? `${displayData.length} relevant companies` : "Momentum vs execution score"} className="md:col-span-1" href="/dashboard/quadrant">
-                    <QuadrantChart data={displayData} className="min-h-[400px]" />
+                <WidgetCard title="Competitive Dynamics" subtitle={`${filtered.length} companies`} className="md:col-span-1" href="/dashboard/quadrant">
+                    <QuadrantChart data={filtered} className="min-h-[400px]" />
                 </WidgetCard>
             </div>
 
-            <WidgetCard title="Enterprise Recon List" subtitle={hasThesis ? `${displayData.length} relevant companies` : "Detailed metrics for all tracked ecosystem players"} href="/dashboard/periodic-table">
-                <PeriodicTable data={displayData} compact={true} />
+            <WidgetCard title="Enterprise Recon List" subtitle={`${filtered.length} companies`} href="/dashboard/periodic-table">
+                <PeriodicTable data={filtered} compact={true} />
             </WidgetCard>
         </div>
     );

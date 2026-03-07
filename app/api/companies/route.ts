@@ -70,14 +70,20 @@ export async function GET() {
       workflowSegment: row['Workflow Segment'] || '',
       subsegment: row['Subsegment'] || '',
       sectorFocus: row['Sector Focus'] || '',
+      categoryTags: Array.from(new Set(
+        (row['Category/Function Tags'] || '').split(',').map(t => t.trim()).filter(Boolean)
+      )),
+      differentiationTags: Array.from(new Set(
+        (row['Differentiation Tags'] || '').split(',').map(t => t.trim()).filter(Boolean)
+      )),
+      operatingModelTags: Array.from(new Set(
+        (row['Operating Model Tags'] || '').split(',').map(t => t.trim()).filter(Boolean)
+      )),
       tags: Array.from(new Set([
         ...(row['Tags'] || '').split(','),
         ...(row['Category/Function Tags'] || '').split(','),
         ...(row['Differentiation Tags'] || '').split(','),
       ].map(t => t.trim()).filter(Boolean))),
-      operatingModelTags: Array.from(new Set(
-        (row['Operating Model Tags'] || '').split(',').map(t => t.trim()).filter(Boolean)
-      )),
       manufacturingType: row['Manufacturing Type'] || '',
       industriesServed: Array.from(new Set(
         (row['Industries Served'] || '').split(',').map(t => t.trim()).filter(Boolean)
