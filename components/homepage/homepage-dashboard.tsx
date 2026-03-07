@@ -12,8 +12,8 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { FilterProvider } from "@/contexts/filter-context"
 
-const MapChart = dynamic(
-  () => import("@/components/charts/map-chart").then(m => m.MapChart),
+const GlobeChart = dynamic(
+  () => import("@/components/charts/globe-chart").then(m => m.GlobeChart),
   { ssr: false, loading: () => <Skeleton className="w-full h-full min-h-[450px] rounded-lg" /> }
 )
 
@@ -86,17 +86,19 @@ export function HomepageDashboard({ data }: { data: Company[] }) {
           </ChartCard>
         </div>
 
-        {/* Global Map — preview mode: counts + top 3 names only, no drill-down */}
+        {/* 3D Globe */}
         <div className="mb-6">
           <ChartCard title="Global Startup Footprint" subtitle={`${data.length} companies across ${countries} countries`}>
-            <MapChart data={data} className="h-[450px]" preview />
+            <div className="h-[500px] rounded-lg overflow-hidden bg-black">
+              <GlobeChart data={data} />
+            </div>
           </ChartCard>
         </div>
 
         {/* Sunburst — preview mode: no controls, max 5 names per slice */}
         <div className="mb-6">
           <ChartCard title="Ecosystem Structure" subtitle="Investment domains by funding round">
-            <SunburstChart data={data} className="min-h-[650px]" preview />
+            <SunburstChart data={data} className="h-[650px]" preview />
           </ChartCard>
         </div>
 
