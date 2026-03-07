@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useTransition } from "react"
 import { Company } from "@/lib/company-data"
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter,
@@ -61,9 +61,13 @@ export function ThesisPanel({ open, onOpenChange, companies, profileType, isAdmi
     }
   }, [open, vcThesis, isvThesis, oemThesis, defaultType])
 
+  const [isPending, startTransition] = useTransition()
+
   function handleApply() {
-    applyThesis(tab, { vc: draftVC, isv: draftISV, oem: draftOEM })
     onOpenChange(false)
+    startTransition(() => {
+      applyThesis(tab, { vc: draftVC, isv: draftISV, oem: draftOEM })
+    })
   }
 
   function handleClear() {

@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import {
-  VCThesis, FUNDING_STAGES, DEAL_SIZE_BRACKETS,
+  VCThesis, FUNDING_STAGES,
   SCORE_DIMENSIONS, ScoreDimensionKey,
 } from "@/contexts/thesis-context"
 import { getInvestmentColor } from "@/lib/investment-colors"
@@ -233,20 +233,11 @@ export function VCStep({ thesis, onChange, companies, variant = "investor" }: VC
             </div>
           </section>
 
-          {/* Deal Size */}
+          {/* Last Funding Event Year */}
           <section>
-            <h4 className="text-sm font-medium mb-2">Deal Size Range</h4>
-            <div className="grid grid-cols-3 gap-2">
-              {DEAL_SIZE_BRACKETS.map(bracket => (
-                <label key={bracket} className="flex items-center gap-2 text-sm cursor-pointer">
-                  <Checkbox
-                    checked={(thesis.dealSizeBrackets ?? []).includes(bracket)}
-                    onCheckedChange={() => onChange({ ...thesis, dealSizeBrackets: toggleItem(thesis.dealSizeBrackets ?? [], bracket) })}
-                  />
-                  {bracket}
-                </label>
-              ))}
-            </div>
+            <h4 className="text-sm font-medium mb-2">Last Funding Event Year</h4>
+            <p className="text-xs text-muted-foreground mb-3">Filter companies by when they last raised funding.</p>
+            <FundingYearRange thesis={thesis} onChange={onChange} companies={companies} />
           </section>
 
           {/* Sectors */}
@@ -300,6 +291,37 @@ export function VCStep({ thesis, onChange, companies, variant = "investor" }: VC
             <ScoreWeightSliders thesis={thesis} onChange={onChange} />
           </section>
         </>
+      )}
+    </div>
+  )
+}
+
+function FundingYearRange({ thesis, onChange, companies }: { thesis: VCThesis; onChange: (t: VCThesis) => void; companies: Company[] }) {
+  const { minYear, maxYear } = useMemo(() => {
+    const years = companies.map(c => c.fundingYear).filter(y => y > 2000)
+    if (years.length === 0) return { minYear: 2015, maxYear: new Date().getFullYear() }
+    return { minYear: Math.min(...years), maxYear: Math.max(...years) }
+  }, [companies])
+
+  const [lo, hi] = thesis.fundingYearRange ?? [0, 0]
+  const effectiveLo = lo === 0 ? minYear : lo
+  const effectiveHi = hi === 0 ? maxYear : hi
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between text-xs text-muted-foreground tabular-nums">
+        <span>{effectiveLo}</span>
+        <span>{effectiveHi}</span>
+      </div>
+      <Slider
+        min={minYear}
+        max={maxYear}
+        step={1}
+        value={[effectiveLo, effectiveHi]}
+        onValueChange={([newLo, newHi]) => onChange({ ...thesis, fundingYearRange: [newLo, newHi] })}
+      />
+      {lo === 0 && hi === 0 && (
+        <p className="text-[10px] text-muted-foreground italic">All years (no filter applied)</p>
       )}
     </div>
   )

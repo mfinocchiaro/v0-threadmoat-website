@@ -32,6 +32,7 @@ export type ScoreDimensionKey = (typeof SCORE_DIMENSIONS)[number]["key"]
 
 export interface VCThesis {
   fundingStages: string[]
+  fundingYearRange: [number, number]
   dealSizeBrackets: string[]
   investmentLists: string[]
   subcategories: string[]
@@ -152,6 +153,7 @@ const DEFAULT_SCORE_WEIGHTS: Record<ScoreDimensionKey, number> = {
 
 const DEFAULT_VC: VCThesis = {
   fundingStages: [],
+  fundingYearRange: [0, 0],
   dealSizeBrackets: [],
   investmentLists: [],
   subcategories: [],
@@ -206,13 +208,13 @@ function scoreVC(company: Company, thesis: VCThesis): number {
     if (stages.some(s => round.toLowerCase().includes(s.toLowerCase()))) score += 20
   }
 
-  // Deal size (10pts)
-  const brackets = thesis.dealSizeBrackets ?? []
-  if (brackets.length === 0) {
+  // Last funding year (10pts)
+  const [yearMin, yearMax] = thesis.fundingYearRange ?? [0, 0]
+  if (yearMin === 0 && yearMax === 0) {
     score += 10
   } else {
-    const amount = company.lastFundingAmount || company.totalFunding || 0
-    if (dealSizeMatch(amount, brackets)) score += 10
+    const fy = company.fundingYear || 0
+    if (fy >= yearMin && fy <= yearMax) score += 10
   }
 
   // Operating model match (10pts)
