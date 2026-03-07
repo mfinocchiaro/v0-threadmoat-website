@@ -13,8 +13,25 @@ interface ThesisResultsProps {
   companies: Company[]
 }
 
+const MAX_EXPANDED = 25
+const MAX_CATEGORIES = 4
+
 function VCResults({ results, expanded }: { results: ScoredCompany[]; expanded: boolean }) {
-  const visible = expanded ? results : results.slice(0, 10)
+  // Limit to top investment categories to avoid exposing the full database
+  const filtered = useMemo(() => {
+    const catCounts = new Map<string, number>()
+    for (const r of results) {
+      const cat = r.company.investmentList || "Other"
+      catCounts.set(cat, (catCounts.get(cat) || 0) + 1)
+    }
+    const topCats = [...catCounts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, MAX_CATEGORIES)
+      .map(([cat]) => cat)
+    return results.filter(r => topCats.includes(r.company.investmentList || "Other"))
+  }, [results])
+
+  const visible = expanded ? filtered.slice(0, MAX_EXPANDED) : filtered.slice(0, 10)
   return (
     <div className="space-y-2">
       {visible.map(({ company, score }) => (
@@ -32,8 +49,8 @@ function VCResults({ results, expanded }: { results: ScoredCompany[]; expanded: 
 function ISVResults({ results, expanded }: { results: ScoredCompany[]; expanded: boolean }) {
   const whitespace = results.filter(r => r.label === "Whitespace")
   const adjacent = results.filter(r => r.label === "Adjacent")
-  const visibleWS = expanded ? whitespace : whitespace.slice(0, 5)
-  const visibleAdj = expanded ? adjacent : adjacent.slice(0, 5)
+  const visibleWS = expanded ? whitespace.slice(0, MAX_EXPANDED) : whitespace.slice(0, 5)
+  const visibleAdj = expanded ? adjacent.slice(0, MAX_EXPANDED) : adjacent.slice(0, 5)
 
   return (
     <div className="space-y-4">
@@ -77,8 +94,8 @@ function ISVResults({ results, expanded }: { results: ScoredCompany[]; expanded:
 function OEMResults({ results, expanded }: { results: ScoredCompany[]; expanded: boolean }) {
   const replacements = results.filter(r => r.label === "Replacement Candidate")
   const gaps = results.filter(r => r.label === "Coverage Gap")
-  const visibleRep = expanded ? replacements : replacements.slice(0, 5)
-  const visibleGap = expanded ? gaps : gaps.slice(0, 5)
+  const visibleRep = expanded ? replacements.slice(0, MAX_EXPANDED) : replacements.slice(0, 5)
+  const visibleGap = expanded ? gaps.slice(0, MAX_EXPANDED) : gaps.slice(0, 5)
 
   return (
     <div className="space-y-4">
@@ -125,16 +142,23 @@ export function ThesisResults({ companies }: ThesisResultsProps) {
 
   const results = useMemo(() => {
     if (!activeThesis) return []
-    return scoreCompanies(companies)
+    const scored = scoreCompanies(companies)
+    // Only show qualifying matches — never expose the full database
+    if (activeThesis === "vc" || activeThesis === "founder") {
+      return scored.filter(r => r.score >= 50)
+    }
+    if (activeThesis === "isv") {
+      return scored.filter(r => r.label !== "Covered")
+    }
+    if (activeThesis === "oem") {
+      return scored.filter(r => r.label !== "Commercial")
+    }
+    return scored
   }, [activeThesis, companies, scoreCompanies])
 
   if (!activeThesis || !activeConfig || results.length === 0) return null
 
-  const totalMatches = (activeThesis === "vc" || activeThesis === "founder")
-    ? results.filter(r => r.score >= 50).length
-    : activeThesis === "isv"
-      ? results.filter(r => r.label !== "Covered").length
-      : results.filter(r => r.label !== "Commercial").length
+  const totalMatches = results.length
 
   return (
     <Card className="mb-6">
@@ -149,7 +173,7 @@ export function ThesisResults({ companies }: ThesisResultsProps) {
         {activeThesis === "isv" && <ISVResults results={results} expanded={expanded} />}
         {activeThesis === "oem" && <OEMResults results={results} expanded={expanded} />}
 
-        {results.length > 10 && (
+        {totalMatches > 10 && (
           <Button
             variant="ghost"
             size="sm"
@@ -159,7 +183,7 @@ export function ThesisResults({ companies }: ThesisResultsProps) {
             {expanded ? (
               <><ChevronUp className="mr-1 h-3 w-3" /> Show less</>
             ) : (
-              <><ChevronDown className="mr-1 h-3 w-3" /> View all {totalMatches} matches</>
+              <><ChevronDown className="mr-1 h-3 w-3" /> Show more (top {Math.min(totalMatches, MAX_EXPANDED)})</>
             )}
           </Button>
         )}
