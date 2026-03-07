@@ -1,6 +1,11 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+function getResend() {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error('RESEND_API_KEY is not configured')
+  }
+  return new Resend(process.env.RESEND_API_KEY)
+}
 
 const FROM_EMAIL = process.env.FROM_EMAIL || 'ThreadMoat <noreply@threadmoat.com>'
 
@@ -14,7 +19,7 @@ function getBaseUrl() {
 export async function sendVerificationEmail(email: string, token: string) {
   const url = `${getBaseUrl()}/auth/verify-email?token=${token}`
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM_EMAIL,
     to: email,
     subject: 'Verify your ThreadMoat account',
@@ -38,7 +43,7 @@ export async function sendVerificationEmail(email: string, token: string) {
 export async function sendPasswordResetEmail(email: string, token: string) {
   const url = `${getBaseUrl()}/auth/reset-password?token=${token}`
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM_EMAIL,
     to: email,
     subject: 'Reset your ThreadMoat password',

@@ -265,7 +265,7 @@ export default function SignUpPage() {
                     <Input
                       id="invite-code"
                       type="text"
-                      placeholder="e.g. THREADED2026"
+                      placeholder="Enter code if you have one"
                       maxLength={50}
                       value={form.inviteCode}
                       onChange={set('inviteCode')}
