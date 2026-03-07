@@ -26,7 +26,7 @@ export function StartupDashboard({ data, isLoading }: { data: Company[]; isLoadi
     const displayData = useMemo(() => hasThesis ? matches.map(r => r.company) : data, [hasThesis, matches, data]);
     const filtered = displayData.filter(filterCompany);
 
-    if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading ecosystem data…</div>;
+    if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading ecosystem data...</div>;
 
     const focusLabel = activeConfig?.buttonText ?? "Set Competitive Moat";
     const totalFunding = filtered.reduce((s, c) => s + (c.totalFunding || 0), 0);
@@ -83,10 +83,10 @@ export function StartupDashboard({ data, isLoading }: { data: Company[]; isLoadi
                                             {c.latestFundingRound && <Badge variant="outline" className="text-[10px]">{c.latestFundingRound}</Badge>}
                                         </div>
                                         <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
-                                            <div><span className="text-muted-foreground">Headcount:</span> {c.headcount || "—"}</div>
+                                            <div><span className="text-muted-foreground">Headcount:</span> {c.headcount || "\u2014"}</div>
                                             <div><span className="text-muted-foreground">Funding:</span> {formatCurrency(c.totalFunding || 0)}</div>
                                             <div><span className="text-muted-foreground">Revenue:</span> {formatCurrency(c.estimatedRevenue || 0)}</div>
-                                            <div><span className="text-muted-foreground">Moat:</span> {c.weightedScore?.toFixed(0) || "—"}</div>
+                                            <div><span className="text-muted-foreground">Moat:</span> {c.weightedScore?.toFixed(0) || "\u2014"}</div>
                                         </div>
                                         {c.strengths && <p className="text-xs line-clamp-2"><span className="text-muted-foreground">Strengths:</span> {c.strengths}</p>}
                                     </div>
@@ -97,27 +97,21 @@ export function StartupDashboard({ data, isLoading }: { data: Company[]; isLoadi
                 </WidgetCard>
             )}
 
-            <div className="grid gap-6 lg:grid-cols-7">
-                <div className="lg:col-span-4">
-                    <WidgetCard title="Competitive Landscape" subtitle={`${filtered.length} competitors`} href="/dashboard/landscape">
-                        <LandscapeChart data={filtered} className="min-h-[500px]" />
-                    </WidgetCard>
-                </div>
-                <div className="lg:col-span-3">
-                    <WidgetCard title="Periodic Table" subtitle={`${filtered.length} competitors`} href="/dashboard/periodic-table">
-                        <PeriodicTable data={filtered} compact={true} />
-                    </WidgetCard>
-                </div>
-            </div>
+            <WidgetCard title="Competitive Landscape" subtitle={`${filtered.length} competitors`} href="/dashboard/landscape">
+                <LandscapeChart data={filtered} className="min-h-[500px]" />
+            </WidgetCard>
 
-            <div className="grid gap-6 md:grid-cols-2">
-                <WidgetCard title="Competitive Quadrant" subtitle="Market momentum vs execution" href="/dashboard/quadrant">
-                    <QuadrantChart data={filtered} className="h-[400px]" />
-                </WidgetCard>
-                <WidgetCard title="Top Rankings" subtitle={`Top from ${filtered.length} competitors`} href="/dashboard/bar-chart">
-                    <BarChart data={filtered} />
-                </WidgetCard>
-            </div>
+            <WidgetCard title="Periodic Table" subtitle={`${filtered.length} competitors`} href="/dashboard/periodic-table">
+                <PeriodicTable data={filtered} compact={true} />
+            </WidgetCard>
+
+            <WidgetCard title="Competitive Quadrant" subtitle="Market momentum vs execution" href="/dashboard/quadrant">
+                <QuadrantChart data={filtered} className="h-[500px]" />
+            </WidgetCard>
+
+            <WidgetCard title="Top Rankings" subtitle={`Top from ${filtered.length} competitors`} href="/dashboard/bar-chart">
+                <BarChart data={filtered} />
+            </WidgetCard>
         </div>
     );
 }

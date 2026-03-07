@@ -16,10 +16,14 @@ export function SidebarShell({
   user,
   profile,
   children,
+  onSelectScenario,
+  activeScenario,
 }: {
   user: Session["user"];
   profile?: Profile;
   children: React.ReactNode;
+  onSelectScenario?: (key: string) => void;
+  activeScenario?: string;
 }) {
   const [collapsed, setCollapsed] = useState(false);
 
@@ -38,11 +42,16 @@ export function SidebarShell({
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
-      <Sidebar collapsed={collapsed} onToggle={toggle} />
+      <Sidebar
+        collapsed={collapsed}
+        onToggle={toggle}
+        onSelectScenario={onSelectScenario}
+        activeScenario={activeScenario}
+      />
       <div className="flex flex-1 flex-col overflow-hidden">
         <TopBar user={user} profile={profile} />
         <div className="flex-1 overflow-y-auto">
-          <div className="container mx-auto px-6 py-6">{children}</div>
+          <div className="mx-auto px-6 py-6">{children}</div>
         </div>
       </div>
     </div>

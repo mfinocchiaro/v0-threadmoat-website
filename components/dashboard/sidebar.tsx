@@ -9,15 +9,47 @@ import {
   Settings, TrendingUp, TreePine, Wind, Radar, Flame, Clock,
   SlidersHorizontal, BoxSelect, Activity, MoveRight, Type,
   Link2, ScatterChart, BarChart3, RefreshCw, Users, GridIcon, FileText, Eye,
-  Compass,
+  Compass, Focus, Rocket, Building2, Layers, ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useThesisOptional } from "@/contexts/thesis-context";
+import { useState } from "react";
 
 const NAV_ITEMS = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard", exact: true },
+];
+
+export const FOCUS_SCENARIOS = [
+  {
+    key: "startup_founder",
+    label: "Competitive Moat Swimmer",
+    shortLabel: "Moat Swimmer",
+    icon: Rocket,
+    desc: "Track competitors, monitor funding rounds, find positioning gaps.",
+  },
+  {
+    key: "vc_investor",
+    label: "Investment Thesis Writer",
+    shortLabel: "Thesis Writer",
+    icon: TrendingUp,
+    desc: "Discover deal flow, track portfolios, monitor market trends.",
+  },
+  {
+    key: "oem_enterprise",
+    label: "White Space Filler",
+    shortLabel: "White Space",
+    icon: Building2,
+    desc: "Map software landscape, identify gaps and replacement targets.",
+  },
+  {
+    key: "isv_platform",
+    label: "Targeted Acquisition Radar",
+    shortLabel: "Acq. Radar",
+    icon: Layers,
+    desc: "Find acquisition targets, partnership and integration opportunities.",
+  },
 ];
 
 const VIZ_ITEMS = [
@@ -59,6 +91,8 @@ const BOTTOM_ITEMS = [
 interface SidebarProps {
   collapsed: boolean;
   onToggle: () => void;
+  onSelectScenario?: (key: string) => void;
+  activeScenario?: string;
 }
 
 function NavLink({ href, icon: Icon, label, collapsed, exact }: {
@@ -95,14 +129,17 @@ function NavLink({ href, icon: Icon, label, collapsed, exact }: {
   return link;
 }
 
-export function Sidebar({ collapsed, onToggle }: SidebarProps) {
+export function Sidebar({ collapsed, onToggle, onSelectScenario, activeScenario }: SidebarProps) {
   const thesis = useThesisOptional();
   const hasThesis = !!thesis?.activeThesis;
+  const [focusMenuOpen, setFocusMenuOpen] = useState(false);
 
   // Before thesis is set, only show Investment Landscape
   const visibleVizItems = hasThesis
     ? VIZ_ITEMS
     : VIZ_ITEMS.filter(item => item.href === "/dashboard/landscape-intro");
+
+  const activeScenarioData = FOCUS_SCENARIOS.find(s => s.key === activeScenario);
 
   return (
     <TooltipProvider>
@@ -127,6 +164,74 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
             {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </button>
         </div>
+
+        {/* Focus Scenario Selector */}
+        {!collapsed ? (
+          <div className="border-b border-border px-2 py-2">
+            <button
+              onClick={() => setFocusMenuOpen(!focusMenuOpen)}
+              className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted transition-colors"
+            >
+              <Focus className="h-4 w-4 text-primary shrink-0" />
+              <span className="truncate flex-1 text-left">
+                {activeScenarioData ? activeScenarioData.shortLabel : "Set Focus"}
+              </span>
+              <ChevronDown className={cn("h-3.5 w-3.5 text-muted-foreground transition-transform", focusMenuOpen && "rotate-180")} />
+            </button>
+            {focusMenuOpen && (
+              <div className="mt-1 space-y-0.5">
+                {FOCUS_SCENARIOS.map(s => {
+                  const Icon = s.icon;
+                  const isActive = activeScenario === s.key;
+                  return (
+                    <button
+                      key={s.key}
+                      onClick={() => {
+                        onSelectScenario?.(s.key);
+                        setFocusMenuOpen(false);
+                      }}
+                      className={cn(
+                        "flex w-full items-start gap-2.5 rounded-md px-3 py-2 text-left transition-colors",
+                        isActive
+                          ? "bg-primary/10 text-primary"
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      )}
+                    >
+                      <Icon className="h-4 w-4 mt-0.5 shrink-0" />
+                      <div className="min-w-0">
+                        <div className="text-xs font-medium truncate">{s.label}</div>
+                        <div className="text-[10px] text-muted-foreground/70 line-clamp-1">{s.desc}</div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="border-b border-border py-2 px-2">
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => {
+                    // When collapsed, expand sidebar and open focus menu
+                    onToggle();
+                    setTimeout(() => setFocusMenuOpen(true), 300);
+                  }}
+                  className={cn(
+                    "flex w-full items-center justify-center rounded-md px-2 py-2 transition-colors",
+                    activeScenarioData ? "text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
+                >
+                  <Focus className="h-4 w-4" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="text-xs">
+                {activeScenarioData ? activeScenarioData.label : "Set Focus"}
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        )}
 
         {/* Scrollable nav */}
         <ScrollArea className="flex-1 py-2">

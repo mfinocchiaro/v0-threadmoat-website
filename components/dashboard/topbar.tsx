@@ -19,10 +19,10 @@ interface Profile {
 }
 
 const PROFILE_LABELS: Record<string, string> = {
-  startup_founder: "Startup / Founder",
-  vc_investor: "VC / Investor",
-  oem_enterprise: "OEM / Enterprise",
-  isv_platform: "ISV / Platform",
+  startup_founder: "Competitive Moat Swimmer",
+  vc_investor: "Investment Thesis Writer",
+  oem_enterprise: "White Space Filler",
+  isv_platform: "Targeted Acquisition Radar",
 };
 
 interface TopBarProps {

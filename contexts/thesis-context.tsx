@@ -71,7 +71,7 @@ export interface ProfileThesisConfig {
 export const PROFILE_THESIS_CONFIG: Record<string, ProfileThesisConfig> = {
   startup_founder: {
     buttonText: "Set Competitive Moat",
-    sheetTitle: "Define Your Competitive Moat",
+    sheetTitle: "Competitive Moat Swimmer",
     sheetDescription: "Identify competitors and understand your positioning in the market.",
     thesisType: "founder",
     tabLabel: "Founder",
@@ -80,7 +80,7 @@ export const PROFILE_THESIS_CONFIG: Record<string, ProfileThesisConfig> = {
   },
   vc_investor: {
     buttonText: "Set Investment Thesis",
-    sheetTitle: "Define Your Investment Thesis",
+    sheetTitle: "Investment Thesis Writer",
     sheetDescription: "Set your investment criteria to discover and rank opportunities.",
     thesisType: "vc",
     tabLabel: "Investor",
@@ -88,22 +88,22 @@ export const PROFILE_THESIS_CONFIG: Record<string, ProfileThesisConfig> = {
     resultTitle: "Investment Thesis Match",
   },
   isv_platform: {
-    buttonText: "Set Whitespace Analysis",
-    sheetTitle: "Define Your Whitespace Analysis",
-    sheetDescription: "Identify gaps in the market where your solutions are needed.",
+    buttonText: "Set Acquisition Radar",
+    sheetTitle: "Targeted Acquisition Radar",
+    sheetDescription: "Identify acquisition targets and partnership opportunities in the ecosystem.",
     thesisType: "isv",
     tabLabel: "ISV",
-    indicatorLabel: "Whitespace Analysis Active",
-    resultTitle: "Market Opportunity Analysis",
+    indicatorLabel: "Acquisition Radar Active",
+    resultTitle: "Acquisition Radar Results",
   },
   oem_enterprise: {
-    buttonText: "Set Coverage Analysis",
-    sheetTitle: "Define Your Coverage Analysis",
-    sheetDescription: "Map your software landscape and identify replacement opportunities.",
+    buttonText: "Set White Space Analysis",
+    sheetTitle: "White Space Filler",
+    sheetDescription: "Map your software landscape to identify white space, gaps, and replacement opportunities.",
     thesisType: "oem",
     tabLabel: "OEM",
-    indicatorLabel: "Coverage Analysis Active",
-    resultTitle: "Software Coverage Analysis",
+    indicatorLabel: "White Space Filler Active",
+    resultTitle: "White Space Analysis",
   },
 }
 

@@ -25,7 +25,6 @@ export function OEMDashboard({ data, isLoading }: { data: Company[]; isLoading: 
     const replacementCandidates = useMemo(() => scored.filter(r => r.label === "Replacement Candidate"), [scored]);
     const coverageGaps = useMemo(() => scored.filter(r => r.label === "Coverage Gap"), [scored]);
 
-    // Display data = everything except "Filtered Out" and "Commercial"
     const displayData = useMemo(() =>
         hasThesis
             ? scored.filter(r => r.label !== "Filtered Out" && r.label !== "Commercial").map(r => r.company)
@@ -33,14 +32,12 @@ export function OEMDashboard({ data, isLoading }: { data: Company[]; isLoading: 
     , [hasThesis, scored, data]);
     const filtered = displayData.filter(filterCompany);
 
-    // Threats: replacement candidates with high weighted scores
     const threats = useMemo(() =>
         hasThesis
             ? replacementCandidates.filter(r => (r.company.weightedScore || 0) > 60).slice(0, 5)
             : []
     , [hasThesis, replacementCandidates]);
 
-    // Acquisition targets: coverage gap companies that are early-stage with strong tech
     const acquisitionTargets = useMemo(() =>
         hasThesis
             ? coverageGaps
@@ -49,19 +46,18 @@ export function OEMDashboard({ data, isLoading }: { data: Company[]; isLoading: 
             : []
     , [hasThesis, coverageGaps]);
 
-    // Capability gaps: subcategories marked "none" in coverage map
     const gapCount = useMemo(() =>
         hasThesis ? Object.values(oemThesis.coverageMap).filter(v => v === "none").length : 0
     , [hasThesis, oemThesis]);
 
-    if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading OEM intelligence…</div>;
+    if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading White Space intelligence...</div>;
 
-    const focusLabel = activeConfig?.buttonText ?? "Set Coverage Analysis";
+    const focusLabel = activeConfig?.buttonText ?? "Set White Space Analysis";
 
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">OEM Intelligence</h1>
+                <h1 className="text-3xl font-bold tracking-tight">White Space Intelligence</h1>
                 <p className="text-muted-foreground">{hasThesis ? `${displayData.length} relevant companies from ${data.length} total.` : `${data.length} companies across all domains.`}</p>
             </div>
 
@@ -99,57 +95,56 @@ export function OEMDashboard({ data, isLoading }: { data: Company[]; isLoading: 
             </div>}
 
             {hasThesis && threats.length > 0 && (
-                <div className="grid md:grid-cols-2 gap-4">
-                    <WidgetCard title="Threat Radar" subtitle="Replacement candidates with highest scores">
-                        <div className="space-y-3">
-                            {threats.map(({ company: t }) => (
-                                <div key={t.id} className="flex items-center gap-4 p-3 rounded-lg border">
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center gap-2">
-                                            <span className="font-medium truncate">{t.name}</span>
-                                            <Badge variant="destructive">Threat</Badge>
-                                        </div>
-                                        <p className="text-xs text-muted-foreground mt-1 truncate">{t.subsegment || t.investmentList}</p>
+                <WidgetCard title="Threat Radar" subtitle="Replacement candidates with highest scores">
+                    <div className="space-y-3">
+                        {threats.map(({ company: t }) => (
+                            <div key={t.id} className="flex items-center gap-4 p-3 rounded-lg border">
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2">
+                                        <span className="font-medium truncate">{t.name}</span>
+                                        <Badge variant="destructive">Threat</Badge>
                                     </div>
-                                    <div className="text-right shrink-0">
-                                        <div className="text-lg font-bold">{t.weightedScore}</div>
-                                        <div className="text-xs text-muted-foreground">Score</div>
-                                    </div>
+                                    <p className="text-xs text-muted-foreground mt-1 truncate">{t.subsegment || t.investmentList}</p>
                                 </div>
-                            ))}
-                        </div>
-                    </WidgetCard>
-                    {acquisitionTargets.length > 0 && (
-                        <WidgetCard title="Acquisition Shortlist" subtitle="Early-stage companies filling your gaps">
-                            <div className="space-y-3">
-                                {acquisitionTargets.map(({ company: t }) => (
-                                    <div key={t.id} className="flex items-center gap-4 p-3 rounded-lg border">
-                                        <div className="flex-1 min-w-0">
-                                            <span className="font-medium truncate">{t.name}</span>
-                                            <p className="text-xs text-muted-foreground mt-1 truncate">
-                                                {t.latestFundingRound} · Tech: {t.techDifferentiation?.toFixed(1)}/10
-                                            </p>
-                                        </div>
-                                        <Badge variant="outline">{t.investmentList}</Badge>
-                                    </div>
-                                ))}
+                                <div className="text-right shrink-0">
+                                    <div className="text-lg font-bold">{t.weightedScore}</div>
+                                    <div className="text-xs text-muted-foreground">Score</div>
+                                </div>
                             </div>
-                        </WidgetCard>
-                    )}
-                </div>
+                        ))}
+                    </div>
+                </WidgetCard>
             )}
 
-            <div className="grid md:grid-cols-3 gap-6">
-                <WidgetCard title="Ecosystem Network" subtitle={`${filtered.length} companies`} className="md:col-span-1" href="/dashboard/network">
-                    <NetworkGraph data={filtered} className="min-h-[400px]" />
+            {hasThesis && acquisitionTargets.length > 0 && (
+                <WidgetCard title="Acquisition Shortlist" subtitle="Early-stage companies filling your gaps">
+                    <div className="space-y-3">
+                        {acquisitionTargets.map(({ company: t }) => (
+                            <div key={t.id} className="flex items-center gap-4 p-3 rounded-lg border">
+                                <div className="flex-1 min-w-0">
+                                    <span className="font-medium truncate">{t.name}</span>
+                                    <p className="text-xs text-muted-foreground mt-1 truncate">
+                                        {t.latestFundingRound} · Tech: {t.techDifferentiation?.toFixed(1)}/10
+                                    </p>
+                                </div>
+                                <Badge variant="outline">{t.investmentList}</Badge>
+                            </div>
+                        ))}
+                    </div>
                 </WidgetCard>
-                <WidgetCard title="Market Breakdown" subtitle={`${filtered.length} companies`} className="md:col-span-1" href="/dashboard/sunburst">
-                    <SunburstChart data={filtered} className="min-h-[400px]" />
-                </WidgetCard>
-                <WidgetCard title="Competitive Dynamics" subtitle={`${filtered.length} companies`} className="md:col-span-1" href="/dashboard/quadrant">
-                    <QuadrantChart data={filtered} className="min-h-[400px]" />
-                </WidgetCard>
-            </div>
+            )}
+
+            <WidgetCard title="Ecosystem Network" subtitle={`${filtered.length} companies`} href="/dashboard/network">
+                <NetworkGraph data={filtered} className="min-h-[500px]" />
+            </WidgetCard>
+
+            <WidgetCard title="Market Breakdown" subtitle={`${filtered.length} companies`} href="/dashboard/sunburst">
+                <SunburstChart data={filtered} className="min-h-[500px]" />
+            </WidgetCard>
+
+            <WidgetCard title="Competitive Dynamics" subtitle={`${filtered.length} companies`} href="/dashboard/quadrant">
+                <QuadrantChart data={filtered} className="min-h-[500px]" />
+            </WidgetCard>
 
             <WidgetCard title="Enterprise Recon List" subtitle={`${filtered.length} companies`} href="/dashboard/periodic-table">
                 <PeriodicTable data={filtered} compact={true} />

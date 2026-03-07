@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
 import { sql } from '@/lib/db'
 import { getUserSubscription } from '@/lib/subscription'
-import { SidebarShell } from '@/components/dashboard/sidebar-shell'
+import { DashboardLayoutClient } from '@/components/dashboard/layout-client'
 import { Paywall } from '@/components/dashboard/paywall'
 
 type ProfileRow = {
@@ -61,8 +61,12 @@ export default async function DashboardLayout({
   }
 
   return (
-    <SidebarShell user={user} profile={profile}>
+    <DashboardLayoutClient
+      user={user}
+      profile={profile}
+      initialScenario={profile?.profile_type}
+    >
       {children}
-    </SidebarShell>
+    </DashboardLayoutClient>
   )
 }
