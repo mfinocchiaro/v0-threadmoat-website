@@ -29,16 +29,16 @@ CREATE TABLE IF NOT EXISTS profiles (
 -- Subscriptions (Stripe + coupon trials)
 CREATE TABLE IF NOT EXISTS subscriptions (
   id                     UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id                UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  stripe_customer_id     TEXT,
-  stripe_subscription_id TEXT,
-  product_id             TEXT        NOT NULL DEFAULT 'none',
-  status                 TEXT        NOT NULL DEFAULT 'inactive',
+  user_id                UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE UNIQUE,
+  stripe_customer_id     VARCHAR,
+  stripe_subscription_id VARCHAR,
+  product_id             VARCHAR     NOT NULL DEFAULT 'none',
+  status                 VARCHAR     NOT NULL DEFAULT 'active'
+                           CHECK (status IN ('active','trialing','inactive','canceled','expired','past_due')),
   current_period_start   TIMESTAMPTZ,
   current_period_end     TIMESTAMPTZ,
   created_at             TIMESTAMPTZ DEFAULT now(),
-  updated_at             TIMESTAMPTZ DEFAULT now(),
-  UNIQUE(user_id)
+  updated_at             TIMESTAMPTZ DEFAULT now()
 );
 
 CREATE INDEX IF NOT EXISTS idx_subscriptions_user_id ON subscriptions(user_id);
