@@ -29,8 +29,8 @@ export function OEMDashboard({ data, isLoading }: { data: Company[]; isLoading: 
     const displayData = useMemo(() =>
         hasThesis
             ? scored.filter(r => r.label !== "Filtered Out" && r.label !== "Commercial").map(r => r.company)
-            : []
-    , [hasThesis, scored]);
+            : data
+    , [hasThesis, scored, data]);
     const filtered = displayData.filter(filterCompany);
 
     // Threats: replacement candidates with high weighted scores
@@ -58,29 +58,18 @@ export function OEMDashboard({ data, isLoading }: { data: Company[]; isLoading: 
 
     const focusLabel = activeConfig?.buttonText ?? "Set Coverage Analysis";
 
-    // No thesis = no data
-    if (!hasThesis) {
-        return (
-            <div className="space-y-6">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">OEM Intelligence</h1>
-                    <p className="text-muted-foreground">Competitive landscape, threat detection, and M&A opportunities.</p>
-                </div>
-                <FocusPrompt label={focusLabel} description="Map your software landscape to reveal threats, acquisition targets, and capability gaps." />
-            </div>
-        );
-    }
-
     return (
         <div className="space-y-6">
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">OEM Intelligence</h1>
-                <p className="text-muted-foreground">{displayData.length} relevant companies from {data.length} total.</p>
+                <p className="text-muted-foreground">{hasThesis ? `${displayData.length} relevant companies from ${data.length} total.` : `${data.length} companies across all domains.`}</p>
             </div>
 
-            <VizFilterBar companies={displayData} />
+            {!hasThesis && <FocusPrompt label={focusLabel} description="Map your software landscape to reveal threats, acquisition targets, and capability gaps." />}
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {hasThesis && <VizFilterBar companies={displayData} />}
+
+            {hasThesis && <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <KPICard
                     title="Active Threats"
                     value={threats.length.toString()}
@@ -107,9 +96,9 @@ export function OEMDashboard({ data, isLoading }: { data: Company[]; isLoading: 
                     subtitle="Customized/homegrown software"
                     icon={<Handshake className="size-5" />}
                 />
-            </div>
+            </div>}
 
-            {threats.length > 0 && (
+            {hasThesis && threats.length > 0 && (
                 <div className="grid md:grid-cols-2 gap-4">
                     <WidgetCard title="Threat Radar" subtitle="Replacement candidates with highest scores">
                         <div className="space-y-3">

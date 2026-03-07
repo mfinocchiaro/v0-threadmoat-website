@@ -187,17 +187,23 @@ function dealSizeMatch(amount: number, brackets: string[]): boolean {
 }
 
 function scoreVC(company: Company, thesis: VCThesis): number {
+  // ── Hard filters: if user selected these and company doesn't match, exclude ──
+  const lists = thesis.investmentLists ?? []
+  if (lists.length > 0 && !lists.includes(company.investmentList)) return 0
+
+  const subcats = thesis.subcategories ?? []
+  if (subcats.length > 0 && !(company.subcategories && subcats.includes(company.subcategories))) return 0
+
+  // ── Soft scoring on remaining criteria (rescaled to 100) ──
   let score = 0
 
-  // Stage match (15pts)
+  // Stage match (20pts)
   const stages = thesis.fundingStages ?? []
   if (stages.length === 0) {
-    score += 15
+    score += 20
   } else {
     const round = company.latestFundingRound || company.startupLifecyclePhase || ""
-    if (stages.some(s => round.toLowerCase().includes(s.toLowerCase()))) {
-      score += 15
-    }
+    if (stages.some(s => round.toLowerCase().includes(s.toLowerCase()))) score += 20
   }
 
   // Deal size (10pts)
@@ -209,49 +215,33 @@ function scoreVC(company: Company, thesis: VCThesis): number {
     if (dealSizeMatch(amount, brackets)) score += 10
   }
 
-  // Sector / Investment List (10pts)
-  const lists = thesis.investmentLists ?? []
-  if (lists.length === 0) {
-    score += 10
-  } else {
-    if (lists.includes(company.investmentList)) score += 10
-  }
-
-  // Subcategory match (10pts)
-  const subcats = thesis.subcategories ?? []
-  if (subcats.length === 0) {
-    score += 10
-  } else {
-    if (company.subcategories && subcats.includes(company.subcategories)) score += 10
-  }
-
-  // Operating model match (8pts)
+  // Operating model match (10pts)
   const opTags = thesis.operatingModelTags ?? []
   if (opTags.length === 0) {
-    score += 8
+    score += 10
   } else {
     const companyOps = company.operatingModelTags || []
-    if (opTags.some(t => companyOps.some(ct => ct.toLowerCase() === t.toLowerCase()))) score += 8
+    if (opTags.some(t => companyOps.some(ct => ct.toLowerCase() === t.toLowerCase()))) score += 10
   }
 
-  // Category/function tags match (7pts)
+  // Category/function tags match (10pts)
   const catTags = thesis.categoryTags ?? []
   if (catTags.length === 0) {
-    score += 7
+    score += 10
   } else {
     const companyCats = company.categoryTags || []
-    if (catTags.some(t => companyCats.some(ct => ct.toLowerCase() === t.toLowerCase()))) score += 7
+    if (catTags.some(t => companyCats.some(ct => ct.toLowerCase() === t.toLowerCase()))) score += 10
   }
 
-  // Geography (5pts)
+  // Geography (10pts)
   const countries = thesis.countries ?? []
   if (countries.length === 0) {
-    score += 5
+    score += 10
   } else {
-    if (countries.includes(company.country)) score += 5
+    if (countries.includes(company.country)) score += 10
   }
 
-  // Weighted scores (35pts)
+  // Weighted scores (40pts)
   const weights = thesis.scoreWeights ?? {}
   const totalWeight = Object.values(weights).reduce((a, b) => a + b, 0)
   if (totalWeight > 0) {
@@ -261,9 +251,9 @@ function scoreVC(company: Company, thesis: VCThesis): number {
       const weight = Math.min(weights[dim.key] ?? 4, 5)
       weightedSum += (companyVal / 5) * (weight / 5)
     }
-    score += (weightedSum / SCORE_DIMENSIONS.length) * 35
+    score += (weightedSum / SCORE_DIMENSIONS.length) * 40
   } else {
-    score += 35
+    score += 40
   }
 
   return Math.min(Math.round(score), 100)

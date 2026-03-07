@@ -54,7 +54,7 @@ export function VCDashboard({ data, isLoading }: { data: Company[]; isLoading: b
     const hasThesis = activeThesis === "vc" || activeThesis === "founder";
     const scored = useMemo(() => scoreCompanies(data), [scoreCompanies, data]);
     const matches = useMemo(() => scored.filter(r => r.score >= 50), [scored]);
-    const displayData = useMemo(() => hasThesis ? matches.map(r => r.company) : [], [hasThesis, matches]);
+    const displayData = useMemo(() => hasThesis ? matches.map(r => r.company) : data, [hasThesis, matches, data]);
     const filtered = displayData.filter(filterCompany);
 
     // All hooks MUST be above early returns (React Rules of Hooks)
@@ -67,20 +67,6 @@ export function VCDashboard({ data, isLoading }: { data: Company[]; isLoading: b
     if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading portfolio data…</div>;
 
     const focusLabel = activeConfig?.buttonText ?? "Set Focus";
-
-    // No thesis = no data
-    if (!hasThesis) {
-        return (
-            <div className="space-y-6">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Investor Intelligence</h1>
-                    <p className="text-muted-foreground">Deal flow analysis, portfolio tracking, and market landscape mapping.</p>
-                </div>
-                <FocusPrompt label={focusLabel} description="Define your investment criteria to discover deal flow, match scores, burn warnings, and pipeline insights." />
-            </div>
-        );
-    }
-
     const matchAvgScore = matches.length > 0
         ? (matches.reduce((s, r) => s + r.score, 0) / matches.length).toFixed(0)
         : "0";
@@ -92,19 +78,21 @@ export function VCDashboard({ data, isLoading }: { data: Company[]; isLoading: b
                 <p className="text-muted-foreground">{matches.length} thesis matches from {data.length} companies.</p>
             </div>
 
-            <VizFilterBar companies={displayData} />
+            {!hasThesis && <FocusPrompt label={focusLabel} description="Define your investment criteria to discover deal flow, match scores, burn warnings, and pipeline insights." />}
+
+            {hasThesis && <VizFilterBar companies={displayData} />}
 
             <div className="grid gap-6 lg:grid-cols-3">
                 <div className="lg:col-span-2 row-span-2">
-                    <WidgetCard title="Global Deal Flow" subtitle={`${filtered.length} thesis matches`} className="h-full min-h-[500px]" href="/dashboard/map">
+                    <WidgetCard title="Global Deal Flow" subtitle={`${filtered.length} companies`} className="h-full min-h-[500px]" href="/dashboard/map">
                         <MapChart data={filtered} className="h-full min-h-[450px]" />
                     </WidgetCard>
                 </div>
 
                 <div className="space-y-4">
-                    <KPICard title="Thesis Matches" value={matches.length.toString()} subtitle={`from ${data.length} total`} trend="up" icon={<Target className="size-4" />} />
-                    <KPICard title="Avg. Match Score" value={`${matchAvgScore}%`} subtitle="Across thesis matches" icon={<BarChart3 className="size-4" />} />
-                    {redFlags.length > 0 ? (
+                    {hasThesis && <KPICard title="Thesis Matches" value={matches.length.toString()} subtitle={`from ${data.length} total`} trend="up" icon={<Target className="size-4" />} />}
+                    {hasThesis && <KPICard title="Avg. Match Score" value={`${matchAvgScore}%`} subtitle="Across thesis matches" icon={<BarChart3 className="size-4" />} />}
+                    {hasThesis && redFlags.length > 0 ? (
                         <WidgetCard title="Burn Warnings" subtitle="Low funding efficiency matches">
                             <div className="space-y-3">
                                 {redFlags.map(r => (

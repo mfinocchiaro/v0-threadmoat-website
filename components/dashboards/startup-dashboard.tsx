@@ -23,26 +23,12 @@ export function StartupDashboard({ data, isLoading }: { data: Company[]; isLoadi
     const hasThesis = activeThesis === "founder";
     const scored = useMemo(() => scoreCompanies(data), [scoreCompanies, data]);
     const matches = useMemo(() => scored.filter(r => r.score >= 50), [scored]);
-    const displayData = useMemo(() => hasThesis ? matches.map(r => r.company) : [], [hasThesis, matches]);
+    const displayData = useMemo(() => hasThesis ? matches.map(r => r.company) : data, [hasThesis, matches, data]);
     const filtered = displayData.filter(filterCompany);
 
     if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading ecosystem data…</div>;
 
     const focusLabel = activeConfig?.buttonText ?? "Set Competitive Moat";
-
-    // No thesis = no data
-    if (!hasThesis) {
-        return (
-            <div className="space-y-6">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Startup Intelligence</h1>
-                    <p className="text-muted-foreground">Monitor market dynamics, competitor movements, and funding trends.</p>
-                </div>
-                <FocusPrompt label={focusLabel} description="Define your competitive space to reveal competitors, benchmark your positioning, and uncover market gaps." />
-            </div>
-        );
-    }
-
     const totalFunding = filtered.reduce((s, c) => s + (c.totalFunding || 0), 0);
     const avgCompetitorScore = matches.length > 0
         ? (matches.reduce((s, r) => s + (r.company.weightedScore || 0), 0) / matches.length).toFixed(1)
@@ -59,16 +45,20 @@ export function StartupDashboard({ data, isLoading }: { data: Company[]; isLoadi
                 <p className="text-muted-foreground">{matches.length} competitors from {data.length} companies.</p>
             </div>
 
-            <VizFilterBar companies={displayData} />
+            {!hasThesis && <FocusPrompt label={focusLabel} description="Define your competitive space to reveal competitors, benchmark your positioning, and uncover market gaps." />}
 
+            {hasThesis && <VizFilterBar companies={displayData} />}
+
+            {hasThesis && (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <KPICard title="Competitors Found" value={matches.length.toString()} subtitle={`from ${data.length} companies`} trend="up" icon={<DollarSign className="size-4" />} />
                 <KPICard title="Avg. Competitor Score" value={avgCompetitorScore} subtitle="Weighted moat score" icon={<TrendingUp className="size-4" />} />
                 <KPICard title="Total Headcount" value={totalHeadcount.toLocaleString()} subtitle="Competitor talent pool" trend="stable" icon={<Users className="size-4" />} />
                 <KPICard title="Market Reach" value={String(countries)} subtitle="Countries active" icon={<Globe className="size-4" />} />
             </div>
+            )}
 
-            {topCompetitors.length > 0 && (
+            {hasThesis && topCompetitors.length > 0 && (
                 <WidgetCard title="Top Competitors" subtitle="Highest-scoring companies matching your competitive moat">
                     <div className="space-y-3">
                         {topCompetitors.map(({ company: c, score }) => (

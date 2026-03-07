@@ -29,8 +29,8 @@ export function ISVDashboard({ data, isLoading }: { data: Company[]; isLoading: 
     const displayData = useMemo(() =>
         hasThesis
             ? scored.filter(r => r.label !== "Covered").map(r => r.company)
-            : []
-    , [hasThesis, scored]);
+            : data
+    , [hasThesis, scored, data]);
     const filtered = displayData.filter(filterCompany);
 
     const integrationCandidates = useMemo(() =>
@@ -43,29 +43,18 @@ export function ISVDashboard({ data, isLoading }: { data: Company[]; isLoading: 
 
     const focusLabel = activeConfig?.buttonText ?? "Set Whitespace Analysis";
 
-    // No thesis = no data
-    if (!hasThesis) {
-        return (
-            <div className="space-y-6">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">ISV Intelligence</h1>
-                    <p className="text-muted-foreground">Ecosystem positioning, integration opportunities, and competitive battlecards.</p>
-                </div>
-                <FocusPrompt label={focusLabel} description="Define your coverage to discover whitespace opportunities, adjacent markets, and integration candidates." />
-            </div>
-        );
-    }
-
     return (
         <div className="space-y-6">
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">ISV Intelligence</h1>
-                <p className="text-muted-foreground">{displayData.length} opportunities from {data.length} companies.</p>
+                <p className="text-muted-foreground">{hasThesis ? `${displayData.length} opportunities from ${data.length} companies.` : `${data.length} companies across all domains.`}</p>
             </div>
 
-            <VizFilterBar companies={displayData} />
+            {!hasThesis && <FocusPrompt label={focusLabel} description="Define your coverage to discover whitespace opportunities, adjacent markets, and integration candidates." />}
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {hasThesis && <VizFilterBar companies={displayData} />}
+
+            {hasThesis && <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <KPICard
                     title="Whitespace Opportunities"
                     value={whitespace.length.toString()}
@@ -92,7 +81,7 @@ export function ISVDashboard({ data, isLoading }: { data: Company[]; isLoading: 
                     trend={integrationCandidates.length > 0 ? "up" : undefined}
                     icon={<Link2 className="size-5" />}
                 />
-            </div>
+            </div>}
 
             <div className="grid lg:grid-cols-7 gap-6">
                 <div className="lg:col-span-4">
