@@ -19,7 +19,7 @@ function getBaseUrl() {
 export async function sendVerificationEmail(email: string, token: string) {
   const url = `${getBaseUrl()}/auth/verify-email?token=${token}`
 
-  await getResend().emails.send({
+  const { data, error } = await getResend().emails.send({
     from: FROM_EMAIL,
     to: email,
     subject: 'Verify your ThreadMoat account',
@@ -38,12 +38,18 @@ export async function sendVerificationEmail(email: string, token: string) {
       </div>
     `,
   })
+
+  if (error) {
+    console.error('[Resend] Verification email failed:', error)
+    throw new Error(`Email send failed: ${error.message}`)
+  }
+  console.log('[Resend] Verification email sent:', data?.id)
 }
 
 export async function sendPasswordResetEmail(email: string, token: string) {
   const url = `${getBaseUrl()}/auth/reset-password?token=${token}`
 
-  await getResend().emails.send({
+  const { data, error } = await getResend().emails.send({
     from: FROM_EMAIL,
     to: email,
     subject: 'Reset your ThreadMoat password',
@@ -62,4 +68,10 @@ export async function sendPasswordResetEmail(email: string, token: string) {
       </div>
     `,
   })
+
+  if (error) {
+    console.error('[Resend] Password reset email failed:', error)
+    throw new Error(`Email send failed: ${error.message}`)
+  }
+  console.log('[Resend] Password reset email sent:', data?.id)
 }
