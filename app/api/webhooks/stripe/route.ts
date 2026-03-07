@@ -80,18 +80,18 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, stripe:
   const period = getPeriodDates(subscription)
 
   await sql`
-    INSERT INTO subscriptions (user_id, stripe_subscription_id, stripe_price_id, status, current_period_start, current_period_end)
+    INSERT INTO subscriptions (user_id, stripe_subscription_id, product_id, status, current_period_start, current_period_end)
     VALUES (
       ${userId},
       ${subscriptionId},
-      ${subscription.items.data[0]?.price.id ?? null},
+      ${subscription.items.data[0]?.price.id ?? 'stripe'},
       ${subscription.status},
       ${period.start},
       ${period.end}
     )
     ON CONFLICT (user_id) DO UPDATE SET
       stripe_subscription_id = EXCLUDED.stripe_subscription_id,
-      stripe_price_id        = EXCLUDED.stripe_price_id,
+      product_id             = EXCLUDED.product_id,
       status                 = EXCLUDED.status,
       current_period_start   = EXCLUDED.current_period_start,
       current_period_end     = EXCLUDED.current_period_end,
@@ -115,7 +115,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   await sql`
     UPDATE subscriptions SET
       stripe_subscription_id = ${subscription.id},
-      stripe_price_id        = ${subscription.items.data[0]?.price.id ?? null},
+      product_id             = ${subscription.items.data[0]?.price.id ?? 'stripe'},
       status                 = ${subscription.status},
       current_period_start   = ${period.start},
       current_period_end     = ${period.end},

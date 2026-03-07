@@ -40,8 +40,8 @@ export async function redeemCoupon(couponId: string, userId: string, durationDay
 
   // Create subscription with trialing status
   await sql`
-    INSERT INTO subscriptions (user_id, status, current_period_start, current_period_end)
-    VALUES (${userId}, 'trialing', ${now.toISOString()}, ${periodEnd.toISOString()})
+    INSERT INTO subscriptions (user_id, product_id, status, current_period_start, current_period_end)
+    VALUES (${userId}, 'coupon_trial', 'trialing', ${now.toISOString()}, ${periodEnd.toISOString()})
     ON CONFLICT (user_id) DO UPDATE SET
       status = 'trialing',
       current_period_start = EXCLUDED.current_period_start,
