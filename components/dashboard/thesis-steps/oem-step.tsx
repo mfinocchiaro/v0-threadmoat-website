@@ -74,7 +74,7 @@ function getGroupCoverageSummary(group: InvestmentGroupInfo, coverageMap: Record
     if (c && c !== "none") acc++
     return acc
   }, 0)
-  return `${set}/${group.subcategories.length} mapped`
+  return `${set} of ${group.subcategories.length} subcategories covered`
 }
 
 export function OEMStep({ thesis, onChange, companies }: OEMStepProps) {

@@ -57,6 +57,13 @@ export function VCDashboard({ data, isLoading }: { data: Company[]; isLoading: b
     const displayData = useMemo(() => hasThesis ? matches.map(r => r.company) : [], [hasThesis, matches]);
     const filtered = displayData.filter(filterCompany);
 
+    // All hooks MUST be above early returns (React Rules of Hooks)
+    const redFlags = useMemo(() =>
+        matches
+            .filter(r => (r.company.fundingEfficiency || 0) < 3 && (r.company.totalFunding || 0) > 1_000_000)
+            .slice(0, 5)
+    , [matches]);
+
     if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading portfolio data…</div>;
 
     const focusLabel = activeConfig?.buttonText ?? "Set Focus";
@@ -77,12 +84,6 @@ export function VCDashboard({ data, isLoading }: { data: Company[]; isLoading: b
     const matchAvgScore = matches.length > 0
         ? (matches.reduce((s, r) => s + r.score, 0) / matches.length).toFixed(0)
         : "0";
-
-    const redFlags = useMemo(() =>
-        matches
-            .filter(r => (r.company.fundingEfficiency || 0) < 3 && (r.company.totalFunding || 0) > 1_000_000)
-            .slice(0, 5)
-    , [matches]);
 
     return (
         <div className="space-y-6">

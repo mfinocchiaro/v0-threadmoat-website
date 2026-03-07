@@ -292,7 +292,13 @@ function scoreISV(company: Company, thesis: ISVThesis): { score: number; label: 
 function scoreOEM(company: Company, thesis: OEMThesis): { score: number; label: string } {
   // Match on subcategory first, fall back to investment list for legacy configs
   const coverage = thesis.coverageMap[company.subcategories] ?? thesis.coverageMap[company.investmentList]
-  if (!coverage || coverage === "none") {
+
+  // undefined = user never configured this area → filter out
+  // "none" = user explicitly marked no coverage → real gap
+  if (coverage === undefined) {
+    return { score: 0, label: "Filtered Out" }
+  }
+  if (coverage === "none") {
     return { score: 80, label: "Coverage Gap" }
   }
   if (coverage === "customized" || coverage === "homegrown") {
@@ -344,30 +350,39 @@ export function ThesisProvider({ children, profileType }: { children: ReactNode;
         if (saved.isv) setISVThesis(saved.isv)
         if (saved.oem) setOEMThesis(saved.oem)
         if (saved.activeThesis) {
-          setActiveThesis(saved.activeThesis)
-          // Re-apply filters
-          setTimeout(() => {
-            const vc = saved.vc ?? DEFAULT_VC
-            setFilters(prev => {
-              const next = { ...prev }
-              switch (saved.activeThesis) {
-                case "founder":
-                case "vc":
-                  if (vc.investmentLists.length > 0) next.investmentLists = vc.investmentLists
-                  if (vc.countries.length > 0) next.countries = vc.countries
-                  if (vc.fundingStages.length > 0) next.fundingRound = vc.fundingStages
-                  break
-                case "oem":
-                  // OEM coverage is now subcategory-keyed; no investment list filter push
-                  break
-              }
-              return next
-            })
-          }, 0)
+          // Only activate saved thesis if it matches the current profile type
+          // (prevents ISV thesis leaking into OEM view, etc.)
+          const expectedType = profileType ? PROFILE_THESIS_CONFIG[profileType]?.thesisType : null
+          const vcFamily: ThesisType[] = ["vc", "founder"]
+          const thesisMatchesProfile = !expectedType
+            || saved.activeThesis === expectedType
+            || (vcFamily.includes(saved.activeThesis) && vcFamily.includes(expectedType))
+          if (thesisMatchesProfile) {
+            setActiveThesis(saved.activeThesis)
+            // Re-apply filters
+            setTimeout(() => {
+              const vc = saved.vc ?? DEFAULT_VC
+              setFilters(prev => {
+                const next = { ...prev }
+                switch (saved.activeThesis) {
+                  case "founder":
+                  case "vc":
+                    if (vc.investmentLists.length > 0) next.investmentLists = vc.investmentLists
+                    if (vc.countries.length > 0) next.countries = vc.countries
+                    if (vc.fundingStages.length > 0) next.fundingRound = vc.fundingStages
+                    break
+                  case "oem":
+                    // OEM coverage is now subcategory-keyed; no investment list filter push
+                    break
+                }
+                return next
+              })
+            }, 0)
+          }
         }
       })
       .catch(() => {})
-  }, [setFilters])
+  }, [setFilters, profileType])
 
   const scoreCompanies = useCallback((companies: Company[]): ScoredCompany[] => {
     if (!activeThesis) return []

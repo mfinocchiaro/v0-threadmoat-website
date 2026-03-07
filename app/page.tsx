@@ -4,8 +4,17 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ArrowRight, Database, Users, TrendingUp, Mail, CheckCircle2, MapPin, CalendarDays } from "lucide-react"
+import { loadCompaniesFromCSV, stripSensitiveFields } from "@/lib/load-companies-server"
+import { HomepageDashboard } from "@/components/homepage/homepage-dashboard"
 
-export default function HomePage() {
+export default async function HomePage() {
+  let companies: Awaited<ReturnType<typeof loadCompaniesFromCSV>> = []
+  try {
+    const raw = await loadCompaniesFromCSV()
+    companies = stripSensitiveFields(raw)
+  } catch {
+    // Data load failed — page renders without dashboard
+  }
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -89,17 +98,20 @@ export default function HomePage() {
           introductions to 150+ founders to build your portfolio with tomorrow&apos;s unicorns.
         </p>
         <div className="mt-10 flex items-center justify-center gap-4">
-          <Link href="/dashboard">
+          <a href="#preview">
             <Button size="lg" className="gap-2">
               <Database className="h-5 w-5" />
               See Analytics
             </Button>
-          </Link>
+          </a>
           <Link href="/pricing">
             <Button size="lg" variant="outline">View Pricing</Button>
           </Link>
         </div>
       </section>
+
+      {/* Live Dashboard Preview */}
+      {companies.length > 0 && <HomepageDashboard data={companies} />}
 
       {/* Organization Selector */}
       <section className="border-t border-border/40 bg-muted/30" id="services">
