@@ -306,7 +306,7 @@ export function MapChart({ data = [], className }: MapChartProps) {
       .on("mouseout", function () {
         d3.select(this).attr("fill", "#1e293b");
       })
-      .on("click", (event, d) => {
+      .on("click", (event: MouseEvent, d: any) => {
         event.stopPropagation();
         const country = canonicalCountry(d.properties?.name);
         setSelectedCountry(country || null);

@@ -21,18 +21,19 @@ export default async function DashboardLayout({
 }) {
   const session = await auth()
 
-  if (!session?.user) {
+  if (!session?.user?.id) {
     redirect('/auth/login?redirect=/dashboard')
   }
 
   const user = session.user
+  const userId: string = user.id!
 
   let profile: ProfileRow | undefined
   try {
     const rows = await sql`
       SELECT is_admin, full_name, company, title, profile_type
       FROM profiles
-      WHERE id = ${user.id}
+      WHERE id = ${userId}
     `
     profile = rows[0] as ProfileRow | undefined
   } catch {
@@ -49,7 +50,7 @@ export default async function DashboardLayout({
   if (!isAdmin) {
     let hasSubscription = false
     try {
-      const subscription = await getUserSubscription(user.id)
+      const subscription = await getUserSubscription(userId)
       hasSubscription = subscription.hasActiveSubscription
     } catch {
       // DB unavailable

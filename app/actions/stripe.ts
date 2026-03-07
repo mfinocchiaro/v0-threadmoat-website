@@ -10,16 +10,16 @@ export async function createCheckoutSession(productId: string, userEmail: string
   if (!product) throw new Error('Product not found')
 
   const session = await auth()
-  if (!session?.user) throw new Error('User not authenticated')
+  if (!session?.user?.id) throw new Error('User not authenticated')
 
-  const userId = session.user.id
+  const userId: string = session.user.id
 
   // Check if user already has a Stripe customer ID
   const rows = await sql`SELECT stripe_customer_id FROM profiles WHERE id = ${userId}`
-  let customerId = rows[0]?.stripe_customer_id as string | undefined
+  let customerId: string = (rows[0]?.stripe_customer_id as string) || ''
 
   // Create Stripe customer if one doesn't exist yet
-  if (!customerId) {
+  if (customerId === '') {
     const customer = await getStripe().customers.create({
       email: userEmail,
       metadata: { user_id: userId },
@@ -35,17 +35,19 @@ export async function createCheckoutSession(productId: string, userEmail: string
     process.env.NEXT_PUBLIC_BASE_URL ||
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
 
+  const interval = product.interval === 'year' ? 'year' as const : 'month' as const
+
   const checkoutSession = await getStripe().checkout.sessions.create({
     customer: customerId,
-    mode: 'subscription',
-    payment_method_types: ['card'],
+    mode: 'subscription' as const,
+    payment_method_types: ['card' as const],
     line_items: [
       {
         price_data: {
           currency: 'usd',
-          product_data: { name: product.name, description: product.description },
+          product_data: { name: product.name, description: product.description || '' },
           unit_amount: product.priceInCents,
-          recurring: { interval: product.interval || 'month' },
+          recurring: { interval },
         },
         quantity: 1,
       },
@@ -60,7 +62,7 @@ export async function createCheckoutSession(productId: string, userEmail: string
 
 export async function createBillingPortalSession() {
   const session = await auth()
-  if (!session?.user) throw new Error('User not authenticated')
+  if (!session?.user?.id) throw new Error('User not authenticated')
 
   const rows = await sql`
     SELECT stripe_customer_id FROM profiles WHERE id = ${session.user.id}

@@ -3,6 +3,7 @@
 import { sql } from '@/lib/db'
 import bcrypt from 'bcryptjs'
 import { type RegisterData, PASSWORD_RULES } from '@/lib/auth-schema'
+import { rateLimit } from '@/lib/rate-limit'
 
 export type { RegisterData }
 
@@ -31,6 +32,10 @@ function validateLinkedInUrl(url: string): boolean {
 }
 
 export async function registerUser(data: RegisterData) {
+  // --- Rate limit: 5 signups per IP-like key per 15 minutes ---
+  const rl = rateLimit(`signup:${data.email.trim().toLowerCase()}`, 5, 15 * 60 * 1000)
+  if (!rl.allowed) throw new Error('Too many attempts. Please try again later.')
+
   // --- Sanitize ---
   const fullName    = data.fullName.trim()
   const email       = data.email.trim().toLowerCase()
@@ -66,10 +71,10 @@ export async function registerUser(data: RegisterData) {
   const passwordError = validatePassword(password)
   if (passwordError) throw new Error(passwordError)
 
-  // --- Check for existing account ---
+  // --- Check for existing account (generic message to prevent enumeration) ---
   const existing = await sql`SELECT id FROM users WHERE email = ${email}`
   if (existing.length > 0)
-    throw new Error('An account with this email already exists')
+    throw new Error('Unable to create account. Please try again or sign in.')
 
   const passwordHash = await bcrypt.hash(password, 12)
 

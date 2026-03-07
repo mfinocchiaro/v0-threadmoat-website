@@ -7,6 +7,15 @@ function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!)
 }
 
+/** Extract period dates from subscription items (Stripe SDK v20+) */
+function getPeriodDates(subscription: Stripe.Subscription) {
+  const item = subscription.items.data[0]
+  return {
+    start: item ? new Date(item.current_period_start * 1000).toISOString() : new Date().toISOString(),
+    end: item ? new Date(item.current_period_end * 1000).toISOString() : new Date().toISOString(),
+  }
+}
+
 export async function POST(request: Request) {
   const body = await request.text()
   const headersList = await headers()
@@ -16,11 +25,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'No signature' }, { status: 400 })
   }
 
+  if (!process.env.STRIPE_WEBHOOK_SECRET) {
+    console.error('STRIPE_WEBHOOK_SECRET is not configured')
+    return NextResponse.json({ error: 'Webhook not configured' }, { status: 500 })
+  }
+
   const stripe = getStripe()
   let event: Stripe.Event
 
   try {
-    event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET!)
+    event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET)
   } catch (err) {
     console.error('Webhook signature verification failed:', err)
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
@@ -63,6 +77,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, stripe:
   }
 
   const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+  const period = getPeriodDates(subscription)
 
   await sql`
     INSERT INTO subscriptions (user_id, stripe_subscription_id, stripe_price_id, status, current_period_start, current_period_end)
@@ -71,8 +86,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, stripe:
       ${subscriptionId},
       ${subscription.items.data[0]?.price.id ?? null},
       ${subscription.status},
-      ${new Date(subscription.current_period_start * 1000).toISOString()},
-      ${new Date(subscription.current_period_end * 1000).toISOString()}
+      ${period.start},
+      ${period.end}
     )
     ON CONFLICT (user_id) DO UPDATE SET
       stripe_subscription_id = EXCLUDED.stripe_subscription_id,
@@ -86,6 +101,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, stripe:
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   const customerId = subscription.customer as string
+  const period = getPeriodDates(subscription)
 
   // Look up user by Stripe customer ID stored in profiles
   const rows = await sql`SELECT id FROM profiles WHERE stripe_customer_id = ${customerId}`
@@ -101,8 +117,8 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
       stripe_subscription_id = ${subscription.id},
       stripe_price_id        = ${subscription.items.data[0]?.price.id ?? null},
       status                 = ${subscription.status},
-      current_period_start   = ${new Date(subscription.current_period_start * 1000).toISOString()},
-      current_period_end     = ${new Date(subscription.current_period_end * 1000).toISOString()},
+      current_period_start   = ${period.start},
+      current_period_end     = ${period.end},
       updated_at             = NOW()
     WHERE user_id = ${profile.id as string}
   `

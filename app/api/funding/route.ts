@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { auth } from '@/auth'
 import Papa from 'papaparse'
 import { promises as fs } from 'fs'
 import path from 'path'
@@ -24,6 +25,11 @@ function parseNum(value: string | undefined): number {
 }
 
 export async function GET() {
+  const session = await auth()
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   try {
     const csvPath = path.join(process.cwd(), 'public', 'data', 'Startups-Funding.csv')
     let csvContent = await fs.readFile(csvPath, 'utf-8')

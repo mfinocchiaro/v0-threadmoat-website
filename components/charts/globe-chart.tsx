@@ -159,7 +159,7 @@ interface HubPoint {
 }
 
 function aggregateHubs(data: Company[]): HubPoint[] {
-  const map: Record<string, Omit<HubPoint, "altitude" | "color">> = {};
+  const map: Record<string, Omit<HubPoint, "altitude" | "color" | "dominantCategory">> = {};
 
   for (const c of data) {
     const hub = resolveHub(c.hqLocation, c.country);

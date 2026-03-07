@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { sql } from '@/lib/db'
+import { z } from 'zod'
+
+const ProfileUpdateSchema = z.object({
+  profile_type: z.enum(['startup_founder', 'vc_investor', 'oem_enterprise', 'isv_platform']).nullable().optional(),
+  full_name: z.string().max(100).nullable().optional(),
+  company: z.string().max(100).nullable().optional(),
+  title: z.string().max(100).nullable().optional(),
+})
 
 export async function POST(req: NextRequest) {
   const session = await auth()
@@ -8,7 +16,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { profile_type, full_name, company, title } = await req.json()
+  let data: z.infer<typeof ProfileUpdateSchema>
+  try {
+    data = ProfileUpdateSchema.parse(await req.json())
+  } catch {
+    return NextResponse.json({ error: 'Invalid input' }, { status: 400 })
+  }
+
+  const { profile_type, full_name, company, title } = data
 
   try {
     await sql`
