@@ -73,9 +73,11 @@ export async function GET() {
       tags: Array.from(new Set([
         ...(row['Tags'] || '').split(','),
         ...(row['Category/Function Tags'] || '').split(','),
-        ...(row['Operating Model Tags'] || '').split(','),
         ...(row['Differentiation Tags'] || '').split(','),
       ].map(t => t.trim()).filter(Boolean))),
+      operatingModelTags: Array.from(new Set(
+        (row['Operating Model Tags'] || '').split(',').map(t => t.trim()).filter(Boolean)
+      )),
       manufacturingType: row['Manufacturing Type'] || '',
       industriesServed: Array.from(new Set(
         (row['Industries Served'] || '').split(',').map(t => t.trim()).filter(Boolean)

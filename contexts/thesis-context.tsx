@@ -47,7 +47,8 @@ export interface ISVThesis {
 export type OEMCoverage = "commercial" | "customized" | "homegrown" | "none"
 
 export interface OEMThesis {
-  coverageMap: Record<string, OEMCoverage>
+  coverageMap: Record<string, OEMCoverage>  // keyed by subcategory
+  operatingModelFilters: string[]
 }
 
 export type ThesisType = "founder" | "vc" | "isv" | "oem"
@@ -163,6 +164,7 @@ const DEFAULT_ISV: ISVThesis = {
 
 const DEFAULT_OEM: OEMThesis = {
   coverageMap: {},
+  operatingModelFilters: [],
 }
 
 // ── Scoring helpers ────────────────────────────────────────
@@ -253,7 +255,17 @@ function scoreISV(company: Company, thesis: ISVThesis): { score: number; label: 
 }
 
 function scoreOEM(company: Company, thesis: OEMThesis): { score: number; label: string } {
-  const coverage = thesis.coverageMap[company.investmentList]
+  // If operating model filters are set, exclude non-matching companies
+  if (thesis.operatingModelFilters.length > 0) {
+    const companyTags = company.operatingModelTags || []
+    const hasMatch = thesis.operatingModelFilters.some(f =>
+      companyTags.some(t => t.toLowerCase() === f.toLowerCase())
+    )
+    if (!hasMatch) return { score: 0, label: "Filtered Out" }
+  }
+
+  // Match on subcategory first, fall back to investment list for legacy configs
+  const coverage = thesis.coverageMap[company.subcategories] ?? thesis.coverageMap[company.investmentList]
   if (!coverage || coverage === "none") {
     return { score: 80, label: "Coverage Gap" }
   }
@@ -319,14 +331,9 @@ export function ThesisProvider({ children, profileType }: { children: ReactNode;
                   if (vc.countries.length > 0) next.countries = vc.countries
                   if (vc.fundingStages.length > 0) next.fundingRound = vc.fundingStages
                   break
-                case "oem": {
-                  const oem = saved.oem ?? DEFAULT_OEM
-                  const lists = Object.entries(oem.coverageMap)
-                    .filter(([, v]) => v !== "commercial")
-                    .map(([k]) => k)
-                  if (lists.length > 0) next.investmentLists = lists
+                case "oem":
+                  // OEM coverage is now subcategory-keyed; no investment list filter push
                   break
-                }
               }
               return next
             })
@@ -391,14 +398,9 @@ export function ThesisProvider({ children, profileType }: { children: ReactNode;
         case "isv":
           // ISV doesn't push filters — it scores based on what's NOT covered
           break
-        case "oem": {
-          // OEM filters to investment lists that have non-commercial coverage
-          const relevantLists = Object.entries(oem.coverageMap)
-            .filter(([, v]) => v === "customized" || v === "homegrown" || v === "none")
-            .map(([k]) => k)
-          if (relevantLists.length > 0) next.investmentLists = relevantLists
+        case "oem":
+          // OEM coverage is subcategory-keyed; scoring handles filtering
           break
-        }
       }
       return next
     })
