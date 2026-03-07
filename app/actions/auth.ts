@@ -3,12 +3,11 @@
 import { sql } from '@/lib/db'
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
-import { type RegisterData, PASSWORD_RULES } from '@/lib/auth-schema'
+import { PASSWORD_RULES } from '@/lib/auth-schema'
+import type { RegisterData } from '@/lib/auth-schema'
 import { rateLimit } from '@/lib/rate-limit'
 import { validateCoupon, redeemCoupon } from '@/lib/coupons'
 import { sendVerificationEmail, sendPasswordResetEmail } from '@/lib/email'
-
-export type { RegisterData }
 
 const VALID_PROFILE_TYPES = new Set([
   'startup_founder', 'vc_investor', 'oem_enterprise', 'isv_platform',
