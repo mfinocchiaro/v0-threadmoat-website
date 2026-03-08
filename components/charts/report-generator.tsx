@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useRef, useEffect } from "react"
 import { Company, formatCurrency } from "@/lib/company-data"
 import {
   Dialog,
@@ -8,10 +8,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
+import { Sparkles, ChevronRight } from "lucide-react"
 
 interface ReportGeneratorProps {
   data: Company[]
@@ -156,6 +159,299 @@ function ICReport({ company }: { company: Company }) {
   )
 }
 
+// ─── Intelligence Report Generator ───────────────────────────────────────────
+
+const REPORT_TYPES = [
+  { value: "deep-dive",     label: "Startup Deep Dive Case Study" },
+  { value: "executive",     label: "Executive Briefing" },
+  { value: "moat",          label: "Competitive Moat Analysis" },
+  { value: "financial",     label: "Investment & Financial Profile" },
+  { value: "tech",          label: "Technology & Innovation Audit" },
+  { value: "market",        label: "Market Opportunity Index" },
+  { value: "pmf",           label: "Product-Market Fit Analysis" },
+]
+
+function score5(val: number) {
+  const bars = Math.round(val)
+  return "█".repeat(bars) + "░".repeat(Math.max(0, 5 - bars)) + `  ${val.toFixed(1)}/5`
+}
+
+function generateReport(company: Company, type: string): string {
+  const sep = "─".repeat(60)
+  const header = [
+    `${company.name.toUpperCase()}`,
+    `${company.hqLocation || company.country}  ·  Founded ${company.founded || "N/A"}  ·  ${company.investmentList?.replace(/\(.*\)/, "").trim() ?? ""}`,
+    `Overall Score: ${company.weightedScore?.toFixed(2) ?? "N/A"} / 5.00`,
+    sep,
+  ].join("\n")
+
+  if (type === "deep-dive") {
+    return [
+      header,
+      `\n## OVERVIEW`,
+      company.strengths ? `Strengths: ${company.strengths}` : "",
+      company.weaknesses ? `Risks: ${company.weaknesses}` : "",
+      `\n## FINANCIALS`,
+      `Total Funding:       ${formatCurrency(company.totalFunding)}`,
+      `Est. Revenue:        ${formatCurrency(company.estimatedRevenue)}`,
+      `Est. Market Value:   ${formatCurrency(company.estimatedMarketValue)}`,
+      `Headcount:           ${company.headcount?.toLocaleString() ?? "N/A"}`,
+      `Funding Round:       ${company.latestFundingRound || "N/A"}`,
+      `\n## SCORE BREAKDOWN`,
+      `Market Opportunity   ${score5(company.marketOpportunity)}`,
+      company.marketOpportunityJustification ? `  → ${company.marketOpportunityJustification}` : "",
+      `Team & Execution     ${score5(company.teamExecution)}`,
+      company.teamExecutionJustification ? `  → ${company.teamExecutionJustification}` : "",
+      `Tech Differentiation ${score5(company.techDifferentiation)}`,
+      company.techDifferentiationJustification ? `  → ${company.techDifferentiationJustification}` : "",
+      `Funding Efficiency   ${score5(company.fundingEfficiency)}`,
+      company.fundingEfficiencyJustification ? `  → ${company.fundingEfficiencyJustification}` : "",
+      `Growth Metrics       ${score5(company.growthMetrics)}`,
+      company.growthMetricsJustification ? `  → ${company.growthMetricsJustification}` : "",
+      `Industry Impact      ${score5(company.industryImpact)}`,
+      company.industryImpactJustification ? `  → ${company.industryImpactJustification}` : "",
+      `Competitive Moat     ${score5(company.competitiveMoat)}`,
+      company.competitiveMoatJustification ? `  → ${company.competitiveMoatJustification}` : "",
+      company.industriesServed?.length ? `\n## INDUSTRIES SERVED\n${company.industriesServed.join(", ")}` : "",
+      company.url ? `\n${company.url}` : "",
+    ].filter(Boolean).join("\n")
+  }
+
+  if (type === "executive") {
+    return [
+      header,
+      `\n## INVESTMENT THESIS`,
+      company.strengths || "No summary available.",
+      `\n## KEY METRICS`,
+      `Total Funding:  ${formatCurrency(company.totalFunding)}   |   Est. Revenue: ${formatCurrency(company.estimatedRevenue)}`,
+      `Headcount:      ${company.headcount?.toLocaleString() ?? "N/A"}   |   Round: ${company.latestFundingRound || "N/A"}`,
+      `Score:          ${company.weightedScore?.toFixed(2) ?? "N/A"}/5   |   Lifecycle: ${company.startupLifecyclePhase || "N/A"}`,
+      `\n## KEY RISK`,
+      company.weaknesses || "Not identified.",
+    ].filter(Boolean).join("\n")
+  }
+
+  if (type === "moat") {
+    return [
+      header,
+      `\n## COMPETITIVE MOAT SCORE`,
+      `${score5(company.competitiveMoat)}`,
+      company.competitiveMoatJustification ? `\n${company.competitiveMoatJustification}` : "",
+      `\n## DIFFERENTIATION TAGS`,
+      company.differentiationTags?.join(", ") || "None recorded.",
+      `\n## OPERATING MODEL`,
+      company.operatingModelTags?.join(", ") || "None recorded.",
+      `\n## COMPETITIVE CONTEXT`,
+      `Segment: ${company.subsegment || company.workflowSegment || "N/A"}`,
+      `Investment List: ${company.investmentList || "N/A"}`,
+    ].filter(Boolean).join("\n")
+  }
+
+  if (type === "financial") {
+    return [
+      header,
+      `\n## FUNDING PROFILE`,
+      `Latest Round:        ${company.latestFundingRound || "N/A"} (${company.fundingYear || "N/A"})`,
+      `Last Event Amount:   ${formatCurrency(company.lastFundingAmount)}`,
+      `Total Funding:       ${formatCurrency(company.totalFunding)}`,
+      `\n## REVENUE & VALUATION`,
+      `Est. Annual Revenue: ${formatCurrency(company.estimatedRevenue)}`,
+      `Est. Market Value:   ${formatCurrency(company.estimatedMarketValue)}`,
+      company.financialNotes ? `\nNotes: ${company.financialNotes}` : "",
+      `\n## FUNDING EFFICIENCY SCORE`,
+      `${score5(company.fundingEfficiency)}`,
+      company.fundingEfficiencyJustification ? `\n${company.fundingEfficiencyJustification}` : "",
+      company.investors?.length ? `\n## INVESTORS\n${company.investors.slice(0, 10).join(", ")}` : "",
+    ].filter(Boolean).join("\n")
+  }
+
+  if (type === "tech") {
+    return [
+      header,
+      `\n## TECHNOLOGY DIFFERENTIATION SCORE`,
+      `${score5(company.techDifferentiation)}`,
+      company.techDifferentiationJustification ? `\n${company.techDifferentiationJustification}` : "",
+      `\n## DIFFERENTIATION TAGS`,
+      company.differentiationTags?.join(", ") || "None recorded.",
+      `\n## CATEGORY TAGS`,
+      company.categoryTags?.join(", ") || "None recorded.",
+      `\n## OPERATING MODEL`,
+      company.operatingModelTags?.join(", ") || "None recorded.",
+      `\n## TECH STRENGTHS`,
+      company.strengths || "Not assessed.",
+    ].filter(Boolean).join("\n")
+  }
+
+  if (type === "market") {
+    return [
+      header,
+      `\n## MARKET OPPORTUNITY SCORE`,
+      `${score5(company.marketOpportunity)}`,
+      company.marketOpportunityJustification ? `\n${company.marketOpportunityJustification}` : "",
+      `\n## INDUSTRY IMPACT SCORE`,
+      `${score5(company.industryImpact)}`,
+      company.industryImpactJustification ? `\n${company.industryImpactJustification}` : "",
+      company.industriesServed?.length ? `\n## TARGET INDUSTRIES\n${company.industriesServed.join(", ")}` : "",
+      `\n## MARKET CONTEXT`,
+      `Sector Focus: ${company.sectorFocus || "N/A"}`,
+      `Subsegment: ${company.subsegment || "N/A"}`,
+      `Manufacturing Type: ${company.manufacturingType || "N/A"}`,
+    ].filter(Boolean).join("\n")
+  }
+
+  if (type === "pmf") {
+    return [
+      header,
+      `\n## GROWTH METRICS SCORE`,
+      `${score5(company.growthMetrics)}`,
+      company.growthMetricsJustification ? `\n${company.growthMetricsJustification}` : "",
+      `\n## TEAM & EXECUTION SCORE`,
+      `${score5(company.teamExecution)}`,
+      company.teamExecutionJustification ? `\n${company.teamExecutionJustification}` : "",
+      `\n## CUSTOMER SIGNALS`,
+      company.knownCustomers ? `Known Customers: ${company.knownCustomers}` : "No customers recorded.",
+      `\n## LIFECYCLE STAGE`,
+      `Phase: ${company.startupLifecyclePhase || "N/A"}`,
+      `Funding Round: ${company.latestFundingRound || "N/A"}`,
+      `Headcount: ${company.headcount?.toLocaleString() ?? "N/A"}`,
+    ].filter(Boolean).join("\n")
+  }
+
+  return `${header}\n\nReport type not recognized.`
+}
+
+function IntelligenceReportTab({ data }: { data: Company[] }) {
+  const [reportType, setReportType] = useState("deep-dive")
+  const [companySearch, setCompanySearch] = useState("")
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null)
+  const [reportOutput, setReportOutput] = useState<string | null>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  const suggestions = useMemo(() => {
+    if (!companySearch.trim()) return []
+    const q = companySearch.toLowerCase()
+    return data.filter(c => c.name.toLowerCase().includes(q)).slice(0, 8)
+  }, [data, companySearch])
+
+  // Close suggestions on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false)
+      }
+    }
+    document.addEventListener("mousedown", handler)
+    return () => document.removeEventListener("mousedown", handler)
+  }, [])
+
+  const selectCompany = (c: Company) => {
+    setSelectedCompany(c)
+    setCompanySearch(c.name)
+    setShowSuggestions(false)
+    setReportOutput(null)
+  }
+
+  const generate = () => {
+    if (!selectedCompany) return
+    setReportOutput(generateReport(selectedCompany, reportType))
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Control bar */}
+      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
+        {/* Report type */}
+        <div className="flex flex-col gap-1 min-w-[260px]">
+          <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Report Type</label>
+          <Select value={reportType} onValueChange={setReportType}>
+            <SelectTrigger className="h-9">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {REPORT_TYPES.map(r => (
+                <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Company search */}
+        <div className="flex flex-col gap-1 flex-1 min-w-[240px]" ref={containerRef}>
+          <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Startup</label>
+          <div className="relative">
+            <Input
+              ref={inputRef}
+              placeholder="Type company name..."
+              value={companySearch}
+              onChange={e => {
+                setCompanySearch(e.target.value)
+                setSelectedCompany(null)
+                setShowSuggestions(true)
+                setReportOutput(null)
+              }}
+              onFocus={() => { if (companySearch) setShowSuggestions(true) }}
+              className="h-9"
+            />
+            {showSuggestions && suggestions.length > 0 && (
+              <div className="absolute z-50 top-full mt-1 w-full bg-popover border border-border rounded-lg shadow-xl overflow-hidden">
+                {suggestions.map(c => (
+                  <button
+                    key={c.id}
+                    className="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center justify-between gap-2"
+                    onMouseDown={() => selectCompany(c)}
+                  >
+                    <span>{c.name}</span>
+                    <span className="text-xs text-muted-foreground shrink-0">{c.investmentList?.replace(/\(.*\)/, "").trim()}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Generate button */}
+        <Button
+          onClick={generate}
+          disabled={!selectedCompany}
+          className="h-9 gap-2 shrink-0 sm:self-end"
+        >
+          <Sparkles className="h-4 w-4" />
+          Generate Intelligence
+        </Button>
+      </div>
+
+      {/* Output */}
+      {reportOutput && (
+        <div className="rounded-xl border border-border bg-muted/30 p-5">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2 text-sm font-semibold">
+              <ChevronRight className="h-4 w-4 text-primary" />
+              {REPORT_TYPES.find(r => r.value === reportType)?.label}
+              {selectedCompany && <span className="text-muted-foreground font-normal">— {selectedCompany.name}</span>}
+            </div>
+            <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => navigator.clipboard.writeText(reportOutput)}>
+              Copy
+            </Button>
+          </div>
+          <pre className="text-xs leading-relaxed font-mono whitespace-pre-wrap text-foreground/90 overflow-x-auto">
+            {reportOutput}
+          </pre>
+        </div>
+      )}
+
+      {!reportOutput && (
+        <div className="rounded-xl border border-dashed border-border/50 h-48 flex items-center justify-center text-muted-foreground text-sm">
+          Select a report type and startup, then click Generate Intelligence
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Main Export ──────────────────────────────────────────────────────────────
+
 export function ReportGenerator({ data, className }: ReportGeneratorProps) {
   const [search, setSearch] = useState("")
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null)
@@ -173,6 +469,17 @@ export function ReportGenerator({ data, className }: ReportGeneratorProps) {
 
   return (
     <div className={cn("space-y-4", className)}>
+      <Tabs defaultValue="ic-memos">
+        <TabsList className="mb-4">
+          <TabsTrigger value="ic-memos">IC Memos</TabsTrigger>
+          <TabsTrigger value="intelligence">Intelligence Reports</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="intelligence">
+          <IntelligenceReportTab data={data} />
+        </TabsContent>
+
+        <TabsContent value="ic-memos">
       {/* Search + sort bar */}
       <div className="flex flex-wrap gap-3 items-center">
         <Input
@@ -253,6 +560,8 @@ export function ReportGenerator({ data, className }: ReportGeneratorProps) {
           )}
         </DialogContent>
       </Dialog>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

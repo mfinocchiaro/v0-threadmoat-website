@@ -76,6 +76,7 @@ const VIZ_ITEMS = [
   { href: "/dashboard/chord",          icon: Link2,            label: "Chord Diagram" },
   { href: "/dashboard/marimekko",      icon: BarChart3,        label: "Marimekko" },
   { href: "/dashboard/spiral",         icon: TrendingUp,       label: "Spiral Timeline" },
+  { href: "/dashboard/patterns",       icon: GridIcon,         label: "Patterns" },
 ];
 
 const ADMIN_ITEMS = [

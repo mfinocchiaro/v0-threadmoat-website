@@ -12,7 +12,6 @@ export const INVESTMENT_LIST_COLORS: Record<string, string> = {
     "Bleeding Edge BIM (AEC/BIM)":                       "#7EC8E3", // Cyan
     "SW+HW=Innovation (Robotics, Drones)":               "#0B7A20", // Green
     "Knowledge Engineering (R&D, Learning)":             "#7A3FD1", // Purple
-    "VC":                                                "#7C3AED", // Violet
 };
 
 // Ordered palette array for d3.scaleOrdinal usage
