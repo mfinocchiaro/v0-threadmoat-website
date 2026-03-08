@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 
-type DimensionKey = "investmentList" | "country" | "subsegment" | "lifecyclePhase" | "latestFundingRound"
+type DimensionKey = "investmentList" | "country" | "subsegment" | "lifecyclePhase" | "latestFundingRound" | "manufacturingType" | "subcategories" | "startupLifecyclePhase"
 type MetricKey = "count" | "totalFunding" | "avgScore"
 
 interface MarimekkoChartProps {
@@ -42,6 +42,9 @@ function getDimLabel(dim: DimensionKey): string {
     subsegment: "Subsegment",
     lifecyclePhase: "Lifecycle Phase",
     latestFundingRound: "Funding Round",
+    manufacturingType: "Manufacturing Type",
+    subcategories: "Subcategory",
+    startupLifecyclePhase: "Startup Lifecycle",
   }[dim]
 }
 
@@ -318,6 +321,9 @@ export function MarimekkoChart({ data, className }: MarimekkoChartProps) {
               <SelectItem value="country">Country</SelectItem>
               <SelectItem value="subsegment">Subsegment</SelectItem>
               <SelectItem value="lifecyclePhase">Lifecycle Phase</SelectItem>
+              <SelectItem value="manufacturingType">Manufacturing Type</SelectItem>
+              <SelectItem value="subcategories">Subcategory</SelectItem>
+              <SelectItem value="startupLifecyclePhase">Startup Lifecycle</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -333,6 +339,9 @@ export function MarimekkoChart({ data, className }: MarimekkoChartProps) {
               <SelectItem value="country">Country</SelectItem>
               <SelectItem value="subsegment">Subsegment</SelectItem>
               <SelectItem value="lifecyclePhase">Lifecycle Phase</SelectItem>
+              <SelectItem value="manufacturingType">Manufacturing Type</SelectItem>
+              <SelectItem value="subcategories">Subcategory</SelectItem>
+              <SelectItem value="startupLifecyclePhase">Startup Lifecycle</SelectItem>
             </SelectContent>
           </Select>
         </div>

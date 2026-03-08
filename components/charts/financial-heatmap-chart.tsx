@@ -221,7 +221,7 @@ export function FinancialHeatmapChart({ className, filteredCompanyNames }: Finan
 
     headerGroups.append("text")
       .attr("text-anchor", "start")
-      .attr("fill", "#1e293b")
+      .attr("fill", "#cbd5e1")
       .attr("font-size", "14px")
       .attr("font-weight", "600")
       .text((col) => col.label)
@@ -240,7 +240,7 @@ export function FinancialHeatmapChart({ className, filteredCompanyNames }: Finan
         .attr("y", y + bh / 2)
         .attr("text-anchor", "end")
         .attr("dominant-baseline", "central")
-        .attr("fill", "#0f172a")
+        .attr("fill", "#cbd5e1")
         .attr("font-size", "24px")
         .attr("font-weight", "600")
         .text(rec.company.length > 20 ? rec.company.slice(0, 18) + "..." : rec.company)

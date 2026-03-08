@@ -1,18 +1,19 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { loadCompanyData } from "@/lib/company-data"
 import type { Company } from "@/lib/company-data"
 import { NetworkGraphToggle } from "@/components/charts/network-graph-toggle"
 import { GlobeChart } from "@/components/charts/globe-chart"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Lock } from "lucide-react"
+import { Lock, Maximize2 } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
 export default function ExplorePage() {
   const [companies, setCompanies] = useState<Company[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const graphContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     loadCompanyData().then(data => {
@@ -39,12 +40,6 @@ export default function ExplorePage() {
         </Link>
       </div>
 
-      {/* Disclaimer */}
-      <p className="text-xs text-muted-foreground border border-border rounded-md px-3 py-2 bg-muted/40">
-        ⚠ Research estimates only — figures are educated approximations from public sources and may contain errors.
-        Not investment advice. Always conduct your own due diligence.
-      </p>
-
       {/* Network Graph */}
       <section>
         <h2 className="text-lg font-semibold mb-3">Competitive Network</h2>
@@ -54,8 +49,15 @@ export default function ExplorePage() {
         {isLoading ? (
           <Skeleton className="h-[620px] rounded-xl" />
         ) : (
-          <div className="rounded-xl border border-border overflow-hidden h-[620px]">
+          <div ref={graphContainerRef} className="relative rounded-xl border border-border overflow-hidden h-[620px]">
             <NetworkGraphToggle data={companies} />
+            <button
+              onClick={() => graphContainerRef.current?.requestFullscreen()}
+              className="absolute top-3 right-3 z-10 flex items-center justify-center w-8 h-8 rounded-md bg-background/80 backdrop-blur-sm border border-border/60 hover:bg-background transition-colors"
+              title="Enter fullscreen"
+            >
+              <Maximize2 className="h-4 w-4 text-muted-foreground" />
+            </button>
           </div>
         )}
       </section>

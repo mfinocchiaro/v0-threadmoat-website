@@ -7,6 +7,10 @@ import path from 'path'
 // Cloud SaaS benchmark: $200K ARR/employee is the industry "good" threshold (Bessemer/BVP standard)
 const CLOUD_ARR_BENCHMARK = 200_000
 
+function normalizeCompanyName(name: string): string {
+  return name.trim().replace(/[\u00A0\u2013\u2014]/g, ' ').replace(/\s+/g, ' ').toLowerCase()
+}
+
 function parseCurrency(value: string | undefined): number {
   if (!value) return 0
   const cleaned = value.replace(/[$,\s]/g, '')
@@ -32,13 +36,14 @@ function parseNum(value: string | undefined): number {
  * Priority: Cloud-Native > SaaS > Hybrid > Traditional
  */
 function classifyCloudModel(tags: string): string {
+  if (!tags.trim()) return 'Unknown'
   const set = new Set(tags.split(',').map(t => t.trim().toLowerCase()))
-  if (set.has('cloud-native') || set.has('cloud saas')) return 'Cloud-Native'
-  if (set.has('usage-based')) return 'Cloud-Native'
+  if (set.has('cloud-native') || set.has('cloud saas') || set.has('cloud native')) return 'Cloud-Native'
+  if (set.has('usage-based') || set.has('consumption-based')) return 'Cloud-Native'
   if (set.has('hybrid') || (set.has('on-premise') && (set.has('saas') || set.has('cloud')))) return 'Hybrid'
-  if (set.has('saas') || set.has('b2b saas') || set.has('enterprise saas') || set.has('vertical saas')) return 'SaaS'
-  if (set.has('cloud') || set.has('api-first')) return 'SaaS'
-  if (set.has('on-premise') || set.has('perpetual license')) return 'Traditional'
+  if (set.has('saas') || set.has('b2b saas') || set.has('enterprise saas') || set.has('vertical saas') || set.has('subscription')) return 'SaaS'
+  if (set.has('cloud') || set.has('api-first') || set.has('api first') || set.has('platform')) return 'SaaS'
+  if (set.has('on-premise') || set.has('on premise') || set.has('perpetual license') || set.has('perpetual')) return 'Traditional'
   return 'Unknown'
 }
 
@@ -64,14 +69,14 @@ export async function GET() {
     const tagsByCompany = new Map<string, string>()
     for (const row of gridRows) {
       const name = (row['Company'] || '').trim()
-      if (name) tagsByCompany.set(name.toLowerCase(), row['Operating Model Tags'] || '')
+      if (name) tagsByCompany.set(normalizeCompanyName(name), row['Operating Model Tags'] || '')
     }
 
     const funding = financialRows
       .filter(row => (row['Company'] || '').trim())
       .map((row, index) => {
         const company = (row['Company'] || '').trim()
-        const tags = tagsByCompany.get(company.toLowerCase()) ?? ''
+        const tags = tagsByCompany.get(normalizeCompanyName(company)) ?? ''
         const cloudModel = classifyCloudModel(tags)
 
         const arrPerEmployee = parseCurrency(row['ARR per Employee'])

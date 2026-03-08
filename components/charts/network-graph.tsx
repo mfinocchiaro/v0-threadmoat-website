@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Card } from "@/components/ui/card"
-import { RotateCcw } from "lucide-react"
+import { RotateCcw, Building2 } from "lucide-react"
 
 interface NetworkGraphProps {
   data: Company[]
@@ -21,7 +21,7 @@ interface NetworkGraphProps {
   preview?: boolean
 }
 
-type NodeType = "company" | "mfg" | "investment" | "industry" | "country" | "subsegment" | "category" | "subcategory"
+type NodeType = "company" | "mfg" | "investment" | "industry" | "country" | "subsegment" | "category" | "subcategory" | "incumbent"
 type LinkKind = "primary" | "secondary"
 
 interface Node extends d3.SimulationNodeDatum {
@@ -48,6 +48,7 @@ const HUB_COLORS: Record<string, string> = {
   subsegment: "#10b981",
   category: "#f97316",
   subcategory: "#06b6d4",
+  incumbent: "#dc2626",
 }
 
 // Human-readable labels for hub types
@@ -59,6 +60,7 @@ const HUB_LABELS: Record<string, string> = {
   subsegment: "Subsegment",
   category: "Capability Tag",
   subcategory: "Subcategory",
+  incumbent: "Incumbent Product",
 }
 
 // Normalize common manufacturing type variants
@@ -75,6 +77,15 @@ export function NetworkGraph({ data, className, preview = false }: NetworkGraphP
   const [primaryType, setPrimaryType] = useState<string>("investment")
   const [secondaryType, setSecondaryType] = useState<string>("subcategory")
   const [metric, setMetric] = useState<string>("headcount")
+  const [showIncumbents, setShowIncumbents] = useState(false)
+  const [incumbents, setIncumbents] = useState<Array<{id: string; vendor: string; category: string}>>([])
+
+  useEffect(() => {
+    fetch('/data/incumbents.json')
+      .then(r => r.json())
+      .then(setIncumbents)
+      .catch(() => {}) // silently fail if file not present
+  }, [])
 
   const graphData = useMemo(() => {
     if (!data || data.length === 0) return { nodes: [], links: [], maxVal: 1, hubTypes: new Set<NodeType>() }
@@ -159,8 +170,24 @@ export function NetworkGraph({ data, className, preview = false }: NetworkGraphP
       }
     })
 
+    if (showIncumbents) {
+      incumbents.forEach(inc => {
+        const id = `★ ${inc.id}`
+        if (!nodeMap.has(id)) {
+          nodeMap.set(id, true)
+          nodes.push({ id, type: 'incumbent', val: 30, moat: 5 })
+          hubTypes.add('incumbent')
+        }
+        // Link to matching investment category hub if it exists
+        const catLabel = inc.category.replace(/^\d+-/, '').trim()
+        if (primaryType === 'investment' && nodeMap.has(catLabel)) {
+          links.push({ source: id, target: catLabel, kind: 'primary' })
+        }
+      })
+    }
+
     return { nodes, links, maxVal, hubTypes }
-  }, [data, primaryType, secondaryType, metric])
+  }, [data, primaryType, secondaryType, metric, showIncumbents, incumbents])
 
   useEffect(() => {
     if (!svgRef.current || !containerRef.current || graphData.nodes.length === 0) return
@@ -368,10 +395,21 @@ export function NetworkGraph({ data, className, preview = false }: NetworkGraphP
             </Select>
           </div>
         </div>
-        <Button variant="outline" size="sm" onClick={resetZoom} className="h-8">
-          <RotateCcw className="mr-2 h-3 w-3" />
-          Reset View
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={resetZoom} className="h-8">
+            <RotateCcw className="mr-2 h-3 w-3" />
+            Reset View
+          </Button>
+          <Button
+            variant={showIncumbents ? "default" : "outline"}
+            size="sm"
+            className="h-8"
+            onClick={() => setShowIncumbents(v => !v)}
+          >
+            <Building2 className="mr-2 h-3 w-3" />
+            Incumbents {showIncumbents ? "On" : "Off"}
+          </Button>
+        </div>
       </div>
       )}
       <div ref={containerRef} className="flex-1 w-full min-h-0 relative overflow-hidden bg-background border-b">
