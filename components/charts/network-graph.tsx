@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useRef, useState, useMemo } from "react"
+import React, { useEffect, useRef, useState, useMemo, useDeferredValue } from "react"
 import * as d3 from "d3"
 import { Company } from "@/lib/company-data"
 import { getInvestmentColor, INVESTMENT_LIST_COLORS } from "@/lib/investment-colors"
@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Card } from "@/components/ui/card"
-import { RotateCcw, Building2, Search, X } from "lucide-react"
+import { RotateCcw, Building2, Search, X, Maximize2, Minimize2 } from "lucide-react"
 
 interface NetworkGraphProps {
   data: Company[]
@@ -86,6 +86,23 @@ export function NetworkGraph({ data, className, preview = false }: NetworkGraphP
   const [showIncumbents, setShowIncumbents] = useState(false)
   const [incumbents, setIncumbents] = useState<Array<{id: string; vendor: string; product: string; category: string; revenueB?: number}>>([])
   const [searchQuery, setSearchQuery] = useState("")
+  const deferredQuery = useDeferredValue(searchQuery)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const cardRef = useRef<HTMLDivElement>(null)
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      cardRef.current?.requestFullscreen()
+    } else {
+      document.exitFullscreen()
+    }
+  }
+
+  useEffect(() => {
+    const onFsChange = () => setIsFullscreen(!!document.fullscreenElement)
+    document.addEventListener("fullscreenchange", onFsChange)
+    return () => document.removeEventListener("fullscreenchange", onFsChange)
+  }, [])
 
   // Refs for imperative D3 updates (search highlight, annotation, zoom)
   const searchQueryRef = useRef("")
@@ -355,7 +372,7 @@ export function NetworkGraph({ data, className, preview = false }: NetworkGraphP
       .attr("stroke", d => d.type === "incumbent" ? "#fff" : "#fff")
       .attr("stroke-width", d => d.type === "company" ? moatScale(d.moat) : d.type === "incumbent" ? 3 : 1.5)
       .attr("stroke-opacity", d => d.type === "company" ? 0.9 : 1)
-      .attr("fill-opacity", d => d.type === "incumbent" ? 0.25 : 1)
+      .attr("fill-opacity", d => d.type === "incumbent" ? 0.75 : 1)
 
     // Outer ring for incumbents (shows market territory boundary)
     node.filter(d => d.type === "incumbent")
@@ -418,13 +435,13 @@ export function NetworkGraph({ data, className, preview = false }: NetworkGraphP
     return () => { simulation.stop() }
   }, [graphData, metric])
 
-  // Imperative search highlight — runs without restarting the simulation
+  // Imperative search highlight — deferred so keystrokes never block the UI
   useEffect(() => {
-    searchQueryRef.current = searchQuery
+    searchQueryRef.current = deferredQuery
 
     const nodeSel = nodeSelRef.current
     const annotLayer = annotLayerRef.current
-    const q = searchQuery.trim().toLowerCase()
+    const q = deferredQuery.trim().toLowerCase()
 
     // Reset all node styles first
     if (nodeSel) {
@@ -495,7 +512,7 @@ export function NetworkGraph({ data, className, preview = false }: NetworkGraphP
           )
       }
     }
-  }, [searchQuery, graphData.nodes])
+  }, [deferredQuery, graphData.nodes])
 
   const resetZoom = () => {
     if (!svgRef.current) return
@@ -531,7 +548,7 @@ export function NetworkGraph({ data, className, preview = false }: NetworkGraphP
   }, [])
 
   return (
-    <Card className={`flex flex-col ${preview ? "min-h-[420px]" : "h-[calc(100vh-8rem)]"} ${className ?? ""}`}>
+    <Card ref={cardRef} className={`flex flex-col ${preview ? "min-h-[420px]" : isFullscreen ? "h-screen" : "h-[calc(100vh-8rem)]"} ${className ?? ""}`}>
       {!preview && (
       <div className="p-4 border-b flex flex-wrap gap-4 items-center justify-between bg-card">
         {/* Search bar */}
@@ -603,6 +620,12 @@ export function NetworkGraph({ data, className, preview = false }: NetworkGraphP
           >
             <Building2 className="mr-2 h-3 w-3" />
             Incumbents {showIncumbents ? "On" : "Off"}
+          </Button>
+          <Button variant="outline" size="sm" onClick={toggleFullscreen} className="h-8">
+            {isFullscreen
+              ? <><Minimize2 className="mr-2 h-3 w-3" />Exit Full Screen</>
+              : <><Maximize2 className="mr-2 h-3 w-3" />Full Screen</>
+            }
           </Button>
         </div>
       </div>
