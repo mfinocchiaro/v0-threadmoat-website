@@ -1,9 +1,9 @@
 "use client"
 
-import { useEffect, useState, startTransition } from "react"
+import { useEffect, useState, startTransition, useCallback } from "react"
 import { Company, loadCompanyData } from "@/lib/company-data"
 import { FilterProvider } from "@/contexts/filter-context"
-import { ThesisProvider } from "@/contexts/thesis-context"
+import { ThesisProvider, ThesisType, useThesis } from "@/contexts/thesis-context"
 import { useScenario } from "@/contexts/scenario-context"
 import { StartupDashboard } from "@/components/dashboards/startup-dashboard"
 import { VCDashboard } from "@/components/dashboards/vc-dashboard"
@@ -15,6 +15,13 @@ import { Rocket, TrendingUp, Building2, Layers } from "lucide-react"
 import { FOCUS_SCENARIOS } from "@/components/dashboard/sidebar"
 import { LayoutProvider } from "@/contexts/layout-context"
 import { ConfigPanel } from "@/components/dashboard/config-panel"
+
+const SCENARIO_THESIS: Record<string, ThesisType> = {
+  startup_founder: "founder",
+  vc_investor: "vc",
+  isv_platform: "isv",
+  oem_enterprise: "oem",
+}
 
 function ScenarioPicker({ onSelect }: { onSelect: (key: string) => void }) {
   return (
@@ -55,8 +62,16 @@ function DashboardInner({ companies, isLoading, profileType, onSelectProfile, is
   onSelectProfile: (p: string) => void
   isAdmin: boolean
 }) {
+  const { applyThesis } = useThesis()
+
+  const handleSelectProfile = useCallback((key: string) => {
+    onSelectProfile(key)
+    const thesisType = SCENARIO_THESIS[key] ?? "vc"
+    applyThesis(thesisType)
+  }, [onSelectProfile, applyThesis])
+
   if (!profileType) {
-    return <ScenarioPicker onSelect={onSelectProfile} />
+    return <ScenarioPicker onSelect={handleSelectProfile} />
   }
 
   const scenarioData = FOCUS_SCENARIOS.find(s => s.key === profileType)
@@ -80,7 +95,7 @@ function DashboardInner({ companies, isLoading, profileType, onSelectProfile, is
         companies={companies}
         profileType={profileType}
         isAdmin={isAdmin}
-        onSelectScenario={onSelectProfile}
+        onSelectScenario={handleSelectProfile}
       />
     </>
   )
