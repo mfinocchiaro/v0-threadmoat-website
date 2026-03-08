@@ -76,11 +76,14 @@ const VIZ_ITEMS = [
   { href: "/dashboard/chord",          icon: Link2,            label: "Chord Diagram" },
   { href: "/dashboard/marimekko",      icon: BarChart3,        label: "Marimekko" },
   { href: "/dashboard/spiral",         icon: TrendingUp,       label: "Spiral Timeline" },
-  { href: "/dashboard/investor-stats", icon: Users,            label: "Investor Stats" },
-  { href: "/dashboard/financial-heatmap", icon: Flame,          label: "Financial Heatmap" },
-  { href: "/dashboard/correlation",    icon: GridIcon,         label: "Correlation Matrix" },
-  { href: "/dashboard/reports",        icon: FileText,         label: "Report Generator" },
-  { href: "/dashboard/investor-views", icon: Eye,              label: "Investor Views" },
+];
+
+const ADMIN_ITEMS = [
+  { href: "/dashboard/investor-stats",    icon: Users,     label: "Investor Stats" },
+  { href: "/dashboard/financial-heatmap", icon: Flame,     label: "Financial Heatmap" },
+  { href: "/dashboard/correlation",       icon: GridIcon,  label: "Correlation Matrix" },
+  { href: "/dashboard/reports",           icon: FileText,  label: "Report Generator" },
+  { href: "/dashboard/investor-views",    icon: Eye,       label: "Investor Views" },
 ];
 
 const BOTTOM_ITEMS = [
@@ -258,6 +261,21 @@ export function Sidebar({ collapsed, onToggle, onSelectScenario, activeScenario,
             {visibleVizItems.map(item => (
               <NavLink key={item.href} {...item} collapsed={collapsed} />
             ))}
+
+            {/* Admin-only section */}
+            {isAdmin && (
+              <>
+                {!collapsed && (
+                  <p className="mt-3 mb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-amber-500/80">
+                    Admin Analytics
+                  </p>
+                )}
+                {collapsed && <div className="my-2 border-t border-amber-500/30" />}
+                {ADMIN_ITEMS.map(item => (
+                  <NavLink key={item.href} {...item} collapsed={collapsed} />
+                ))}
+              </>
+            )}
           </nav>
         </ScrollArea>
 
