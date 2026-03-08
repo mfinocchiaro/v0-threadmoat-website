@@ -92,7 +92,7 @@ export async function loadCompaniesFromCSV(): Promise<Company[]> {
         .map(t => t.trim())
         .filter(t => t && ![
           'Undisclosed', 'Unknown or Undisclosed', 'Undisclosed or unknown', 'Unknown', 'N A', 'N/A', 'None',
-          'Bootstrapped', 'Boostrapped', 'Self-funded', 'Self-Funded',
+          'Bootstrapped', 'Self-funded', 'Self-Funded',
           'No publicly disclosed investors found.', 'No publicly disclosed investors found',
           'Angel investors',
         ].includes(t))
