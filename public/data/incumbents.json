@@ -1,106 +1,112 @@
 [
   {
-    "id": "Siemens NX",
-    "vendor": "Siemens",
-    "product": "NX",
-    "category": "Design Intelligence (CAD)",
-    "subcategories": ["CAD", "CAM", "Simulation"],
-    "url": "https://plm.sw.siemens.com/en-US/nx/",
-    "revenueB": 0.72,
-    "revenueNote": "~13% of Siemens DISW $5.4B; est. per product",
+    "id": "Autodesk Revit",
+    "vendor": "Autodesk",
+    "product": "Revit",
+    "category": "Bleeding Edge BIM (AEC/BIM)",
+    "subcategories": [
+      "BIM",
+      "AEC",
+      "Architecture"
+    ],
+    "url": "https://www.autodesk.com/products/revit",
+    "revenueB": 0.65,
+    "revenueNote": "~11% of Autodesk; dominant AEC authoring tool",
+    "founded": 2002,
+    "hq": "United States"
+  },
+  {
+    "id": "Bentley iTwin",
+    "vendor": "Bentley Systems",
+    "product": "iTwin",
+    "category": "Bleeding Edge BIM (AEC/BIM)",
+    "subcategories": [
+      "Digital Twin",
+      "Infrastructure",
+      "BIM"
+    ],
+    "url": "https://www.bentley.com/software/itwin-platform/",
+    "revenueB": 0.1,
+    "revenueNote": "~8% of Bentley $1.2B; platform still ramping",
+    "founded": 2019,
+    "hq": "United States"
+  },
+  {
+    "id": "Esri ArcGIS",
+    "vendor": "Esri",
+    "product": "ArcGIS (Urban, BIM integration)",
+    "category": "Bleeding Edge BIM (AEC/BIM)",
+    "subcategories": [
+      "GIS",
+      "Urban Digital Twin",
+      "Infrastructure"
+    ],
+    "url": "https://www.esri.com/en-us/arcgis/products/arcgis-urban",
+    "revenueB": 0.5,
+    "revenueNote": "Est. relevant AEC/urban portion; Esri private total ~$2B; GIS-BIM convergence growing",
     "founded": 1969,
+    "hq": "United States"
+  },
+  {
+    "id": "Nemetschek Group",
+    "vendor": "Nemetschek",
+    "product": "Nemetschek (Archicad, Allplan, Vectorworks, Bluebeam)",
+    "category": "Bleeding Edge BIM (AEC/BIM)",
+    "subcategories": [
+      "BIM",
+      "Architecture",
+      "Construction",
+      "Visualization"
+    ],
+    "url": "https://www.nemetschek.com",
+    "revenueB": 0.95,
+    "revenueNote": "~\u20ac965M FY2024; publicly traded XETRA:NEM; multi-brand AEC software group",
+    "founded": 1963,
     "hq": "Germany"
   },
   {
-    "id": "Siemens Solid Edge",
-    "vendor": "Siemens",
-    "product": "Solid Edge",
-    "category": "Design Intelligence (CAD)",
-    "subcategories": ["CAD", "CAM", "Simulation"],
-    "url": "https://plm.sw.siemens.com/en-US/nx/",
-    "revenueB": 0.42,
-    "revenueNote": "~13% of Siemens DISW $5.4B; est. per product",
-    "founded": 1969,
-    "hq": "Germany"
+    "id": "Procore",
+    "vendor": "Procore Technologies",
+    "product": "Procore Construction Management",
+    "category": "Bleeding Edge BIM (AEC/BIM)",
+    "subcategories": [
+      "Construction Management",
+      "Project Management",
+      "BIM Collaboration"
+    ],
+    "url": "https://www.procore.com",
+    "revenueB": 1.1,
+    "revenueNote": "FY2024 revenue ~$1.15B; publicly traded NYSE:PCOR; dominant construction PM",
+    "founded": 2002,
+    "hq": "United States"
   },
   {
-    "id": "Siemens Teamcenter",
-    "vendor": "Siemens",
-    "product": "Teamcenter",
-    "category": "Cognitive Thread (PLM, MBSE, DT)",
-    "subcategories": ["PLM", "MBSE", "Digital Thread"],
-    "url": "https://plm.sw.siemens.com/en-US/teamcenter/",
-    "revenueB": 1.30,
-    "revenueNote": "~24% of Siemens DISW; largest product line",
-    "founded": 1990,
-    "hq": "Germany"
-  },
-  {
-    "id": "Siemens Opcenter",
-    "vendor": "Siemens",
-    "product": "Opcenter",
-    "category": "Factory Futures (MES, IIOT)",
-    "subcategories": ["MES", "IIoT", "Digital Manufacturing"],
-    "url": "https://plm.sw.siemens.com/en-US/opcenter/",
-    "revenueB": 0.28,
-    "revenueNote": "~5% of Siemens DISW; smaller MES line",
-    "founded": 2018,
-    "hq": "Germany"
-  },
-  {
-    "id": "Dassault CATIA",
-    "vendor": "Dassault Systèmes",
-    "product": "CATIA",
-    "category": "Design Intelligence (CAD)",
-    "subcategories": ["CAD", "Generative Design", "Surface Modeling"],
-    "url": "https://www.3ds.com/products/catia",
-    "revenueB": 0.9,
-    "revenueNote": "~21% of DS €5.8B; revenue diluted by 3DX platform bundling",
-    "founded": 1977,
-    "hq": "France"
-  },
-  {
-    "id": "Dassault SolidWorks",
-    "vendor": "Dassault Systèmes",
-    "product": "SolidWorks",
-    "category": "Design Intelligence (CAD)",
-    "subcategories": ["CAD", "Generative Design", "Surface Modeling"],
-    "url": "https://www.3ds.com/products/catia",
-    "revenueB": 1.20,
-    "revenueNote": "~21% of DS €5.8B; revenue diluted by 3DX platform bundling",
-    "founded": 1977,
-    "hq": "France"
-  },
-  {
-    "id": "Dassault ENOVIA",
-    "vendor": "Dassault Systèmes",
-    "product": "ENOVIA",
-    "category": "Cognitive Thread (PLM, MBSE, DT)",
-    "subcategories": ["PLM", "MBSE", "Collaboration"],
-    "url": "https://www.3ds.com/products/enovia",
-    "revenueB": 0.70,
-    "revenueNote": "~12% of DS; increasingly bundled in 3DX",
-    "founded": 1998,
-    "hq": "France"
-  },
-  {
-    "id": "Dassault SIMULIA",
-    "vendor": "Dassault Systèmes",
-    "product": "SIMULIA",
-    "category": "Extreme Analysis (CAE, CFD, FEA, QC)",
-    "subcategories": ["FEA", "CFD", "Simulation"],
-    "url": "https://www.3ds.com/products/simulia",
-    "revenueB": 0.52,
-    "revenueNote": "~9% of DS; acquired Abaqus/CST folded in",
-    "founded": 1978,
-    "hq": "France"
+    "id": "Trimble Buildings",
+    "vendor": "Trimble",
+    "product": "Trimble Buildings (Tekla, MEP)",
+    "category": "Bleeding Edge BIM (AEC/BIM)",
+    "subcategories": [
+      "BIM",
+      "Structural BIM",
+      "Construction",
+      "MEP"
+    ],
+    "url": "https://buildings.trimble.com",
+    "revenueB": 0.7,
+    "revenueNote": "Est. Buildings segment of Trimble ~$3.7B total; Tekla dominant in structural BIM",
+    "founded": 1993,
+    "hq": "United States"
   },
   {
     "id": "Dassault DELMIA",
-    "vendor": "Dassault Systèmes",
+    "vendor": "Dassault Syst\u00e8mes",
     "product": "DELMIA",
     "category": "Adaptive Manufacturing (AM, CAM, CNC)",
-    "subcategories": ["CAM", "Digital Manufacturing", "Robotics"],
+    "subcategories": [
+      "CAM",
+      "Digital Manufacturing",
+      "Robotics"
+    ],
     "url": "https://www.3ds.com/products/delmia",
     "revenueB": 0.28,
     "revenueNote": "~5% of DS; smallest of the major DS brands",
@@ -108,47 +114,127 @@
     "hq": "France"
   },
   {
-    "id": "PTC Creo",
-    "vendor": "PTC",
-    "product": "Creo",
-    "category": "Design Intelligence (CAD)",
-    "subcategories": ["CAD", "Generative Design", "AR Design"],
-    "url": "https://www.ptc.com/en/products/creo",
-    "revenueB": 0.58,
-    "revenueNote": "~25% of PTC $2.3B; historically core product",
-    "founded": 1987,
+    "id": "Hexagon Manufacturing Intelligence",
+    "vendor": "Hexagon",
+    "product": "Manufacturing Intelligence",
+    "category": "Adaptive Manufacturing (AM, CAM, CNC)",
+    "subcategories": [
+      "Quality Control",
+      "Metrology",
+      "CAM"
+    ],
+    "url": "https://hexagon.com/products/manufacturing-intelligence",
+    "revenueB": 0.55,
+    "revenueNote": "Software portion only (~30% of MI $1.8B); hardware/services excluded",
+    "founded": 2004,
+    "hq": "Sweden"
+  },
+  {
+    "id": "Aras Innovator",
+    "vendor": "Aras",
+    "product": "Aras Innovator",
+    "category": "Cognitive Thread (PLM, MBSE, DT)",
+    "subcategories": [
+      "PLM",
+      "MBSE",
+      "Digital Thread"
+    ],
+    "url": "https://www.aras.com/en/products/aras-innovator",
+    "revenueB": 0.09,
+    "revenueNote": "Private; ~$80-100M ARR estimated from analyst sources",
+    "founded": 2000,
     "hq": "United States"
+  },
+  {
+    "id": "Autodesk Vault",
+    "vendor": "Autodesk",
+    "product": "Vault",
+    "category": "Cognitive Thread (PLM, MBSE, DT)",
+    "subcategories": [
+      "PLM",
+      "PDM",
+      "Data Management"
+    ],
+    "url": "https://www.autodesk.com/products/vault",
+    "revenueB": 0.11,
+    "revenueNote": "~2% of Autodesk; legacy PDM, slow decline",
+    "founded": 2003,
+    "hq": "United States"
+  },
+  {
+    "id": "Dassault ENOVIA",
+    "vendor": "Dassault Syst\u00e8mes",
+    "product": "ENOVIA",
+    "category": "Cognitive Thread (PLM, MBSE, DT)",
+    "subcategories": [
+      "PLM",
+      "MBSE",
+      "Collaboration"
+    ],
+    "url": "https://www.3ds.com/products/enovia",
+    "revenueB": 0.7,
+    "revenueNote": "~12% of DS; increasingly bundled in 3DX",
+    "founded": 1998,
+    "hq": "France"
   },
   {
     "id": "PTC Windchill",
     "vendor": "PTC",
     "product": "Windchill",
     "category": "Cognitive Thread (PLM, MBSE, DT)",
-    "subcategories": ["PLM", "Digital Thread", "MBSE"],
+    "subcategories": [
+      "PLM",
+      "Digital Thread",
+      "MBSE"
+    ],
     "url": "https://www.ptc.com/en/products/windchill",
-    "revenueB": 0.50,
+    "revenueB": 0.5,
     "revenueNote": "~22% of PTC; now largest product by ARR",
     "founded": 1998,
     "hq": "United States"
   },
   {
-    "id": "TPG ThingWorx",
-    "vendor": "TPG",
-    "product": "ThingWorx",
-    "category": "Factory Futures (MES, IIOT)",
-    "subcategories": ["IIoT", "MES", "Digital Twin"],
-    "url": "https://www.ptc.com/en/products/thingworx",
-    "revenueB": 0.22,
-    "revenueNote": "Sold to TPG in 2025",
-    "founded": 2009,
-    "hq": "United States"
+    "id": "SAP PLM",
+    "vendor": "SAP",
+    "product": "SAP PLM",
+    "category": "Cognitive Thread (PLM, MBSE, DT)",
+    "subcategories": [
+      "PLM",
+      "ERP",
+      "Digital Thread"
+    ],
+    "url": "https://www.sap.com/products/scm/plm-r-d-engineering.html",
+    "revenueB": 0.28,
+    "revenueNote": "Estimated; bundled into S/4HANA, no standalone disclosure",
+    "founded": 2002,
+    "hq": "Germany"
+  },
+  {
+    "id": "Siemens Teamcenter",
+    "vendor": "Siemens",
+    "product": "Teamcenter",
+    "category": "Cognitive Thread (PLM, MBSE, DT)",
+    "subcategories": [
+      "PLM",
+      "MBSE",
+      "Digital Thread"
+    ],
+    "url": "https://plm.sw.siemens.com/en-US/teamcenter/",
+    "revenueB": 1.3,
+    "revenueNote": "~24% of Siemens DISW; largest product line",
+    "founded": 1990,
+    "hq": "Germany"
   },
   {
     "id": "Autodesk Fusion",
     "vendor": "Autodesk",
     "product": "Fusion",
     "category": "Design Intelligence (CAD)",
-    "subcategories": ["CAD", "CAM", "Generative Design"],
+    "subcategories": [
+      "CAD",
+      "CAM",
+      "Generative Design"
+    ],
     "url": "https://www.autodesk.com/products/fusion-360",
     "revenueB": 0.25,
     "revenueNote": "~4% of Autodesk $5.9B; fast growing but still small",
@@ -160,7 +246,10 @@
     "vendor": "Autodesk",
     "product": "Inventor",
     "category": "Design Intelligence (CAD)",
-    "subcategories": ["CAD", "Mechanical Design"],
+    "subcategories": [
+      "CAD",
+      "Mechanical Design"
+    ],
     "url": "https://www.autodesk.com/products/inventor",
     "revenueB": 0.32,
     "revenueNote": "~5% of Autodesk; legacy, declining to Fusion",
@@ -168,35 +257,162 @@
     "hq": "United States"
   },
   {
-    "id": "Autodesk Revit",
-    "vendor": "Autodesk",
-    "product": "Revit",
-    "category": "08-Bleeding Edge BIM",
-    "subcategories": ["BIM", "AEC", "Architecture"],
-    "url": "https://www.autodesk.com/products/revit",
-    "revenueB": 0.65,
-    "revenueNote": "~11% of Autodesk; dominant AEC authoring tool",
-    "founded": 2002,
+    "id": "Dassault CATIA",
+    "vendor": "Dassault Syst\u00e8mes",
+    "product": "CATIA",
+    "category": "Design Intelligence (CAD)",
+    "subcategories": [
+      "CAD",
+      "Generative Design",
+      "Surface Modeling"
+    ],
+    "url": "https://www.3ds.com/products/catia",
+    "revenueB": 0.9,
+    "revenueNote": "~21% of DS \u20ac5.8B; revenue diluted by 3DX platform bundling",
+    "founded": 1977,
+    "hq": "France"
+  },
+  {
+    "id": "Dassault SolidWorks",
+    "vendor": "Dassault Syst\u00e8mes",
+    "product": "SolidWorks",
+    "category": "Design Intelligence (CAD)",
+    "subcategories": [
+      "CAD",
+      "Generative Design",
+      "Surface Modeling"
+    ],
+    "url": "https://www.3ds.com/products/catia",
+    "revenueB": 1.2,
+    "revenueNote": "~21% of DS \u20ac5.8B; revenue diluted by 3DX platform bundling",
+    "founded": 1977,
+    "hq": "France"
+  },
+  {
+    "id": "PTC Creo",
+    "vendor": "PTC",
+    "product": "Creo",
+    "category": "Design Intelligence (CAD)",
+    "subcategories": [
+      "CAD",
+      "Generative Design",
+      "AR Design"
+    ],
+    "url": "https://www.ptc.com/en/products/creo",
+    "revenueB": 0.58,
+    "revenueNote": "~25% of PTC $2.3B; historically core product",
+    "founded": 1987,
     "hq": "United States"
   },
   {
-    "id": "Autodesk Vault",
+    "id": "Siemens NX",
+    "vendor": "Siemens",
+    "product": "NX",
+    "category": "Design Intelligence (CAD)",
+    "subcategories": [
+      "CAD",
+      "CAM",
+      "Simulation"
+    ],
+    "url": "https://plm.sw.siemens.com/en-US/nx/",
+    "revenueB": 0.72,
+    "revenueNote": "~13% of Siemens DISW $5.4B; est. per product",
+    "founded": 1969,
+    "hq": "Germany"
+  },
+  {
+    "id": "Siemens Solid Edge",
+    "vendor": "Siemens",
+    "product": "Solid Edge",
+    "category": "Design Intelligence (CAD)",
+    "subcategories": [
+      "CAD",
+      "CAM",
+      "Simulation"
+    ],
+    "url": "https://plm.sw.siemens.com/en-US/nx/",
+    "revenueB": 0.42,
+    "revenueNote": "~13% of Siemens DISW $5.4B; est. per product",
+    "founded": 1969,
+    "hq": "Germany"
+  },
+  {
+    "id": "Ansys Academic",
+    "vendor": "Ansys",
+    "product": "Ansys Academic Program",
+    "category": "Knowledge Engineering (R&D, Learning)",
+    "subcategories": [
+      "FEA",
+      "CFD",
+      "Simulation Education"
+    ],
+    "url": "https://www.ansys.com/academic",
+    "revenueB": 0.15,
+    "revenueNote": "Est. academic portion ~$150M; strong pipeline role \u2014 students become enterprise buyers; now part of Synopsys",
+    "founded": 1970,
+    "hq": "United States",
+    "acquisitionNote": "Acquired by Synopsys 2024 for $35B"
+  },
+  {
+    "id": "Autodesk Education",
     "vendor": "Autodesk",
-    "product": "Vault",
-    "category": "Cognitive Thread (PLM, MBSE, DT)",
-    "subcategories": ["PLM", "PDM", "Data Management"],
-    "url": "https://www.autodesk.com/products/vault",
-    "revenueB": 0.11,
-    "revenueNote": "~2% of Autodesk; legacy PDM, slow decline",
-    "founded": 2003,
+    "product": "Autodesk Education (Fusion, Revit, AutoCAD)",
+    "category": "Knowledge Engineering (R&D, Learning)",
+    "subcategories": [
+      "CAD",
+      "BIM",
+      "STEM Education",
+      "Design"
+    ],
+    "url": "https://www.autodesk.com/education",
+    "revenueB": 0.2,
+    "revenueNote": "Est. education segment ~$200M; Autodesk widely used in vocational, university, and K-12 STEM programs",
+    "founded": 1982,
     "hq": "United States"
+  },
+  {
+    "id": "MathWorks",
+    "vendor": "MathWorks",
+    "product": "MATLAB / Simulink",
+    "category": "Knowledge Engineering (R&D, Learning)",
+    "subcategories": [
+      "MATLAB",
+      "Model-Based Design",
+      "Simulation",
+      "Education"
+    ],
+    "url": "https://www.mathworks.com",
+    "revenueB": 1.5,
+    "revenueNote": "Private; est. ~$1.5B revenue; dominant in academia, controls, and MBD; widely used in engineering programs globally",
+    "founded": 1984,
+    "hq": "United States"
+  },
+  {
+    "id": "PTC Onshape",
+    "vendor": "PTC",
+    "product": "Onshape",
+    "category": "Design Intelligence (CAD)",
+    "subcategories": [
+      "CAD",
+      "Cloud CAD",
+      "STEM Education"
+    ],
+    "url": "https://www.onshape.com",
+    "revenueB": 0.12,
+    "revenueNote": "Est. ~$120M ARR; acquired by PTC 2019 for $470M; leading cloud CAD for education",
+    "founded": 2012,
+    "hq": "United States",
+    "acquisitionNote": "Acquired by PTC 2019"
   },
   {
     "id": "Ansys Mechanical",
     "vendor": "Ansys",
     "product": "Ansys Mechanical",
     "category": "Extreme Analysis (CAE, CFD, FEA, QC)",
-    "subcategories": ["FEA", "Structural Simulation"],
+    "subcategories": [
+      "FEA",
+      "Structural Simulation"
+    ],
     "url": "https://www.ansys.com/products/structures/ansys-mechanical",
     "revenueB": 0.65,
     "revenueNote": "~26% of Ansys $2.5B; structural is core product line",
@@ -208,7 +424,10 @@
     "vendor": "Ansys",
     "product": "Ansys Fluent",
     "category": "Extreme Analysis (CAE, CFD, FEA, QC)",
-    "subcategories": ["CFD", "Fluid Simulation"],
+    "subcategories": [
+      "CFD",
+      "Fluid Simulation"
+    ],
     "url": "https://www.ansys.com/products/fluids/ansys-fluent",
     "revenueB": 0.42,
     "revenueNote": "~17% of Ansys; CFD second-largest product",
@@ -216,71 +435,63 @@
     "hq": "United States"
   },
   {
-    "id": "Bentley iTwin",
-    "vendor": "Bentley Systems",
-    "product": "iTwin",
-    "category": "08-Bleeding Edge BIM",
-    "subcategories": ["Digital Twin", "Infrastructure", "BIM"],
-    "url": "https://www.bentley.com/software/itwin-platform/",
-    "revenueB": 0.10,
-    "revenueNote": "~8% of Bentley $1.2B; platform still ramping",
+    "id": "Cadence Clarity",
+    "vendor": "Cadence",
+    "product": "Clarity 3D Solver",
+    "category": "Extreme Analysis (CAE, CFD, FEA, QC)",
+    "subcategories": [
+      "EDA",
+      "EM Simulation",
+      "Semiconductor"
+    ],
+    "url": "https://www.cadence.com/en_US/home/tools/system-analysis/electromagnetic-analysis.html",
+    "revenueB": 0.1,
+    "revenueNote": "Small product within Cadence $4.3B; SI/CFD tools ~2-3%",
     "founded": 2019,
     "hq": "United States"
   },
   {
-    "id": "Bentley OpenPlant",
-    "vendor": "Bentley Systems",
-    "product": "OpenPlant",
-    "category": "Factory Futures (MES, IIOT)",
-    "subcategories": ["Plant Design", "Process Industries"],
-    "url": "https://www.bentley.com/software/openplant/",
-    "revenueB": 0.07,
-    "revenueNote": "~6% of Bentley; niche process plant product",
-    "founded": 2010,
-    "hq": "United States"
+    "id": "Dassault SIMULIA",
+    "vendor": "Dassault Syst\u00e8mes",
+    "product": "SIMULIA",
+    "category": "Extreme Analysis (CAE, CFD, FEA, QC)",
+    "subcategories": [
+      "FEA",
+      "CFD",
+      "Simulation"
+    ],
+    "url": "https://www.3ds.com/products/simulia",
+    "revenueB": 0.52,
+    "revenueNote": "~9% of DS; acquired Abaqus/CST folded in",
+    "founded": 1978,
+    "hq": "France"
   },
   {
-    "id": "SAP PLM",
-    "vendor": "SAP",
-    "product": "SAP PLM",
-    "category": "Cognitive Thread (PLM, MBSE, DT)",
-    "subcategories": ["PLM", "ERP", "Digital Thread"],
-    "url": "https://www.sap.com/products/scm/plm-r-d-engineering.html",
-    "revenueB": 0.28,
-    "revenueNote": "Estimated; bundled into S/4HANA, no standalone disclosure",
-    "founded": 2002,
-    "hq": "Germany"
-  },
-  {
-    "id": "SAP MES",
-    "vendor": "SAP",
-    "product": "SAP Digital Manufacturing",
-    "category": "Factory Futures (MES, IIOT)",
-    "subcategories": ["MES", "Digital Manufacturing"],
-    "url": "https://www.sap.com/products/scm/digital-manufacturing.html",
-    "revenueB": 0.18,
-    "revenueNote": "Estimated; early stage cloud MES, no standalone disclosure",
-    "founded": 2006,
-    "hq": "Germany"
-  },
-  {
-    "id": "Hexagon Manufacturing Intelligence",
+    "id": "Hexagon MSC Software",
     "vendor": "Hexagon",
-    "product": "Manufacturing Intelligence",
-    "category": "Adaptive Manufacturing (AM, CAM, CNC)",
-    "subcategories": ["Quality Control", "Metrology", "CAM"],
-    "url": "https://hexagon.com/products/manufacturing-intelligence",
-    "revenueB": 0.55,
-    "revenueNote": "Software portion only (~30% of MI $1.8B); hardware/services excluded",
-    "founded": 2004,
-    "hq": "Sweden"
+    "product": "MSC Software (Nastran, Adams, Marc)",
+    "category": "Extreme Analysis (CAE, CFD, FEA, QC)",
+    "subcategories": [
+      "FEA",
+      "Multibody Dynamics",
+      "Structural Simulation"
+    ],
+    "url": "https://hexagon.com/products/msc-software",
+    "revenueB": 0.35,
+    "revenueNote": "Est. software portion of Hexagon MI; MSC acquired by Hexagon 2017 for $834M",
+    "founded": 1963,
+    "hq": "United States"
   },
   {
     "id": "NVIDIA Omniverse",
     "vendor": "NVIDIA",
     "product": "Omniverse",
     "category": "Extreme Analysis (CAE, CFD, FEA, QC)",
-    "subcategories": ["Digital Twin", "Physics Simulation", "AI Simulation"],
+    "subcategories": [
+      "Digital Twin",
+      "Physics Simulation",
+      "AI Simulation"
+    ],
     "url": "https://www.nvidia.com/en-us/omniverse/",
     "revenueB": 0.08,
     "revenueNote": "Pre-revenue at scale; NVIDIA does not break out separately",
@@ -288,27 +499,72 @@
     "hq": "United States"
   },
   {
-    "id": "Cadence Clarity",
-    "vendor": "Cadence",
-    "product": "Clarity 3D Solver",
+    "id": "Siemens Altair HyperWorks",
+    "vendor": "Siemens",
+    "product": "Altair HyperWorks",
     "category": "Extreme Analysis (CAE, CFD, FEA, QC)",
-    "subcategories": ["EDA", "EM Simulation", "Semiconductor"],
-    "url": "https://www.cadence.com/en_US/home/tools/system-analysis/electromagnetic-analysis.html",
-    "revenueB": 0.10,
-    "revenueNote": "Small product within Cadence $4.3B; SI/CFD tools ~2-3%",
-    "founded": 2019,
-    "hq": "United States"
+    "subcategories": [
+      "FEA",
+      "EM Simulation",
+      "HPC",
+      "AI Simulation"
+    ],
+    "url": "https://altair.com/hyperworks/",
+    "revenueB": 0.65,
+    "revenueNote": "~\u20ac600M added to Siemens digital revenue per acquisition disclosure; Altair FY2024 ~$650M",
+    "founded": 1985,
+    "hq": "United States",
+    "acquisitionNote": "Acquired by Siemens March 2025 for ~$10B"
   },
   {
-    "id": "Rockwell FactoryTalk",
-    "vendor": "Rockwell Automation",
-    "product": "FactoryTalk",
+    "id": "Synopsys Ansys",
+    "vendor": "Synopsys",
+    "product": "Ansys (post-acquisition)",
+    "category": "Extreme Analysis (CAE, CFD, FEA, QC)",
+    "subcategories": [
+      "FEA",
+      "CFD",
+      "Semiconductor Simulation",
+      "EDA"
+    ],
+    "url": "https://www.ansys.com",
+    "revenueB": 2.5,
+    "revenueNote": "Ansys FY2023 ~$2.5B; acquired by Synopsys 2024 for $35B; Synopsys total ~$6B",
+    "founded": 1970,
+    "hq": "United States",
+    "acquisitionNote": "Acquired by Synopsys 2024 for $35B \u2014 major consolidation in simulation/EDA"
+  },
+  {
+    "id": "AVEVA MES",
+    "vendor": "AVEVA (Schneider Electric)",
+    "product": "AVEVA System Platform / MES",
     "category": "Factory Futures (MES, IIOT)",
-    "subcategories": ["MES", "IIoT", "SCADA"],
-    "url": "https://www.rockwellautomation.com/en-US/products/software/factorytalk.html",
-    "revenueB": 0.65,
-    "revenueNote": "~54% of Rockwell software segment $1.2B",
-    "founded": 1998,
+    "subcategories": [
+      "MES",
+      "SCADA",
+      "IIoT",
+      "Process Industries"
+    ],
+    "url": "https://www.aveva.com/en/products/mes/",
+    "revenueB": 0.9,
+    "revenueNote": "Est. MES/operations portion of AVEVA ~$1.3B total; Schneider acquired 100% 2023 for ~$9.1B",
+    "founded": 1967,
+    "hq": "United Kingdom",
+    "acquisitionNote": "Fully acquired by Schneider Electric 2023; delisted from LSE"
+  },
+  {
+    "id": "Bentley OpenPlant",
+    "vendor": "Bentley Systems",
+    "product": "OpenPlant",
+    "category": "Factory Futures (MES, IIOT)",
+    "subcategories": [
+      "Plant Design",
+      "Process Industries"
+    ],
+    "url": "https://www.bentley.com/software/openplant/",
+    "revenueB": 0.07,
+    "revenueNote": "~6% of Bentley; niche process plant product",
+    "founded": 2010,
     "hq": "United States"
   },
   {
@@ -316,7 +572,11 @@
     "vendor": "GE Digital",
     "product": "Predix",
     "category": "Factory Futures (MES, IIOT)",
-    "subcategories": ["IIoT", "Asset Performance", "Digital Twin"],
+    "subcategories": [
+      "IIoT",
+      "Asset Performance",
+      "Digital Twin"
+    ],
     "url": "https://www.ge.com/digital/applications/industrial-internet",
     "revenueB": 0.12,
     "revenueNote": "Declining; GE Digital ~$600M total, Predix rebranding into GE Vernova stack",
@@ -324,15 +584,362 @@
     "hq": "United States"
   },
   {
-    "id": "Aras Innovator",
-    "vendor": "Aras",
-    "product": "Aras Innovator",
-    "category": "Cognitive Thread (PLM, MBSE, DT)",
-    "subcategories": ["PLM", "MBSE", "Digital Thread"],
-    "url": "https://www.aras.com/en/products/aras-innovator",
-    "revenueB": 0.09,
-    "revenueNote": "Private; ~$80-100M ARR estimated from analyst sources",
-    "founded": 2000,
+    "id": "Honeywell Forge",
+    "vendor": "Honeywell",
+    "product": "Honeywell Forge",
+    "category": "Factory Futures (MES, IIOT)",
+    "subcategories": [
+      "IIoT",
+      "Asset Performance",
+      "Process Industries"
+    ],
+    "url": "https://www.honeywell.com/us/en/industrial/forge",
+    "revenueB": 0.3,
+    "revenueNote": "Est.; Honeywell Process Solutions software portion ~$300M; not broken out separately",
+    "founded": 2018,
+    "hq": "United States"
+  },
+  {
+    "id": "Rockwell FactoryTalk",
+    "vendor": "Rockwell Automation",
+    "product": "FactoryTalk",
+    "category": "Factory Futures (MES, IIOT)",
+    "subcategories": [
+      "MES",
+      "IIoT",
+      "SCADA"
+    ],
+    "url": "https://www.rockwellautomation.com/en-US/products/software/factorytalk.html",
+    "revenueB": 0.65,
+    "revenueNote": "~54% of Rockwell software segment $1.2B",
+    "founded": 1998,
+    "hq": "United States"
+  },
+  {
+    "id": "Rockwell Plex",
+    "vendor": "Rockwell Automation",
+    "product": "Plex Smart Manufacturing Platform",
+    "category": "Factory Futures (MES, IIOT)",
+    "subcategories": [
+      "MES",
+      "ERP",
+      "Cloud Manufacturing"
+    ],
+    "url": "https://www.plex.com",
+    "revenueB": 0.23,
+    "revenueNote": "Acquired by Rockwell 2021 for $2.22B; estimated ARR ~$230M",
+    "founded": 2001,
+    "hq": "United States",
+    "acquisitionNote": "Acquired by Rockwell Automation 2021"
+  },
+  {
+    "id": "SAP MES",
+    "vendor": "SAP",
+    "product": "SAP Digital Manufacturing",
+    "category": "Factory Futures (MES, IIOT)",
+    "subcategories": [
+      "MES",
+      "Digital Manufacturing"
+    ],
+    "url": "https://www.sap.com/products/scm/digital-manufacturing.html",
+    "revenueB": 0.18,
+    "revenueNote": "Estimated; early stage cloud MES, no standalone disclosure",
+    "founded": 2006,
+    "hq": "Germany"
+  },
+  {
+    "id": "Siemens Opcenter",
+    "vendor": "Siemens",
+    "product": "Opcenter",
+    "category": "Factory Futures (MES, IIOT)",
+    "subcategories": [
+      "MES",
+      "IIoT",
+      "Digital Manufacturing"
+    ],
+    "url": "https://plm.sw.siemens.com/en-US/opcenter/",
+    "revenueB": 0.28,
+    "revenueNote": "~5% of Siemens DISW; smaller MES line",
+    "founded": 2018,
+    "hq": "Germany"
+  },
+  {
+    "id": "TPG ThingWorx",
+    "vendor": "TPG",
+    "product": "ThingWorx",
+    "category": "Factory Futures (MES, IIOT)",
+    "subcategories": [
+      "IIoT",
+      "MES",
+      "Digital Twin"
+    ],
+    "url": "https://www.ptc.com/en/products/thingworx",
+    "revenueB": 0.22,
+    "revenueNote": "Sold to TPG in 2025",
+    "founded": 2009,
+    "hq": "United States"
+  },
+  {
+    "id": "ETQ Reliance",
+    "vendor": "ETQ (Hexagon)",
+    "product": "ETQ Reliance QMS",
+    "category": "Augmented Operations (MOM, CMMS, AR/VR, SLM)",
+    "subcategories": [
+      "QMS",
+      "Compliance",
+      "Quality Management"
+    ],
+    "url": "https://www.etq.com",
+    "revenueB": 0.08,
+    "revenueNote": "Est. ~$80M ARR; acquired by Hexagon 2022; leading standalone QMS",
+    "founded": 1992,
+    "hq": "United States"
+  },
+  {
+    "id": "IFS Cloud",
+    "vendor": "IFS",
+    "product": "IFS Cloud",
+    "category": "Augmented Operations (MOM, CMMS, AR/VR, SLM)",
+    "subcategories": [
+      "ERP",
+      "EAM",
+      "FSM",
+      "MRO"
+    ],
+    "url": "https://www.ifs.com/products/ifs-cloud/",
+    "revenueB": 0.8,
+    "revenueNote": "Private (EQT-backed); est. ~$800M ARR; strong in aerospace, defense, energy",
+    "founded": 1983,
+    "hq": "Sweden"
+  },
+  {
+    "id": "Infor CloudSuite",
+    "vendor": "Infor (Koch Industries)",
+    "product": "Infor CloudSuite Industrial",
+    "category": "Augmented Operations (MOM, CMMS, AR/VR, SLM)",
+    "subcategories": [
+      "ERP",
+      "Manufacturing",
+      "Industry-specific ERP"
+    ],
+    "url": "https://www.infor.com/products/cloudsuite-industrial",
+    "revenueB": 1.0,
+    "revenueNote": "Est. ~$1B for manufacturing ERP; Infor total ~$3.6B; acquired by Koch 2020",
+    "founded": 2002,
+    "hq": "United States"
+  },
+  {
+    "id": "Oracle ERP Cloud",
+    "vendor": "Oracle",
+    "product": "Oracle Fusion Cloud ERP",
+    "category": "Augmented Operations (MOM, CMMS, AR/VR, SLM)",
+    "subcategories": [
+      "ERP",
+      "Finance",
+      "Manufacturing"
+    ],
+    "url": "https://www.oracle.com/erp/",
+    "revenueB": 4.2,
+    "revenueNote": "Est. cloud ERP portion of Oracle $53B; Fusion ERP fastest growing segment",
+    "founded": 2012,
+    "hq": "United States"
+  },
+  {
+    "id": "SAP S4HANA",
+    "vendor": "SAP",
+    "product": "SAP S/4HANA",
+    "category": "Augmented Operations (MOM, CMMS, AR/VR, SLM)",
+    "subcategories": [
+      "ERP",
+      "Finance",
+      "Manufacturing Operations"
+    ],
+    "url": "https://www.sap.com/products/erp/s4hana.html",
+    "revenueB": 6.5,
+    "revenueNote": "Est. S/4HANA portion of SAP ~\u20ac32B total; largest ERP by enterprise manufacturing revenue",
+    "founded": 2015,
+    "hq": "Germany"
+  },
+  {
+    "id": "Cognex",
+    "vendor": "Cognex",
+    "product": "Cognex Machine Vision",
+    "category": "SW+HW=Innovation (Robotics, Drones)",
+    "subcategories": [
+      "Machine Vision",
+      "Barcode Reading",
+      "Quality Inspection"
+    ],
+    "url": "https://www.cognex.com",
+    "revenueB": 0.85,
+    "revenueNote": "FY2024 revenue ~$820M; publicly traded NASDAQ:CGNX; vision software bundled with hardware",
+    "founded": 1981,
+    "hq": "United States"
+  },
+  {
+    "id": "Keyence",
+    "vendor": "Keyence",
+    "product": "Keyence Sensors, Vision, Measurement",
+    "category": "SW+HW=Innovation (Robotics, Drones)",
+    "subcategories": [
+      "Machine Vision",
+      "Sensors",
+      "Metrology",
+      "Barcode"
+    ],
+    "url": "https://www.keyence.com",
+    "revenueB": 4.2,
+    "revenueNote": "~\u00a5920B (~$6.1B total FY2024); SW+HW tightly integrated; direct sales model; no hardware/SW split",
+    "founded": 1974,
+    "hq": "Japan"
+  },
+  {
+    "id": "NI Emerson",
+    "vendor": "NI (Emerson)",
+    "product": "NI LabVIEW / TestStand",
+    "category": "SW+HW=Innovation (Robotics, Drones)",
+    "subcategories": [
+      "Test & Measurement",
+      "Data Acquisition",
+      "Automated Test"
+    ],
+    "url": "https://www.ni.com",
+    "revenueB": 1.7,
+    "revenueNote": "~$1.7B pre-acquisition; acquired by Emerson 2023 for $8.2B; SW deeply tied to HW platform",
+    "founded": 1976,
+    "hq": "United States",
+    "acquisitionNote": "Acquired by Emerson Electric 2023"
+  },
+  {
+    "id": "Teledyne FLIR",
+    "vendor": "Teledyne",
+    "product": "Teledyne FLIR Imaging Systems",
+    "category": "SW+HW=Innovation (Robotics, Drones)",
+    "subcategories": [
+      "Thermal Imaging",
+      "Machine Vision",
+      "Industrial Inspection"
+    ],
+    "url": "https://www.teledyneflir.com",
+    "revenueB": 0.9,
+    "revenueNote": "Est. FLIR portion of Teledyne ~$5.5B; acquired 2021 for $8B; imaging SW+HW integrated",
+    "founded": 1978,
+    "hq": "United States",
+    "acquisitionNote": "Acquired by Teledyne Technologies 2021"
+  },
+  {
+    "id": "Zebra Technologies",
+    "vendor": "Zebra Technologies",
+    "product": "Zebra Intelligent Enterprise",
+    "category": "SW+HW=Innovation (Robotics, Drones)",
+    "subcategories": [
+      "RFID",
+      "Barcode",
+      "Mobile Computing",
+      "Warehouse Automation"
+    ],
+    "url": "https://www.zebra.com",
+    "revenueB": 1.2,
+    "revenueNote": "~$1.2B software/services est. of ~$5.8B total FY2024; Fetch Robotics and Matrox Vision acquired",
+    "founded": 1969,
+    "hq": "United States"
+  },
+  {
+    "id": "Blue Yonder",
+    "vendor": "Blue Yonder (Panasonic)",
+    "product": "Blue Yonder Supply Chain Platform",
+    "category": "Streamlined Supply Chain (SCM)",
+    "subcategories": [
+      "Supply Chain Planning",
+      "Warehouse Management",
+      "Order Management"
+    ],
+    "url": "https://blueyonder.com",
+    "revenueB": 0.9,
+    "revenueNote": "Est. ~$900M ARR; acquired by Panasonic 2021 for ~$8.5B",
+    "founded": 1985,
+    "hq": "United States",
+    "acquisitionNote": "Acquired by Panasonic 2021"
+  },
+  {
+    "id": "Coupa",
+    "vendor": "Coupa Software",
+    "product": "Coupa Business Spend Management",
+    "category": "Streamlined Supply Chain (SCM)",
+    "subcategories": [
+      "Procurement",
+      "Spend Management",
+      "Invoicing"
+    ],
+    "url": "https://www.coupa.com",
+    "revenueB": 0.55,
+    "revenueNote": "Last public ARR ~$541M FY2023; taken private by Vista Equity 2023 for $8B",
+    "founded": 2006,
+    "hq": "United States",
+    "acquisitionNote": "Taken private by Vista Equity Partners 2023"
+  },
+  {
+    "id": "Jaggaer",
+    "vendor": "Jaggaer",
+    "product": "Jaggaer ONE",
+    "category": "Streamlined Supply Chain (SCM)",
+    "subcategories": [
+      "Sourcing",
+      "Procurement",
+      "Supplier Management"
+    ],
+    "url": "https://www.jaggaer.com",
+    "revenueB": 0.18,
+    "revenueNote": "Private; est. ~$180M ARR; strong in manufacturing/public sector",
+    "founded": 1995,
+    "hq": "United States"
+  },
+  {
+    "id": "Kinaxis",
+    "vendor": "Kinaxis",
+    "product": "RapidResponse",
+    "category": "Streamlined Supply Chain (SCM)",
+    "subcategories": [
+      "Supply Chain Planning",
+      "S&OP",
+      "Concurrent Planning"
+    ],
+    "url": "https://www.kinaxis.com",
+    "revenueB": 0.44,
+    "revenueNote": "FY2024 revenue ~CAD$520M (~$390-440M USD); publicly traded TSX:KXS",
+    "founded": 1984,
+    "hq": "Canada"
+  },
+  {
+    "id": "Oracle SCM",
+    "vendor": "Oracle",
+    "product": "Oracle SCM Cloud",
+    "category": "Streamlined Supply Chain (SCM)",
+    "subcategories": [
+      "Supply Chain Planning",
+      "Procurement",
+      "Logistics"
+    ],
+    "url": "https://www.oracle.com/scm/",
+    "revenueB": 1.5,
+    "revenueNote": "Est. SCM portion of Oracle Cloud Apps; not broken out separately by Oracle",
+    "founded": 2012,
+    "hq": "United States"
+  },
+  {
+    "id": "SAP Ariba",
+    "vendor": "SAP",
+    "product": "SAP Ariba",
+    "category": "Streamlined Supply Chain (SCM)",
+    "subcategories": [
+      "Procurement",
+      "Sourcing",
+      "Supplier Management"
+    ],
+    "url": "https://www.ariba.com",
+    "revenueB": 1.2,
+    "revenueNote": "Est. ~$1.2B; bundled in SAP Spend Management; acquired by SAP 2012 for $4.3B",
+    "founded": 1996,
     "hq": "United States"
   }
 ]
