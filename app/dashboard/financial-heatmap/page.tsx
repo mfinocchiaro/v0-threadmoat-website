@@ -3,13 +3,12 @@
 import { useMemo } from "react"
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
-import { FocusPrompt } from "@/components/dashboard/focus-prompt"
 import { VizFilterBar } from "@/components/viz-filter-bar"
 import { FinancialHeatmapChart } from "@/components/charts/financial-heatmap-chart"
 import { Skeleton } from "@/components/ui/skeleton"
 
 function FinancialHeatmapInner() {
-  const { companies, filtered, isLoading, hasThesis } = useThesisGatedData()
+  const { companies, filtered, isLoading } = useThesisGatedData()
 
   const filteredNames = useMemo(() => {
     return new Set(filtered.map((c) => c.name))
@@ -25,8 +24,6 @@ function FinancialHeatmapInner() {
       </div>
       {isLoading ? (
         <Skeleton className="h-[600px] rounded-xl" />
-      ) : !hasThesis ? (
-        <FocusPrompt label="Set Focus" description="Configure your thesis on the main dashboard to unlock this visualization." />
       ) : (
         <>
           <VizFilterBar companies={companies} />

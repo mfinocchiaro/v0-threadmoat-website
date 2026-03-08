@@ -1,14 +1,13 @@
 "use client"
 
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
-import { FocusPrompt } from "@/components/dashboard/focus-prompt"
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
 import { VizFilterBar } from "@/components/viz-filter-bar"
 import { TimelineChart } from "@/components/charts/timeline-chart"
 import { Skeleton } from "@/components/ui/skeleton"
 
 function TimelineInner() {
-  const { companies, filtered, isLoading, hasThesis } = useThesisGatedData()
+  const { companies, filtered, isLoading } = useThesisGatedData()
 
   return (
     <div className="space-y-4">
@@ -18,9 +17,7 @@ function TimelineInner() {
           Number of AI PLM startups founded per year. Click any bar to explore the companies founded that year.
         </p>
       </div>
-      {!hasThesis ? (
-        <FocusPrompt label="Set Focus" description="Configure your thesis on the main dashboard to unlock this visualization." />
-      ) : isLoading ? (
+      {isLoading ? (
         <Skeleton className="h-[600px] rounded-xl" />
       ) : (
         <>

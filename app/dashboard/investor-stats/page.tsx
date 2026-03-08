@@ -2,7 +2,6 @@
 
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
-import { FocusPrompt } from "@/components/dashboard/focus-prompt"
 import { VizFilterBar } from "@/components/viz-filter-bar"
 import { InvestorStatsChart } from "@/components/charts/investor-stats-chart"
 import { InvestorExplorerChart } from "@/components/charts/investor-explorer-chart"
@@ -10,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 function InvestorStatsInner() {
-  const { companies, filtered, isLoading, hasThesis } = useThesisGatedData()
+  const { companies, filtered, isLoading } = useThesisGatedData()
 
   return (
     <div className="space-y-4">
@@ -25,8 +24,6 @@ function InvestorStatsInner() {
       </div>
       {isLoading ? (
         <Skeleton className="h-[600px] rounded-xl" />
-      ) : !hasThesis ? (
-        <FocusPrompt label="Set Focus" description="Configure your thesis on the main dashboard to unlock this visualization." />
       ) : (
         <>
           <VizFilterBar companies={companies} />

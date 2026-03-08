@@ -18,7 +18,7 @@ export function useThesisGatedData() {
   const hasThesis = !!activeThesis
 
   const displayData = useMemo(() => {
-    if (!hasThesis) return []
+    if (!hasThesis) return allCompanies // Show all data when no thesis
     const scored = scoreCompanies(allCompanies)
     return scored.filter(r => r.score >= 50).map(r => r.company)
   }, [hasThesis, scoreCompanies, allCompanies])
@@ -28,5 +28,5 @@ export function useThesisGatedData() {
     [displayData, filterCompany]
   )
 
-  return { companies: displayData, filtered, isLoading, hasThesis }
+  return { companies: displayData, filtered, isLoading, hasThesis, allCompanies }
 }

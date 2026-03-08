@@ -1,14 +1,13 @@
 "use client"
 
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
-import { FocusPrompt } from "@/components/dashboard/focus-prompt"
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
 import { VizFilterBar } from "@/components/viz-filter-bar"
 import { RadarChart } from "@/components/charts/radar-chart"
 import { Skeleton } from "@/components/ui/skeleton"
 
 function RadarInner() {
-  const { companies, filtered, isLoading, hasThesis } = useThesisGatedData()
+  const { companies, filtered, isLoading } = useThesisGatedData()
 
   return (
     <div className="space-y-4">
@@ -19,9 +18,7 @@ function RadarInner() {
           Funding Efficiency, Growth Metrics, and Industry Impact.
         </p>
       </div>
-      {!hasThesis ? (
-        <FocusPrompt label="Set Focus" description="Configure your thesis on the main dashboard to unlock this visualization." />
-      ) : isLoading ? (
+      {isLoading ? (
         <Skeleton className="h-[600px] rounded-xl" />
       ) : (
         <>

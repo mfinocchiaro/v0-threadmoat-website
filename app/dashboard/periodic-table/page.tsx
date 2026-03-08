@@ -1,13 +1,12 @@
 "use client"
 
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
-import { FocusPrompt } from "@/components/dashboard/focus-prompt"
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
 import { PeriodicTable } from "@/components/charts/periodic-table"
 import { Skeleton } from "@/components/ui/skeleton"
 
 function PeriodicTableInner() {
-  const { filtered, isLoading, hasThesis } = useThesisGatedData()
+  const { filtered, isLoading } = useThesisGatedData()
 
   if (isLoading) {
     return (
@@ -18,14 +17,6 @@ function PeriodicTableInner() {
             <Skeleton key={i} className="h-16 w-16 rounded" />
           ))}
         </div>
-      </div>
-    )
-  }
-
-  if (!hasThesis) {
-    return (
-      <div className="p-8 space-y-4">
-        <FocusPrompt label="Set Focus" description="Configure your thesis on the main dashboard to unlock this visualization." />
       </div>
     )
   }

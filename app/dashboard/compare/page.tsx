@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/table"
 import { Company, formatCurrency } from "@/lib/company-data"
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
-import { FocusPrompt } from "@/components/dashboard/focus-prompt"
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -25,7 +24,7 @@ const SCORE_COLOR = (v: number) =>
   v >= 4 ? "text-emerald-500 font-medium" : v >= 3 ? "text-amber-500" : "text-red-500"
 
 function CompareInner() {
-  const { companies: allCompanies, isLoading, hasThesis } = useThesisGatedData()
+  const { companies: allCompanies, isLoading } = useThesisGatedData()
   const [selected, setSelected] = useState<string[]>([])
   const [search, setSearch] = useState("")
   const preSelected = useRef(false)
@@ -90,18 +89,6 @@ function CompareInner() {
           <p className="text-muted-foreground">Select up to 5 companies to compare side-by-side.</p>
         </div>
         <Skeleton className="h-[600px] rounded-xl" />
-      </div>
-    )
-  }
-
-  if (!hasThesis) {
-    return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold">Compare Companies</h1>
-          <p className="text-muted-foreground">Select up to 5 companies to compare side-by-side.</p>
-        </div>
-        <FocusPrompt label="Set Focus" description="Configure your thesis on the main dashboard to unlock this visualization." />
       </div>
     )
   }
