@@ -5,6 +5,7 @@ import * as d3 from "d3"
 import { Company } from "@/lib/company-data"
 import { getInvestmentColor, INVESTMENT_LIST_COLORS } from "@/lib/investment-colors"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
@@ -13,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Card } from "@/components/ui/card"
-import { RotateCcw, Building2 } from "lucide-react"
+import { RotateCcw, Building2, Search, X } from "lucide-react"
 
 interface NetworkGraphProps {
   data: Company[]
@@ -63,6 +64,9 @@ const HUB_LABELS: Record<string, string> = {
   incumbent: "Incumbent Product",
 }
 
+// Stable moat stroke-width scale (module-level, no effect dependency needed)
+const moatStrokeScale = d3.scaleLinear().domain([0, 5]).range([1, 4]).clamp(true)
+
 // Normalize common manufacturing type variants
 function normalizeMfgType(raw: string): string {
   const trimmed = raw.trim()
@@ -79,6 +83,13 @@ export function NetworkGraph({ data, className, preview = false }: NetworkGraphP
   const [metric, setMetric] = useState<string>("headcount")
   const [showIncumbents, setShowIncumbents] = useState(false)
   const [incumbents, setIncumbents] = useState<Array<{id: string; vendor: string; category: string}>>([])
+  const [searchQuery, setSearchQuery] = useState("")
+
+  // Refs for imperative D3 updates (search highlight, annotation, zoom)
+  const searchQueryRef = useRef("")
+  const nodeSelRef = useRef<d3.Selection<SVGGElement, Node, SVGGElement, unknown> | null>(null)
+  const annotLayerRef = useRef<d3.Selection<SVGGElement, unknown, null, undefined> | null>(null)
+  const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null)
 
   useEffect(() => {
     fetch('/data/incumbents.json')
@@ -205,6 +216,41 @@ export function NetworkGraph({ data, className, preview = false }: NetworkGraphP
       .on("zoom", event => g.attr("transform", event.transform))
 
     svg.call(zoom)
+    zoomRef.current = zoom
+
+    // Annotation layer — drawn above all nodes so it's always visible
+    const annotLayer = g.append("g").attr("class", "search-annot-layer")
+    annotLayerRef.current = annotLayer
+
+    // Helper: draw/update the search annotation at the matched node's current position
+    function applyAnnotation() {
+      annotLayer.selectAll("*").remove()
+      const q = searchQueryRef.current.trim().toLowerCase()
+      if (!q) return
+      const match = graphData.nodes.find(n => n.type === "company" && n.id.toLowerCase().includes(q))
+      if (!match || match.x === undefined || match.y === undefined) return
+
+      const ag = annotLayer.append("g").attr("transform", `translate(${match.x},${match.y})`)
+      // Dashed line from node to label
+      ag.append("line")
+        .attr("x1", 0).attr("y1", -14)
+        .attr("x2", 0).attr("y2", -34)
+        .attr("stroke", "#fbbf24").attr("stroke-width", 1.5).attr("stroke-dasharray", "3,2")
+      // Label pill background
+      const labelText = match.id.length > 24 ? match.id.slice(0, 22) + "…" : match.id
+      const labelW = labelText.length * 6.5 + 18
+      ag.append("rect")
+        .attr("x", -labelW / 2).attr("y", -58)
+        .attr("width", labelW).attr("height", 22)
+        .attr("rx", 5).attr("fill", "#fbbf24").attr("opacity", 0.95)
+      // Label text
+      ag.append("text")
+        .attr("x", 0).attr("y", -43)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "11px").attr("font-weight", "700")
+        .attr("fill", "#0f172a")
+        .text(labelText)
+    }
 
     const radiusScale = d3.scaleSqrt()
       .domain([0, graphData.maxVal])
@@ -248,6 +294,8 @@ export function NetworkGraph({ data, className, preview = false }: NetworkGraphP
       .selectAll("g")
       .data(graphData.nodes)
       .join("g")
+
+    nodeSelRef.current = node as d3.Selection<SVGGElement, Node, SVGGElement, unknown>
 
     if (!preview) {
       node.call(
@@ -315,10 +363,92 @@ export function NetworkGraph({ data, className, preview = false }: NetworkGraphP
         .attr("x2", (d: any) => d.target.x)
         .attr("y2", (d: any) => d.target.y)
       node.attr("transform", d => `translate(${d.x},${d.y})`)
+      applyAnnotation()
     })
+
+    simulation.on("end", applyAnnotation)
 
     return () => { simulation.stop() }
   }, [graphData, metric])
+
+  // Imperative search highlight — runs without restarting the simulation
+  useEffect(() => {
+    searchQueryRef.current = searchQuery
+
+    const nodeSel = nodeSelRef.current
+    const annotLayer = annotLayerRef.current
+    const q = searchQuery.trim().toLowerCase()
+
+    // Reset all node styles first
+    if (nodeSel) {
+      nodeSel.each(function (d) {
+        const sel = d3.select(this)
+        sel.select("circle")
+          .attr("stroke", "#fff")
+          .attr("stroke-width", d.type === "company" ? moatStrokeScale(d.moat) : 1.5)
+          .attr("opacity", 0.9)
+        sel.select("text")
+          .attr("opacity", d.type === "company" ? 0.8 : 1)
+      })
+    }
+
+    // Clear annotation
+    annotLayer?.selectAll("*").remove()
+
+    if (!q || !nodeSel) return
+
+    // Find best matching company node
+    const match = graphData.nodes.find(n => n.type === "company" && n.id.toLowerCase().includes(q))
+
+    // Dim all nodes; highlight match
+    nodeSel.each(function (d) {
+      const isMatch = match && d.id === match.id
+      const dimmed = !isMatch
+      const sel = d3.select(this)
+      sel.select("circle").attr("opacity", dimmed ? 0.07 : 1)
+      sel.select("text").attr("opacity", dimmed ? 0.04 : (d.type === "company" ? 0.9 : 1))
+      if (isMatch) {
+        sel.select("circle")
+          .attr("stroke", "#fbbf24")
+          .attr("stroke-width", 4)
+          .attr("opacity", 1)
+      }
+    })
+
+    // Draw annotation if node has settled position
+    if (match && annotLayer && match.x !== undefined && match.y !== undefined) {
+      const ag = annotLayer.append("g").attr("transform", `translate(${match.x},${match.y})`)
+      ag.append("line")
+        .attr("x1", 0).attr("y1", -14)
+        .attr("x2", 0).attr("y2", -34)
+        .attr("stroke", "#fbbf24").attr("stroke-width", 1.5).attr("stroke-dasharray", "3,2")
+      const labelText = match.id.length > 24 ? match.id.slice(0, 22) + "…" : match.id
+      const labelW = labelText.length * 6.5 + 18
+      ag.append("rect")
+        .attr("x", -labelW / 2).attr("y", -58)
+        .attr("width", labelW).attr("height", 22)
+        .attr("rx", 5).attr("fill", "#fbbf24").attr("opacity", 0.95)
+      ag.append("text")
+        .attr("x", 0).attr("y", -43)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "11px").attr("font-weight", "700")
+        .attr("fill", "#0f172a")
+        .text(labelText)
+
+      // Auto-pan to matched node
+      if (zoomRef.current && svgRef.current && containerRef.current) {
+        const w = containerRef.current.clientWidth
+        const h = containerRef.current.clientHeight
+        const scale = 1.8
+        d3.select(svgRef.current)
+          .transition().duration(600)
+          .call(
+            zoomRef.current.transform as any,
+            d3.zoomIdentity.translate(w / 2 - match.x * scale, h / 2 - match.y * scale).scale(scale)
+          )
+      }
+    }
+  }, [searchQuery, graphData.nodes])
 
   const resetZoom = () => {
     if (!svgRef.current) return
@@ -357,6 +487,24 @@ export function NetworkGraph({ data, className, preview = false }: NetworkGraphP
     <Card className={`flex flex-col ${preview ? "min-h-[420px]" : "h-[calc(100vh-8rem)]"} ${className ?? ""}`}>
       {!preview && (
       <div className="p-4 border-b flex flex-wrap gap-4 items-center justify-between bg-card">
+        {/* Search bar */}
+        <div className="relative w-48">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+          <Input
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            placeholder="Find startup…"
+            className="h-8 text-xs pl-8 pr-7"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
         <div className="flex flex-wrap gap-4 items-center">
           <div className="space-y-1">
             <label className="text-xs font-medium text-muted-foreground">Metric Sizing</label>
