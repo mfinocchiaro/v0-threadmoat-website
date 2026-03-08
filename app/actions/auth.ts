@@ -38,7 +38,7 @@ function validateLinkedInUrl(url: string): boolean {
 export async function registerUser(data: RegisterData): Promise<ActionResult> {
   try {
     // --- Rate limit: 5 signups per email per 15 minutes ---
-    const rl = rateLimit(`signup:${data.email.trim().toLowerCase()}`, 5, 15 * 60 * 1000)
+    const rl = await rateLimit(`signup:${data.email.trim().toLowerCase()}`, 5, 15 * 60 * 1000)
     if (!rl.allowed) return { success: false, error: 'Too many attempts. Please try again later.' }
 
     // --- Sanitize ---
@@ -143,7 +143,7 @@ export async function registerUser(data: RegisterData): Promise<ActionResult> {
 
 export async function resendVerificationEmail(email: string): Promise<ActionResult> {
   try {
-    const rl = rateLimit(`resend-verify:${email}`, 3, 15 * 60 * 1000)
+    const rl = await rateLimit(`resend-verify:${email}`, 3, 15 * 60 * 1000)
     if (!rl.allowed) return { success: false, error: 'Too many attempts. Please try again later.' }
 
     const rows = await sql`
@@ -191,7 +191,7 @@ export async function verifyEmail(token: string): Promise<ActionResult> {
 
 export async function requestPasswordReset(email: string): Promise<ActionResult> {
   try {
-    const rl = rateLimit(`reset:${email}`, 3, 15 * 60 * 1000)
+    const rl = await rateLimit(`reset:${email}`, 3, 15 * 60 * 1000)
     if (!rl.allowed) return { success: false, error: 'Too many attempts. Please try again later.' }
 
     const normalizedEmail = email.trim().toLowerCase()

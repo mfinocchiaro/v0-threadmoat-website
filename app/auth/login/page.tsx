@@ -22,7 +22,11 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const searchParams = useSearchParams()
-  const redirectTo = searchParams.get('redirect') || '/dashboard'
+  const rawRedirect = searchParams.get('redirect') ?? ''
+  // Only allow same-origin relative paths; reject external URLs and protocol-relative //
+  const redirectTo = rawRedirect.startsWith('/') && !rawRedirect.startsWith('//')
+    ? rawRedirect
+    : '/dashboard'
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()

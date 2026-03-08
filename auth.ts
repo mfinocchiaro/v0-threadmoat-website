@@ -15,7 +15,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const email = (credentials.email as string || '').trim().toLowerCase()
 
         // Rate limit: 10 attempts per email per 15 minutes
-        const rl = rateLimit(`login:${email}`, 10, 15 * 60 * 1000)
+        const rl = await rateLimit(`login:${email}`, 10, 15 * 60 * 1000)
         if (!rl.allowed) return null
 
         const sql = neon(process.env.DATABASE_URL!)
