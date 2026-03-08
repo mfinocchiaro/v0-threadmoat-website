@@ -33,17 +33,21 @@ function parseNum(value: string | undefined): number {
 
 /**
  * Classify cloud delivery model from Operating Model Tags.
- * Priority: Cloud-Native > SaaS > Hybrid > Traditional
+ * Uses the actual tag values from the CSV directly.
+ * Priority: Cloud-Native > SaaS > Hybrid > Traditional/Edge > Unknown
  */
 function classifyCloudModel(tags: string): string {
   if (!tags.trim()) return 'Unknown'
   const set = new Set(tags.split(',').map(t => t.trim().toLowerCase()))
-  if (set.has('cloud-native') || set.has('cloud saas') || set.has('cloud native')) return 'Cloud-Native'
-  if (set.has('usage-based') || set.has('consumption-based')) return 'Cloud-Native'
-  if (set.has('hybrid') || (set.has('on-premise') && (set.has('saas') || set.has('cloud')))) return 'Hybrid'
-  if (set.has('saas') || set.has('b2b saas') || set.has('enterprise saas') || set.has('vertical saas') || set.has('subscription')) return 'SaaS'
-  if (set.has('cloud') || set.has('api-first') || set.has('api first') || set.has('platform')) return 'SaaS'
-  if (set.has('on-premise') || set.has('on premise') || set.has('perpetual license') || set.has('perpetual')) return 'Traditional'
+  // Cloud-Native: explicitly cloud-native architecture or HPC/consumption billing
+  if (set.has('cloud-native') || set.has('cloud saas') || set.has('usage-based') || set.has('consumption-based')) return 'Cloud-Native'
+  // Hybrid: mixed on-premise + cloud, or explicit hybrid tag
+  if (set.has('hybrid') || set.has('cloud + edge hybrid')) return 'Hybrid'
+  // SaaS: subscription cloud delivery (matches "SaaS", "Cloud", "Enterprise SaaS", etc. directly)
+  if (set.has('saas') || set.has('cloud') || set.has('enterprise saas') || set.has('b2b saas') || set.has('vertical saas')) return 'SaaS'
+  // Traditional/Edge: on-premise, perpetual, hardware, or edge-deployed
+  if (set.has('on-premise') || set.has('on premise') || set.has('perpetual license') || set.has('perpetual') ||
+      set.has('hw plus sw') || set.has('edge computing') || set.has('edge deployment')) return 'Traditional'
   return 'Unknown'
 }
 

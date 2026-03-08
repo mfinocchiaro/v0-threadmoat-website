@@ -96,7 +96,11 @@ export function VizFilterBar({ companies, className }: VizFilterBarProps) {
     const countries = Array.from(new Set(companies.map(c => c.country).filter(Boolean))).sort()
     const lifecycles = Array.from(new Set(companies.map(c => c.lifecyclePhase || c.startupLifecyclePhase).filter(Boolean))).sort()
     const fundingRounds = Array.from(new Set(companies.map(c => c.latestFundingRound).filter(Boolean))).sort()
-    return { investmentLists, subsegments, industries, countries, lifecycles, fundingRounds }
+    // Operating Model: use the fixed canonical order rather than alphabetical
+    const OPERATING_MODEL_ORDER = ["cloud-native", "Cloud SaaS", "SaaS", "Enterprise SaaS", "Vertical SaaS", "B2B SaaS", "Cloud", "Hybrid", "Cloud + Edge Hybrid", "On-premise", "Edge Computing", "Edge deployment", "HW plus SW", "Perpetual License"]
+    const allOpTags = new Set(companies.flatMap(c => c.operatingModelTags || []).filter(Boolean))
+    const operatingModels = OPERATING_MODEL_ORDER.filter(t => allOpTags.has(t))
+    return { investmentLists, subsegments, industries, countries, lifecycles, fundingRounds, operatingModels }
   }, [companies])
 
   const toggle = React.useCallback((type: string, value: string) => {
@@ -120,6 +124,7 @@ export function VizFilterBar({ companies, className }: VizFilterBarProps) {
       countries: [],
       lifecycle: [],
       fundingRound: [],
+      operatingModel: [],
       search: "",
     }))
   }
@@ -130,7 +135,8 @@ export function VizFilterBar({ companies, className }: VizFilterBarProps) {
     filters.industries.length +
     filters.countries.length +
     filters.lifecycle.length +
-    filters.fundingRound.length
+    filters.fundingRound.length +
+    filters.operatingModel.length
 
   return (
     <div className={`space-y-4 ${className ?? ""}`}>
@@ -175,6 +181,11 @@ export function VizFilterBar({ companies, className }: VizFilterBarProps) {
             label="Funding" filterKey="fundingRound"
             items={options.fundingRounds} active={filters.fundingRound}
             onToggle={(v) => toggle("fundingRound", v)} onClear={() => clearFilter("fundingRound")}
+          />
+          <FilterPopover
+            label="Operating Model" filterKey="operatingModel"
+            items={options.operatingModels} active={filters.operatingModel}
+            onToggle={(v) => toggle("operatingModel", v)} onClear={() => clearFilter("operatingModel")}
           />
           {activeCount > 0 && (
             <Button variant="ghost" onClick={clearAll} className="h-8 px-2 lg:px-3">
