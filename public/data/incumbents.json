@@ -6,7 +6,8 @@
     "category": "01-Design Intelligence",
     "subcategories": ["CAD", "CAM", "Simulation"],
     "url": "https://plm.sw.siemens.com/en-US/nx/",
-    "revenueB": 4.8,
+    "revenueB": 0.72,
+    "revenueNote": "~13% of Siemens DISW $5.4B; est. per product",
     "founded": 1969,
     "hq": "Germany"
   },
@@ -17,7 +18,8 @@
     "category": "04-Cognitive Thread",
     "subcategories": ["PLM", "MBSE", "Digital Thread"],
     "url": "https://plm.sw.siemens.com/en-US/teamcenter/",
-    "revenueB": 3.2,
+    "revenueB": 1.30,
+    "revenueNote": "~24% of Siemens DISW; largest product line",
     "founded": 1990,
     "hq": "Germany"
   },
@@ -28,7 +30,8 @@
     "category": "05-Factory Futures",
     "subcategories": ["MES", "IIoT", "Digital Manufacturing"],
     "url": "https://plm.sw.siemens.com/en-US/opcenter/",
-    "revenueB": 1.1,
+    "revenueB": 0.28,
+    "revenueNote": "~5% of Siemens DISW; smaller MES line",
     "founded": 2018,
     "hq": "Germany"
   },
@@ -39,7 +42,8 @@
     "category": "01-Design Intelligence",
     "subcategories": ["CAD", "Generative Design", "Surface Modeling"],
     "url": "https://www.3ds.com/products/catia",
-    "revenueB": 3.5,
+    "revenueB": 1.20,
+    "revenueNote": "~21% of DS €5.8B; revenue diluted by 3DX platform bundling",
     "founded": 1977,
     "hq": "France"
   },
@@ -50,7 +54,8 @@
     "category": "04-Cognitive Thread",
     "subcategories": ["PLM", "MBSE", "Collaboration"],
     "url": "https://www.3ds.com/products/enovia",
-    "revenueB": 2.1,
+    "revenueB": 0.70,
+    "revenueNote": "~12% of DS; increasingly bundled in 3DX",
     "founded": 1998,
     "hq": "France"
   },
@@ -61,7 +66,8 @@
     "category": "02-Extreme Analysis",
     "subcategories": ["FEA", "CFD", "Simulation"],
     "url": "https://www.3ds.com/products/simulia",
-    "revenueB": 1.4,
+    "revenueB": 0.52,
+    "revenueNote": "~9% of DS; acquired Abaqus/CST folded in",
     "founded": 1978,
     "hq": "France"
   },
@@ -72,7 +78,8 @@
     "category": "03-Adaptive Manufacturing",
     "subcategories": ["CAM", "Digital Manufacturing", "Robotics"],
     "url": "https://www.3ds.com/products/delmia",
-    "revenueB": 0.8,
+    "revenueB": 0.28,
+    "revenueNote": "~5% of DS; smallest of the major DS brands",
     "founded": 1997,
     "hq": "France"
   },
@@ -83,7 +90,8 @@
     "category": "01-Design Intelligence",
     "subcategories": ["CAD", "Generative Design", "AR Design"],
     "url": "https://www.ptc.com/en/products/creo",
-    "revenueB": 0.9,
+    "revenueB": 0.58,
+    "revenueNote": "~25% of PTC $2.3B; historically core product",
     "founded": 1987,
     "hq": "United States"
   },
@@ -94,7 +102,8 @@
     "category": "04-Cognitive Thread",
     "subcategories": ["PLM", "Digital Thread", "MBSE"],
     "url": "https://www.ptc.com/en/products/windchill",
-    "revenueB": 1.2,
+    "revenueB": 0.50,
+    "revenueNote": "~22% of PTC; now largest product by ARR",
     "founded": 1998,
     "hq": "United States"
   },
@@ -105,7 +114,8 @@
     "category": "05-Factory Futures",
     "subcategories": ["IIoT", "MES", "Digital Twin"],
     "url": "https://www.ptc.com/en/products/thingworx",
-    "revenueB": 0.7,
+    "revenueB": 0.22,
+    "revenueNote": "~10% of PTC; declining as standalone, bundled into Kepware/Vuforia stack",
     "founded": 2009,
     "hq": "United States"
   },
@@ -116,7 +126,8 @@
     "category": "01-Design Intelligence",
     "subcategories": ["CAD", "CAM", "Generative Design"],
     "url": "https://www.autodesk.com/products/fusion-360",
-    "revenueB": 1.8,
+    "revenueB": 0.25,
+    "revenueNote": "~4% of Autodesk $5.9B; fast growing but still small",
     "founded": 2013,
     "hq": "United States"
   },
@@ -127,7 +138,8 @@
     "category": "01-Design Intelligence",
     "subcategories": ["CAD", "Mechanical Design"],
     "url": "https://www.autodesk.com/products/inventor",
-    "revenueB": 0.6,
+    "revenueB": 0.32,
+    "revenueNote": "~5% of Autodesk; legacy, declining to Fusion",
     "founded": 1999,
     "hq": "United States"
   },
@@ -138,7 +150,8 @@
     "category": "08-Bleeding Edge BIM",
     "subcategories": ["BIM", "AEC", "Architecture"],
     "url": "https://www.autodesk.com/products/revit",
-    "revenueB": 1.1,
+    "revenueB": 0.65,
+    "revenueNote": "~11% of Autodesk; dominant AEC authoring tool",
     "founded": 2002,
     "hq": "United States"
   },
@@ -149,7 +162,8 @@
     "category": "04-Cognitive Thread",
     "subcategories": ["PLM", "PDM", "Data Management"],
     "url": "https://www.autodesk.com/products/vault",
-    "revenueB": 0.3,
+    "revenueB": 0.11,
+    "revenueNote": "~2% of Autodesk; legacy PDM, slow decline",
     "founded": 2003,
     "hq": "United States"
   },
@@ -160,7 +174,8 @@
     "category": "02-Extreme Analysis",
     "subcategories": ["FEA", "Structural Simulation"],
     "url": "https://www.ansys.com/products/structures/ansys-mechanical",
-    "revenueB": 0.9,
+    "revenueB": 0.65,
+    "revenueNote": "~26% of Ansys $2.5B; structural is core product line",
     "founded": 1970,
     "hq": "United States"
   },
@@ -171,7 +186,8 @@
     "category": "02-Extreme Analysis",
     "subcategories": ["CFD", "Fluid Simulation"],
     "url": "https://www.ansys.com/products/fluids/ansys-fluent",
-    "revenueB": 0.7,
+    "revenueB": 0.42,
+    "revenueNote": "~17% of Ansys; CFD second-largest product",
     "founded": 1988,
     "hq": "United States"
   },
@@ -182,7 +198,8 @@
     "category": "08-Bleeding Edge BIM",
     "subcategories": ["Digital Twin", "Infrastructure", "BIM"],
     "url": "https://www.bentley.com/software/itwin-platform/",
-    "revenueB": 0.5,
+    "revenueB": 0.10,
+    "revenueNote": "~8% of Bentley $1.2B; platform still ramping",
     "founded": 2019,
     "hq": "United States"
   },
@@ -193,7 +210,8 @@
     "category": "05-Factory Futures",
     "subcategories": ["Plant Design", "Process Industries"],
     "url": "https://www.bentley.com/software/openplant/",
-    "revenueB": 0.3,
+    "revenueB": 0.07,
+    "revenueNote": "~6% of Bentley; niche process plant product",
     "founded": 2010,
     "hq": "United States"
   },
@@ -204,7 +222,8 @@
     "category": "04-Cognitive Thread",
     "subcategories": ["PLM", "ERP", "Digital Thread"],
     "url": "https://www.sap.com/products/scm/plm-r-d-engineering.html",
-    "revenueB": 1.8,
+    "revenueB": 0.28,
+    "revenueNote": "Estimated; bundled into S/4HANA, no standalone disclosure",
     "founded": 2002,
     "hq": "Germany"
   },
@@ -215,7 +234,8 @@
     "category": "05-Factory Futures",
     "subcategories": ["MES", "Digital Manufacturing"],
     "url": "https://www.sap.com/products/scm/digital-manufacturing.html",
-    "revenueB": 0.9,
+    "revenueB": 0.18,
+    "revenueNote": "Estimated; early stage cloud MES, no standalone disclosure",
     "founded": 2006,
     "hq": "Germany"
   },
@@ -226,7 +246,8 @@
     "category": "03-Adaptive Manufacturing",
     "subcategories": ["Quality Control", "Metrology", "CAM"],
     "url": "https://hexagon.com/products/manufacturing-intelligence",
-    "revenueB": 1.3,
+    "revenueB": 0.55,
+    "revenueNote": "Software portion only (~30% of MI $1.8B); hardware/services excluded",
     "founded": 2004,
     "hq": "Sweden"
   },
@@ -237,7 +258,8 @@
     "category": "02-Extreme Analysis",
     "subcategories": ["Digital Twin", "Physics Simulation", "AI Simulation"],
     "url": "https://www.nvidia.com/en-us/omniverse/",
-    "revenueB": 0.4,
+    "revenueB": 0.08,
+    "revenueNote": "Pre-revenue at scale; NVIDIA does not break out separately",
     "founded": 2019,
     "hq": "United States"
   },
@@ -248,7 +270,8 @@
     "category": "02-Extreme Analysis",
     "subcategories": ["EDA", "EM Simulation", "Semiconductor"],
     "url": "https://www.cadence.com/en_US/home/tools/system-analysis/electromagnetic-analysis.html",
-    "revenueB": 0.6,
+    "revenueB": 0.10,
+    "revenueNote": "Small product within Cadence $4.3B; SI/CFD tools ~2-3%",
     "founded": 2019,
     "hq": "United States"
   },
@@ -259,7 +282,8 @@
     "category": "05-Factory Futures",
     "subcategories": ["MES", "IIoT", "SCADA"],
     "url": "https://www.rockwellautomation.com/en-US/products/software/factorytalk.html",
-    "revenueB": 1.1,
+    "revenueB": 0.65,
+    "revenueNote": "~54% of Rockwell software segment $1.2B",
     "founded": 1998,
     "hq": "United States"
   },
@@ -270,7 +294,8 @@
     "category": "05-Factory Futures",
     "subcategories": ["IIoT", "Asset Performance", "Digital Twin"],
     "url": "https://www.ge.com/digital/applications/industrial-internet",
-    "revenueB": 0.5,
+    "revenueB": 0.12,
+    "revenueNote": "Declining; GE Digital ~$600M total, Predix rebranding into GE Vernova stack",
     "founded": 2015,
     "hq": "United States"
   },
@@ -281,7 +306,8 @@
     "category": "04-Cognitive Thread",
     "subcategories": ["PLM", "MBSE", "Digital Thread"],
     "url": "https://www.aras.com/en/products/aras-innovator",
-    "revenueB": 0.2,
+    "revenueB": 0.09,
+    "revenueNote": "Private; ~$80-100M ARR estimated from analyst sources",
     "founded": 2000,
     "hq": "United States"
   }
