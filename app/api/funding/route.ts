@@ -4,6 +4,9 @@ import Papa from 'papaparse'
 import { promises as fs } from 'fs'
 import path from 'path'
 
+// Cloud SaaS benchmark: $200K ARR/employee is the industry "good" threshold (Bessemer/BVP standard)
+const CLOUD_ARR_BENCHMARK = 200_000
+
 function parseCurrency(value: string | undefined): number {
   if (!value) return 0
   const cleaned = value.replace(/[$,\s]/g, '')
@@ -24,6 +27,21 @@ function parseNum(value: string | undefined): number {
   return isNaN(num) ? 0 : num
 }
 
+/**
+ * Classify cloud delivery model from Operating Model Tags.
+ * Priority: Cloud-Native > SaaS > Hybrid > Traditional
+ */
+function classifyCloudModel(tags: string): string {
+  const set = new Set(tags.split(',').map(t => t.trim().toLowerCase()))
+  if (set.has('cloud-native') || set.has('cloud saas')) return 'Cloud-Native'
+  if (set.has('usage-based')) return 'Cloud-Native'
+  if (set.has('hybrid') || (set.has('on-premise') && (set.has('saas') || set.has('cloud')))) return 'Hybrid'
+  if (set.has('saas') || set.has('b2b saas') || set.has('enterprise saas') || set.has('vertical saas')) return 'SaaS'
+  if (set.has('cloud') || set.has('api-first')) return 'SaaS'
+  if (set.has('on-premise') || set.has('perpetual license')) return 'Traditional'
+  return 'Unknown'
+}
+
 export async function GET() {
   const session = await auth()
   if (!session?.user?.id) {
@@ -31,38 +49,66 @@ export async function GET() {
   }
 
   try {
-    const csvPath = path.join(process.cwd(), 'public', 'data', 'Startups-Financial Health.csv')
-    let csvContent = await fs.readFile(csvPath, 'utf-8')
+    // Load both CSVs in parallel
+    const [financialContent, gridContent] = await Promise.all([
+      fs.readFile(path.join(process.cwd(), 'public', 'data', 'Startups-Financial Health.csv'), 'utf-8'),
+      fs.readFile(path.join(process.cwd(), 'public', 'data', 'Startups-Grid view.csv'), 'utf-8'),
+    ])
 
-    if (csvContent.charCodeAt(0) === 0xFEFF) {
-      csvContent = csvContent.slice(1)
+    const stripBOM = (s: string) => s.charCodeAt(0) === 0xFEFF ? s.slice(1) : s
+
+    const financialRows = (Papa.parse(stripBOM(financialContent), { header: true, skipEmptyLines: true }).data as Record<string, string>[])
+    const gridRows = (Papa.parse(stripBOM(gridContent), { header: true, skipEmptyLines: true }).data as Record<string, string>[])
+
+    // Build a lookup: company name → operating model tags
+    const tagsByCompany = new Map<string, string>()
+    for (const row of gridRows) {
+      const name = (row['Company'] || '').trim()
+      if (name) tagsByCompany.set(name.toLowerCase(), row['Operating Model Tags'] || '')
     }
 
-    const parsed = Papa.parse(csvContent, { header: true, skipEmptyLines: true })
-    const rawData = parsed.data as Record<string, string>[]
-
-    const funding = rawData
+    const funding = financialRows
       .filter(row => (row['Company'] || '').trim())
-      .map((row, index) => ({
-        id: String(index + 1),
-        company: (row['Company'] || '').trim(),
-        scoreFinancial: parseNum(row['Score Financial']),
-        customerSignalScore: parseNum(row['Customer Signal Score']),
-        estRevenueLabel: row['Est. Revenue by ARR or HC'] || '',
-        weightedStartupQualityScore: parseNum(row['Weighted Startup Quality Score']),
-        arrMultiple: parseNum(row['ARR Multiple']),
-        estimatedValuation: parseCurrency(row['Estimated Valuation']),
-        fundingFloor: parseCurrency(row['Funding Floor']),
-        estimatedValueFinal: parseCurrency(row['Estimated Value Final']),
-        arrPerEmployee: parseCurrency(row['ARR per Employee']),
-        annualBurnProxy: parseCurrency(row['Annual Burn Proxy']),
-        runwayProxyMonths: parseNum(row['Runway Proxy (Months)']),
-        startupSizeCategory: row['Startup Size Category'] || '',
-        capitalEfficiency: row['Capital Efficiency'] || '',
-        runwayQuality: row['Runway Quality'] || '',
-        netBurnLevel: row['Net Burn Level'] || '',
-        financialConfidence: row['Financial Confidence'] || '',
-      }))
+      .map((row, index) => {
+        const company = (row['Company'] || '').trim()
+        const tags = tagsByCompany.get(company.toLowerCase()) ?? ''
+        const cloudModel = classifyCloudModel(tags)
+
+        const arrPerEmployee = parseCurrency(row['ARR per Employee'])
+        const totalFunding = parseCurrency(row['Total Current Known Funding Level'])
+        const estimatedRevenue = parseCurrency(row['Current Estimated Annual Revenue'])
+
+        // Cloud ARR efficiency: how many cents of ARR earned per dollar raised.
+        // 100 = broke even on capital (ARR = total funding). Higher = more capital-efficient.
+        const cloudArrEfficiency = totalFunding > 0 ? (estimatedRevenue / totalFunding) * 100 : 0
+
+        // ARR/employee as % of $200K SaaS benchmark. 100 = at benchmark, 150 = 50% above, etc.
+        const cloudArrVsBenchmark = arrPerEmployee > 0 ? (arrPerEmployee / CLOUD_ARR_BENCHMARK) * 100 : 0
+
+        return {
+          id: String(index + 1),
+          company,
+          cloudModel,
+          cloudArrEfficiency: Math.round(cloudArrEfficiency * 10) / 10,
+          cloudArrVsBenchmark: Math.round(cloudArrVsBenchmark * 10) / 10,
+          scoreFinancial: parseNum(row['Score Financial']),
+          customerSignalScore: parseNum(row['Customer Signal Score']),
+          estRevenueLabel: row['Est. Revenue by ARR or HC'] || '',
+          weightedStartupQualityScore: parseNum(row['Weighted Startup Quality Score']),
+          arrMultiple: parseNum(row['ARR Multiple']),
+          estimatedValuation: parseCurrency(row['Estimated Valuation']),
+          fundingFloor: parseCurrency(row['Funding Floor']),
+          estimatedValueFinal: parseCurrency(row['Estimated Value Final']),
+          arrPerEmployee,
+          annualBurnProxy: parseCurrency(row['Annual Burn Proxy']),
+          runwayProxyMonths: parseNum(row['Runway Proxy (Months)']),
+          startupSizeCategory: row['Startup Size Category'] || '',
+          capitalEfficiency: row['Capital Efficiency'] || '',
+          runwayQuality: row['Runway Quality'] || '',
+          netBurnLevel: row['Net Burn Level'] || '',
+          financialConfidence: row['Financial Confidence'] || '',
+        }
+      })
 
     return NextResponse.json({ success: true, count: funding.length, data: funding })
   } catch (error) {

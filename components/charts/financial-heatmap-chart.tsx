@@ -9,6 +9,9 @@ import { cn } from "@/lib/utils"
 interface FundingRecord {
   id: string
   company: string
+  cloudModel: string
+  cloudArrEfficiency: number
+  cloudArrVsBenchmark: number
   scoreFinancial: number
   customerSignalScore: number
   weightedStartupQualityScore: number
@@ -44,7 +47,21 @@ type ColDef =
   | { type: "qual"; key: keyof FundingRecord; label: string; tip: string; levels: string[] }
   | { type: "num";  key: keyof FundingRecord; label: string; tip: string; format: (v: number) => string; higherIsGood: boolean }
 
+const CLOUD_MODEL_ORDER = ["Cloud-Native", "SaaS", "Hybrid", "Traditional", "Unknown"]
+
 const COLUMNS: ColDef[] = [
+  // 0. Cloud Model
+  { type: "qual", key: "cloudModel", label: "Cloud Model",
+    tip: "Delivery model derived from operating tags. Cloud-Native = cloud-first/consumption; SaaS = subscription; Hybrid = mixed; Traditional = on-premise/perpetual.",
+    levels: CLOUD_MODEL_ORDER },
+  // 0b. Cloud ARR Efficiency
+  { type: "num", key: "cloudArrEfficiency", label: "ARR Efficiency %",
+    tip: "ARR as % of total capital raised. 100% = ARR equals all funding ever raised. Higher = more capital-efficient revenue generation.",
+    format: (v: number) => `${v.toFixed(0)}%`, higherIsGood: true },
+  // 0c. ARR vs $200K Benchmark
+  { type: "num", key: "cloudArrVsBenchmark", label: "vs $200K Bench",
+    tip: "ARR/employee as % of the $200K/employee SaaS benchmark (Bessemer/BVP standard). 100% = at benchmark, >100% = above.",
+    format: (v: number) => `${v.toFixed(0)}%`, higherIsGood: true },
   // 1. Company Size
   { type: "qual", key: "startupSizeCategory", label: "Company Size",
     tip: "Headcount-based size bucket: Large (250+), Medium (50–249), Small (<50).",
@@ -91,14 +108,16 @@ const COLUMNS: ColDef[] = [
 
 const NUM_COLUMNS = COLUMNS.filter((c): c is Extract<ColDef, { type: "num" }> => c.type === "num")
 
-type SortKey = "scoreFinancial" | "arrPerEmployee" | "annualBurnProxy" | "runwayProxyMonths" | "estimatedValuation"
+type SortKey = "scoreFinancial" | "arrPerEmployee" | "annualBurnProxy" | "runwayProxyMonths" | "estimatedValuation" | "cloudArrEfficiency" | "cloudArrVsBenchmark"
 
 const SORT_OPTIONS: { value: SortKey; label: string }[] = [
-  { value: "scoreFinancial",  label: "Financial Score" },
-  { value: "estimatedValuation", label: "Valuation" },
-  { value: "arrPerEmployee",  label: "ARR / Employee" },
-  { value: "annualBurnProxy", label: "Annual Burn" },
-  { value: "runwayProxyMonths", label: "Runway Months" },
+  { value: "scoreFinancial",      label: "Financial Score" },
+  { value: "estimatedValuation",  label: "Valuation" },
+  { value: "arrPerEmployee",      label: "ARR / Employee" },
+  { value: "cloudArrEfficiency",  label: "ARR Efficiency %" },
+  { value: "cloudArrVsBenchmark", label: "vs $200K Benchmark" },
+  { value: "annualBurnProxy",     label: "Annual Burn" },
+  { value: "runwayProxyMonths",   label: "Runway Months" },
 ]
 
 const TOP_N_OPTIONS = [10, 15, 20]
@@ -131,6 +150,7 @@ export function FinancialHeatmapChart({ className, filteredCompanyNames }: Finan
   const [error, setError] = useState<string | null>(null)
   const [sortBy, setSortBy] = useState<SortKey>("scoreFinancial")
   const [topN, setTopN] = useState(15)
+  const [cloudOnly, setCloudOnly] = useState(false)
 
   useEffect(() => {
     fetch("/api/funding")
@@ -148,11 +168,14 @@ export function FinancialHeatmapChart({ className, filteredCompanyNames }: Finan
     if (filteredCompanyNames && filteredCompanyNames.size > 0) {
       pool = pool.filter((r) => filteredCompanyNames.has(r.company))
     }
+    if (cloudOnly) {
+      pool = pool.filter((r) => r.cloudModel === "Cloud-Native" || r.cloudModel === "SaaS")
+    }
     return [...pool]
       .filter((r) => (r[sortBy] as number) > 0)
       .sort((a, b) => (b[sortBy] as number) - (a[sortBy] as number))
       .slice(0, topN)
-  }, [fundingData, filteredCompanyNames, sortBy, topN])
+  }, [fundingData, filteredCompanyNames, sortBy, topN, cloudOnly])
 
   // Normalize numeric columns to 0–1 for color intensity
   const numScales = useMemo(() => {
@@ -341,6 +364,15 @@ export function FinancialHeatmapChart({ className, filteredCompanyNames }: Finan
             ))}
           </select>
         </div>
+        <label className="flex items-center gap-1.5 cursor-pointer select-none text-xs text-muted-foreground">
+          <input
+            type="checkbox"
+            checked={cloudOnly}
+            onChange={(e) => setCloudOnly(e.target.checked)}
+            className="rounded"
+          />
+          Cloud &amp; SaaS only
+        </label>
         <span className="text-xs text-muted-foreground ml-auto">
           {ranked.length} of {fundingData.length} startups
         </span>
