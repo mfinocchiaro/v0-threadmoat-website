@@ -45,7 +45,12 @@ export default async function DashboardLayout({
     .map(e => e.trim())
     .filter(Boolean)
 
-  const isAdmin = profile?.is_admin === true || adminEmails.includes(user.email || '')
+  // Match exact email or Gmail +alias (e.g. user+tag@gmail.com matches user@gmail.com)
+  const userEmail = user.email || ''
+  const baseEmail = userEmail.replace(/\+[^@]*@/, '@')
+  const isAdmin = profile?.is_admin === true
+    || adminEmails.includes(userEmail)
+    || adminEmails.includes(baseEmail)
 
   if (!isAdmin) {
     let hasSubscription = false

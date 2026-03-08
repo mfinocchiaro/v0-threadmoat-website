@@ -18,13 +18,15 @@ export default async function DashboardPage() {
     }
   }
 
-  // Also check ADMIN_EMAILS env var
+  // Also check ADMIN_EMAILS env var (supports Gmail +alias matching)
   if (!isAdmin && session?.user?.email) {
     const adminEmails = (process.env.ADMIN_EMAILS || '')
       .split(',')
       .map(e => e.trim())
       .filter(Boolean)
-    isAdmin = adminEmails.includes(session.user.email)
+    const email = session.user.email
+    const baseEmail = email.replace(/\+[^@]*@/, '@')
+    isAdmin = adminEmails.includes(email) || adminEmails.includes(baseEmail)
   }
 
   return <DashboardClient profileType={profileType} isAdmin={isAdmin} />
