@@ -11,7 +11,7 @@ import { LandscapeChart } from "@/components/charts/landscape-chart";
 import { BarChart } from "@/components/charts/bar-chart";
 import { PeriodicTable } from "@/components/charts/periodic-table";
 import { QuadrantChart } from "@/components/charts/quadrant-chart";
-import { NetworkGraph } from "@/components/charts/network-graph";
+import { NetworkGraphToggle } from "@/components/charts/network-graph-toggle";
 import { AdminAnalyticsSection } from "./admin-analytics";
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
 import { Badge } from "@/components/ui/badge";
@@ -100,7 +100,7 @@ export function StartupDashboard({ data, isLoading, isAdmin = false }: { data: C
 
             {show("network") && (
                 <WidgetCard title="Ecosystem Network" subtitle={`${data.length} companies`}>
-                    <NetworkGraph data={data} className="min-h-[500px]" />
+                    <NetworkGraphToggle data={data} className="min-h-[500px]" />
                 </WidgetCard>
             )}
 

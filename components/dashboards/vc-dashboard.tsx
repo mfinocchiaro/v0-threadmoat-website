@@ -11,7 +11,7 @@ import { VizFilterBar } from "@/components/viz-filter-bar";
 import { BubbleChart } from "@/components/charts/bubble-chart";
 import { QuadrantChart } from "@/components/charts/quadrant-chart";
 import { PeriodicTable } from "@/components/charts/periodic-table";
-import { NetworkGraph } from "@/components/charts/network-graph";
+import { NetworkGraphToggle } from "@/components/charts/network-graph-toggle";
 import { AdminAnalyticsSection } from "./admin-analytics";
 import { AlertTriangle, BarChart3, Target, CheckCircle2, DollarSign } from "lucide-react";
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
@@ -126,7 +126,7 @@ export function VCDashboard({ data, isLoading, isAdmin = false }: { data: Compan
 
             {show("network") && (
                 <WidgetCard title="Ecosystem Network" subtitle={`${data.length} companies`}>
-                    <NetworkGraph data={data} className="min-h-[500px]" />
+                    <NetworkGraphToggle data={data} className="min-h-[500px]" />
                 </WidgetCard>
             )}
 

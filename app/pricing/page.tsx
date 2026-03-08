@@ -91,7 +91,9 @@ export default function PricingPage() {
             </span>
           </div>
           <a
-            href="mailto:fino@demystifyingplm.com?subject=Threaded!%20Conference"
+            href="https://threaded.live"
+            target="_blank"
+            rel="noopener noreferrer"
             className="rounded-full bg-purple-600 hover:bg-purple-500 px-4 py-1.5 text-xs font-semibold text-white transition-colors"
           >
             Register Now!

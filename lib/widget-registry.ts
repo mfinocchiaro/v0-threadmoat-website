@@ -63,3 +63,11 @@ export const DEFAULT_LAYOUT: Record<string, string[]> = {
   oem_enterprise:  ["network", "sunburst", "quadrant", "periodic-table"],
   isv_platform:    ["network", "quadrant", "sunburst", "periodic-table"],
 };
+
+/** Admin users get all admin widgets enabled by default */
+const ADMIN_WIDGET_IDS = ADMIN_WIDGETS.map(w => w.id);
+
+export function getDefaultLayout(scenario: string, isAdmin: boolean): string[] {
+  const base = DEFAULT_LAYOUT[scenario] ?? [];
+  return isAdmin ? [...base, ...ADMIN_WIDGET_IDS] : base;
+}

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useTransition, useCallback } from "react"
+import { useState, useEffect, useTransition, useCallback, startTransition as reactStartTransition } from "react"
 import { Company } from "@/lib/company-data"
 import {
   useThesis, ThesisType, VCThesis, ISVThesis, OEMThesis,
@@ -399,7 +399,7 @@ export function ConfigPanel({ companies, profileType, isAdmin, onSelectScenario 
                         <span className="text-sm">{w.label}</span>
                         <Switch
                           checked={enabled.includes(w.id)}
-                          onCheckedChange={() => toggleWidget(scenario, w.id)}
+                          onCheckedChange={() => reactStartTransition(() => toggleWidget(scenario, w.id))}
                         />
                       </label>
                     ))}
@@ -418,7 +418,7 @@ export function ConfigPanel({ companies, profileType, isAdmin, onSelectScenario 
                           <span className="text-sm">{w.label}</span>
                           <Switch
                             checked={enabled.includes(w.id)}
-                            onCheckedChange={() => toggleWidget(scenario, w.id)}
+                            onCheckedChange={() => reactStartTransition(() => toggleWidget(scenario, w.id))}
                           />
                         </label>
                       ))}

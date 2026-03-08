@@ -97,7 +97,7 @@ export function DashboardClient({ isAdmin = false }: { profileType?: string; isA
 
   return (
     <FilterProvider>
-      <LayoutProvider>
+      <LayoutProvider isAdmin={isAdmin}>
         <ThesisProvider profileType={scenario}>
           <DashboardInner
             companies={companies}

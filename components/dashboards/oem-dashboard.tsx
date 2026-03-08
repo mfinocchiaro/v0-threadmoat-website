@@ -7,7 +7,7 @@ import { useLayout } from "@/contexts/layout-context";
 import { KPICard } from "@/components/widgets/kpi-card";
 import { WidgetCard } from "@/components/widgets/widget-card";
 import { VizFilterBar } from "@/components/viz-filter-bar";
-import { NetworkGraph } from "@/components/charts/network-graph";
+import { NetworkGraphToggle } from "@/components/charts/network-graph-toggle";
 import { SunburstChart } from "@/components/charts/sunburst-chart";
 import { QuadrantChart } from "@/components/charts/quadrant-chart";
 import { PeriodicTable } from "@/components/charts/periodic-table";
@@ -107,7 +107,7 @@ export function OEMDashboard({ data, isLoading, isAdmin = false }: { data: Compa
 
             {show("network") && (
                 <WidgetCard title="Ecosystem Network" subtitle={`${data.length} companies`}>
-                    <NetworkGraph data={data} className="min-h-[500px]" />
+                    <NetworkGraphToggle data={data} className="min-h-[500px]" />
                 </WidgetCard>
             )}
 

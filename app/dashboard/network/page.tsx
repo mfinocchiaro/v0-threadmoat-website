@@ -3,7 +3,7 @@
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
 import { VizFilterBar } from "@/components/viz-filter-bar"
-import { NetworkGraph } from "@/components/charts/network-graph"
+import { NetworkGraphToggle } from "@/components/charts/network-graph-toggle"
 import { Skeleton } from "@/components/ui/skeleton"
 
 function NetworkInner() {
@@ -20,7 +20,7 @@ function NetworkInner() {
       ) : (
         <>
           <VizFilterBar companies={companies} />
-          <NetworkGraph data={filtered} />
+          <NetworkGraphToggle data={filtered} />
         </>
       )}
     </div>

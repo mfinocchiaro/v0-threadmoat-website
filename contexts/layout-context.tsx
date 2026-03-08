@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
-import { DEFAULT_LAYOUT } from "@/lib/widget-registry";
+import { DEFAULT_LAYOUT, getDefaultLayout } from "@/lib/widget-registry";
 
 type DashboardLayout = Record<string, string[]>;
 
@@ -18,7 +18,7 @@ interface LayoutContextValue {
 
 const LayoutContext = createContext<LayoutContextValue | null>(null);
 
-export function LayoutProvider({ children, initialLayout }: { children: ReactNode; initialLayout?: DashboardLayout | null }) {
+export function LayoutProvider({ children, initialLayout, isAdmin = false }: { children: ReactNode; initialLayout?: DashboardLayout | null; isAdmin?: boolean }) {
   const [layout, setLayout] = useState<DashboardLayout>(initialLayout ?? {});
   const [loaded, setLoaded] = useState(!!initialLayout);
 
@@ -35,8 +35,8 @@ export function LayoutProvider({ children, initialLayout }: { children: ReactNod
   }, [initialLayout]);
 
   const getEnabledWidgets = useCallback((scenario: string): string[] => {
-    return layout[scenario] ?? DEFAULT_LAYOUT[scenario] ?? [];
-  }, [layout]);
+    return layout[scenario] ?? getDefaultLayout(scenario, isAdmin);
+  }, [layout, isAdmin]);
 
   const saveLayout = useCallback((newLayout: DashboardLayout) => {
     fetch("/api/profile/layout", {
@@ -48,7 +48,7 @@ export function LayoutProvider({ children, initialLayout }: { children: ReactNod
 
   const toggleWidget = useCallback((scenario: string, widgetId: string) => {
     setLayout(prev => {
-      const current = prev[scenario] ?? DEFAULT_LAYOUT[scenario] ?? [];
+      const current = prev[scenario] ?? getDefaultLayout(scenario, isAdmin);
       const next = current.includes(widgetId)
         ? current.filter(id => id !== widgetId)
         : [...current, widgetId];
@@ -56,15 +56,15 @@ export function LayoutProvider({ children, initialLayout }: { children: ReactNod
       saveLayout(updated);
       return updated;
     });
-  }, [saveLayout]);
+  }, [saveLayout, isAdmin]);
 
   const resetLayout = useCallback((scenario: string) => {
     setLayout(prev => {
-      const updated = { ...prev, [scenario]: DEFAULT_LAYOUT[scenario] ?? [] };
+      const updated = { ...prev, [scenario]: getDefaultLayout(scenario, isAdmin) };
       saveLayout(updated);
       return updated;
     });
-  }, [saveLayout]);
+  }, [saveLayout, isAdmin]);
 
   return (
     <LayoutContext.Provider value={{ getEnabledWidgets, toggleWidget, resetLayout, loaded }}>
