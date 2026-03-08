@@ -3,6 +3,7 @@
 import { Company } from "@/lib/company-data";
 import { useFilter } from "@/contexts/filter-context";
 import { useThesis } from "@/contexts/thesis-context";
+import { useLayout } from "@/contexts/layout-context";
 import { KPICard } from "@/components/widgets/kpi-card";
 import { WidgetCard } from "@/components/widgets/widget-card";
 import { VizFilterBar } from "@/components/viz-filter-bar";
@@ -10,13 +11,18 @@ import { NetworkGraph } from "@/components/charts/network-graph";
 import { SunburstChart } from "@/components/charts/sunburst-chart";
 import { QuadrantChart } from "@/components/charts/quadrant-chart";
 import { PeriodicTable } from "@/components/charts/periodic-table";
+import { AdminAnalyticsSection } from "./admin-analytics";
 import { Badge } from "@/components/ui/badge";
 import { Radar, ShoppingCart, Handshake, AlertCircle } from "lucide-react";
 import { useMemo } from "react";
 
-export function OEMDashboard({ data, isLoading }: { data: Company[]; isLoading: boolean }) {
+const SCENARIO = "oem_enterprise";
+
+export function OEMDashboard({ data, isLoading, isAdmin = false }: { data: Company[]; isLoading: boolean; isAdmin?: boolean }) {
     const { filterCompany } = useFilter();
     const { activeThesis, scoreCompanies, oemThesis } = useThesis();
+    const { getEnabledWidgets } = useLayout();
+    const enabled = getEnabledWidgets(SCENARIO);
 
     const hasThesis = activeThesis === "oem";
     const scored = useMemo(() => scoreCompanies(data), [scoreCompanies, data]);
@@ -42,6 +48,8 @@ export function OEMDashboard({ data, isLoading }: { data: Company[]; isLoading: 
     , [hasThesis, oemThesis]);
 
     if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading White Space intelligence...</div>;
+
+    const show = (id: string) => enabled.includes(id);
 
     return (
         <div className="space-y-6">
@@ -97,23 +105,33 @@ export function OEMDashboard({ data, isLoading }: { data: Company[]; isLoading: 
                 </WidgetCard>
             )}
 
-            <WidgetCard title="Ecosystem Network" subtitle={`${data.length} companies`}>
-                <NetworkGraph data={data} className="min-h-[500px]" />
-            </WidgetCard>
+            {show("network") && (
+                <WidgetCard title="Ecosystem Network" subtitle={`${data.length} companies`}>
+                    <NetworkGraph data={data} className="min-h-[500px]" />
+                </WidgetCard>
+            )}
 
             {hasThesis && filtered.length > 0 && (
                 <>
-                    <WidgetCard title="Market Breakdown" subtitle={`${filtered.length} companies`}>
-                        <SunburstChart data={filtered} className="min-h-[500px]" />
-                    </WidgetCard>
-                    <WidgetCard title="Competitive Dynamics" subtitle={`${filtered.length} companies`}>
-                        <QuadrantChart data={filtered} className="min-h-[500px]" />
-                    </WidgetCard>
-                    <WidgetCard title="Enterprise Recon List" subtitle={`${filtered.length} companies`}>
-                        <PeriodicTable data={filtered} compact={true} />
-                    </WidgetCard>
+                    {show("sunburst") && (
+                        <WidgetCard title="Market Breakdown" subtitle={`${filtered.length} companies`}>
+                            <SunburstChart data={filtered} className="min-h-[500px]" />
+                        </WidgetCard>
+                    )}
+                    {show("quadrant") && (
+                        <WidgetCard title="Competitive Dynamics" subtitle={`${filtered.length} companies`}>
+                            <QuadrantChart data={filtered} className="min-h-[500px]" />
+                        </WidgetCard>
+                    )}
+                    {show("periodic-table") && (
+                        <WidgetCard title="Enterprise Recon List" subtitle={`${filtered.length} companies`}>
+                            <PeriodicTable data={filtered} compact={true} />
+                        </WidgetCard>
+                    )}
                 </>
             )}
+
+            {isAdmin && <AdminAnalyticsSection data={data} filtered={filtered} enabledWidgets={enabled} />}
         </div>
     );
 }

@@ -153,13 +153,14 @@ interface HubPoint {
   count: number;
   totalFunding: number;
   categories: Record<string, number>;
+  topCompanies: string[];
   dominantCategory: string;
   altitude: number;
   color: string;
 }
 
 function aggregateHubs(data: Company[]): HubPoint[] {
-  const map: Record<string, Omit<HubPoint, "altitude" | "color" | "dominantCategory">> = {};
+  const map: Record<string, Omit<HubPoint, "altitude" | "color" | "dominantCategory"> & { _companies: { name: string; funding: number }[] }> = {};
 
   for (const c of data) {
     const hub = resolveHub(c.hqLocation, c.country);
@@ -174,14 +175,25 @@ function aggregateHubs(data: Company[]): HubPoint[] {
         count: 0,
         totalFunding: 0,
         categories: {},
-      } as Omit<HubPoint, "altitude" | "color" | "dominantCategory">;
+        topCompanies: [],
+        _companies: [],
+      } as Omit<HubPoint, "altitude" | "color" | "dominantCategory"> & { _companies: { name: string; funding: number }[] };
     }
 
     map[hub].count++;
     map[hub].totalFunding += c.totalFunding || 0;
+    map[hub]._companies.push({ name: c.name, funding: c.totalFunding || 0 });
 
     const cat = c.investmentList || "Other";
     map[hub].categories[cat] = (map[hub].categories[cat] || 0) + 1;
+  }
+
+  // Resolve top 3 companies per hub (by funding)
+  for (const h of Object.values(map)) {
+    h.topCompanies = h._companies
+      .sort((a, b) => b.funding - a.funding)
+      .slice(0, 3)
+      .map(c => c.name);
   }
 
   const hubs = Object.values(map);
@@ -238,11 +250,15 @@ export function GlobeChart({ data }: GlobeChartProps) {
         return `<span style="color:${getCategoryColor(cat)}">■</span> ${short}: ${cnt}`;
       })
       .join("<br/>");
+    const topNames = h.topCompanies.length > 0
+      ? `<div style="margin-top:6px;border-top:1px solid rgba(255,255,255,.1);padding-top:6px"><span style="color:#94a3b8;font-size:10px;text-transform:uppercase;letter-spacing:.5px">Top startups</span><br/>${h.topCompanies.map(n => `<span style="color:#e2e8f0">› ${n}</span>`).join("<br/>")}</div>`
+      : "";
     return `
       <div style="background:rgba(10,14,23,.92);border:1px solid rgba(255,255,255,.15);color:#fff;padding:10px 14px;border-radius:8px;font-size:12px;min-width:200px;line-height:1.6">
         <strong style="font-size:14px">${h.hub}</strong><br/>
         <span style="color:#94a3b8">${h.count} companies · ${formatCurrency(h.totalFunding)}</span><br/>
         <div style="margin-top:6px">${rows}</div>
+        ${topNames}
       </div>`;
   }
 

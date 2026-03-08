@@ -3,6 +3,7 @@
 import { Company } from "@/lib/company-data";
 import { useFilter } from "@/contexts/filter-context";
 import { useThesis } from "@/contexts/thesis-context";
+import { useLayout } from "@/contexts/layout-context";
 import { KPICard } from "@/components/widgets/kpi-card";
 import { WidgetCard } from "@/components/widgets/widget-card";
 import { VizFilterBar } from "@/components/viz-filter-bar";
@@ -10,12 +11,17 @@ import { NetworkGraph } from "@/components/charts/network-graph";
 import { PeriodicTable } from "@/components/charts/periodic-table";
 import { QuadrantChart } from "@/components/charts/quadrant-chart";
 import { SunburstChart } from "@/components/charts/sunburst-chart";
+import { AdminAnalyticsSection } from "./admin-analytics";
 import { Network, FileWarning, Swords, Link2 } from "lucide-react";
 import { useMemo } from "react";
 
-export function ISVDashboard({ data, isLoading }: { data: Company[]; isLoading: boolean }) {
+const SCENARIO = "isv_platform";
+
+export function ISVDashboard({ data, isLoading, isAdmin = false }: { data: Company[]; isLoading: boolean; isAdmin?: boolean }) {
     const { filterCompany } = useFilter();
     const { activeThesis, scoreCompanies } = useThesis();
+    const { getEnabledWidgets } = useLayout();
+    const enabled = getEnabledWidgets(SCENARIO);
 
     const hasThesis = activeThesis === "isv";
     const scored = useMemo(() => scoreCompanies(data), [scoreCompanies, data]);
@@ -35,6 +41,8 @@ export function ISVDashboard({ data, isLoading }: { data: Company[]; isLoading: 
 
     if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading acquisition radar...</div>;
 
+    const show = (id: string) => enabled.includes(id);
+
     return (
         <div className="space-y-6">
             <div>
@@ -51,23 +59,33 @@ export function ISVDashboard({ data, isLoading }: { data: Company[]; isLoading: 
                 <KPICard title="Integration Candidates" value={hasThesis ? integrationCandidates.length.toString() : "\u2014"} subtitle="High-growth target cos." icon={<Link2 className="size-5" />} />
             </div>
 
-            <WidgetCard title="Ecosystem Network" subtitle={`${data.length} companies`}>
-                <NetworkGraph data={data} className="min-h-[500px]" />
-            </WidgetCard>
+            {show("network") && (
+                <WidgetCard title="Ecosystem Network" subtitle={`${data.length} companies`}>
+                    <NetworkGraph data={data} className="min-h-[500px]" />
+                </WidgetCard>
+            )}
 
             {hasThesis && filtered.length > 0 && (
                 <>
-                    <WidgetCard title="Platform Positioning" subtitle={`${filtered.length} companies`}>
-                        <QuadrantChart data={filtered} className="min-h-[500px]" />
-                    </WidgetCard>
-                    <WidgetCard title="Market Taxonomy" subtitle={`${filtered.length} companies`}>
-                        <SunburstChart data={filtered} className="min-h-[500px]" />
-                    </WidgetCard>
-                    <WidgetCard title="Intelligence Master List" subtitle={`${filtered.length} companies`}>
-                        <PeriodicTable data={filtered} compact={true} />
-                    </WidgetCard>
+                    {show("quadrant") && (
+                        <WidgetCard title="Platform Positioning" subtitle={`${filtered.length} companies`}>
+                            <QuadrantChart data={filtered} className="min-h-[500px]" />
+                        </WidgetCard>
+                    )}
+                    {show("sunburst") && (
+                        <WidgetCard title="Market Taxonomy" subtitle={`${filtered.length} companies`}>
+                            <SunburstChart data={filtered} className="min-h-[500px]" />
+                        </WidgetCard>
+                    )}
+                    {show("periodic-table") && (
+                        <WidgetCard title="Intelligence Master List" subtitle={`${filtered.length} companies`}>
+                            <PeriodicTable data={filtered} compact={true} />
+                        </WidgetCard>
+                    )}
                 </>
             )}
+
+            {isAdmin && <AdminAnalyticsSection data={data} filtered={filtered} enabledWidgets={enabled} />}
         </div>
     );
 }

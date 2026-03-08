@@ -3,6 +3,7 @@
 import { Company, formatCurrency } from "@/lib/company-data";
 import { useFilter } from "@/contexts/filter-context";
 import { useThesis } from "@/contexts/thesis-context";
+import { useLayout } from "@/contexts/layout-context";
 import { KPICard } from "@/components/widgets/kpi-card";
 import { WidgetCard } from "@/components/widgets/widget-card";
 import { VizFilterBar } from "@/components/viz-filter-bar";
@@ -11,14 +12,19 @@ import { BarChart } from "@/components/charts/bar-chart";
 import { PeriodicTable } from "@/components/charts/periodic-table";
 import { QuadrantChart } from "@/components/charts/quadrant-chart";
 import { NetworkGraph } from "@/components/charts/network-graph";
+import { AdminAnalyticsSection } from "./admin-analytics";
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
 import { Badge } from "@/components/ui/badge";
 import { DollarSign, Globe, TrendingUp, Users } from "lucide-react";
 import { useMemo } from "react";
 
-export function StartupDashboard({ data, isLoading }: { data: Company[]; isLoading: boolean }) {
+const SCENARIO = "startup_founder";
+
+export function StartupDashboard({ data, isLoading, isAdmin = false }: { data: Company[]; isLoading: boolean; isAdmin?: boolean }) {
     const { filterCompany } = useFilter();
     const { activeThesis, scoreCompanies } = useThesis();
+    const { getEnabledWidgets } = useLayout();
+    const enabled = getEnabledWidgets(SCENARIO);
 
     const hasThesis = activeThesis === "founder";
     const scored = useMemo(() => scoreCompanies(data), [scoreCompanies, data]);
@@ -35,6 +41,8 @@ export function StartupDashboard({ data, isLoading }: { data: Company[]; isLoadi
     const totalHeadcount = filtered.reduce((s, c) => s + (c.headcount || 0), 0);
     const countries = new Set(filtered.map(c => c.country).filter(Boolean)).size;
     const topCompetitors = matches.slice(0, 5);
+
+    const show = (id: string) => enabled.includes(id);
 
     return (
         <div className="space-y-6">
@@ -90,26 +98,38 @@ export function StartupDashboard({ data, isLoading }: { data: Company[]; isLoadi
                 </WidgetCard>
             )}
 
-            <WidgetCard title="Ecosystem Network" subtitle={`${data.length} companies`}>
-                <NetworkGraph data={data} className="min-h-[500px]" />
-            </WidgetCard>
+            {show("network") && (
+                <WidgetCard title="Ecosystem Network" subtitle={`${data.length} companies`}>
+                    <NetworkGraph data={data} className="min-h-[500px]" />
+                </WidgetCard>
+            )}
 
             {hasThesis && filtered.length > 0 && (
                 <>
-                    <WidgetCard title="Competitive Landscape" subtitle={`${filtered.length} competitors`}>
-                        <LandscapeChart data={filtered} className="min-h-[500px]" />
-                    </WidgetCard>
-                    <WidgetCard title="Periodic Table" subtitle={`${filtered.length} competitors`}>
-                        <PeriodicTable data={filtered} compact={true} />
-                    </WidgetCard>
-                    <WidgetCard title="Competitive Quadrant" subtitle="Market momentum vs execution">
-                        <QuadrantChart data={filtered} className="h-[500px]" />
-                    </WidgetCard>
-                    <WidgetCard title="Top Rankings" subtitle={`Top from ${filtered.length} competitors`}>
-                        <BarChart data={filtered} />
-                    </WidgetCard>
+                    {show("landscape") && (
+                        <WidgetCard title="Competitive Landscape" subtitle={`${filtered.length} competitors`}>
+                            <LandscapeChart data={filtered} className="min-h-[500px]" />
+                        </WidgetCard>
+                    )}
+                    {show("periodic-table") && (
+                        <WidgetCard title="Periodic Table" subtitle={`${filtered.length} competitors`}>
+                            <PeriodicTable data={filtered} compact={true} />
+                        </WidgetCard>
+                    )}
+                    {show("quadrant") && (
+                        <WidgetCard title="Competitive Quadrant" subtitle="Market momentum vs execution">
+                            <QuadrantChart data={filtered} className="h-[500px]" />
+                        </WidgetCard>
+                    )}
+                    {show("bar") && (
+                        <WidgetCard title="Top Rankings" subtitle={`Top from ${filtered.length} competitors`}>
+                            <BarChart data={filtered} />
+                        </WidgetCard>
+                    )}
                 </>
             )}
+
+            {isAdmin && <AdminAnalyticsSection data={data} filtered={filtered} enabledWidgets={enabled} />}
         </div>
     );
 }

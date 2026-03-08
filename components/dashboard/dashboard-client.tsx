@@ -14,8 +14,10 @@ import { ThesisResults } from "@/components/dashboard/thesis-results"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { Rocket, TrendingUp, Building2, Layers, Focus } from "lucide-react"
+import { Rocket, TrendingUp, Building2, Layers, Focus, Settings2 } from "lucide-react"
 import { FOCUS_SCENARIOS } from "@/components/dashboard/sidebar"
+import { LayoutProvider } from "@/contexts/layout-context"
+import { WidgetPicker } from "@/components/dashboard/widget-picker"
 
 function ScenarioPicker({ onSelect }: { onSelect: (key: string) => void }) {
   return (
@@ -49,13 +51,15 @@ function ScenarioPicker({ onSelect }: { onSelect: (key: string) => void }) {
   )
 }
 
-function DashboardInner({ companies, isLoading, profileType, onSelectProfile }: {
+function DashboardInner({ companies, isLoading, profileType, onSelectProfile, isAdmin }: {
   companies: Company[]
   isLoading: boolean
   profileType?: string
   onSelectProfile: (p: string) => void
+  isAdmin: boolean
 }) {
   const [thesisPanelOpen, setThesisPanelOpen] = useState(false)
+  const [widgetPickerOpen, setWidgetPickerOpen] = useState(false)
 
   if (!profileType) {
     return <ScenarioPicker onSelect={onSelectProfile} />
@@ -71,18 +75,24 @@ function DashboardInner({ companies, isLoading, profileType, onSelectProfile }: 
         <h2 className="text-lg font-semibold">
           {scenarioData?.label ?? "Dashboard"}
         </h2>
-        <Button variant="outline" size="sm" onClick={() => setThesisPanelOpen(true)}>
-          <Focus className="mr-2 h-4 w-4" />
-          {config?.buttonText ?? "Configure Filters"}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => setWidgetPickerOpen(true)}>
+            <Settings2 className="mr-2 h-4 w-4" />
+            Customize
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => setThesisPanelOpen(true)}>
+            <Focus className="mr-2 h-4 w-4" />
+            {config?.buttonText ?? "Configure Filters"}
+          </Button>
+        </div>
       </div>
 
       <ThesisResults companies={companies} />
 
-      {profileType === "startup_founder" && <StartupDashboard data={companies} isLoading={isLoading} />}
-      {profileType === "vc_investor" && <VCDashboard data={companies} isLoading={isLoading} />}
-      {profileType === "oem_enterprise" && <OEMDashboard data={companies} isLoading={isLoading} />}
-      {profileType === "isv_platform" && <ISVDashboard data={companies} isLoading={isLoading} />}
+      {profileType === "startup_founder" && <StartupDashboard data={companies} isLoading={isLoading} isAdmin={isAdmin} />}
+      {profileType === "vc_investor" && <VCDashboard data={companies} isLoading={isLoading} isAdmin={isAdmin} />}
+      {profileType === "oem_enterprise" && <OEMDashboard data={companies} isLoading={isLoading} isAdmin={isAdmin} />}
+      {profileType === "isv_platform" && <ISVDashboard data={companies} isLoading={isLoading} isAdmin={isAdmin} />}
 
       <ThesisPanel
         open={thesisPanelOpen}
@@ -91,11 +101,18 @@ function DashboardInner({ companies, isLoading, profileType, onSelectProfile }: 
         profileType={profileType}
         isAdmin={false}
       />
+
+      <WidgetPicker
+        open={widgetPickerOpen}
+        onOpenChange={setWidgetPickerOpen}
+        scenario={profileType}
+        isAdmin={isAdmin}
+      />
     </>
   )
 }
 
-export function DashboardClient({ profileType: _unused, isAdmin: _unusedAdmin }: { profileType?: string; isAdmin?: boolean }) {
+export function DashboardClient({ isAdmin = false }: { profileType?: string; isAdmin?: boolean }) {
   const [companies, setCompanies] = useState<Company[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const { scenario, setScenario } = useScenario()
@@ -106,14 +123,17 @@ export function DashboardClient({ profileType: _unused, isAdmin: _unusedAdmin }:
 
   return (
     <FilterProvider>
-      <ThesisProvider profileType={scenario}>
-        <DashboardInner
-          companies={companies}
-          isLoading={isLoading}
-          profileType={scenario}
-          onSelectProfile={setScenario}
-        />
-      </ThesisProvider>
+      <LayoutProvider>
+        <ThesisProvider profileType={scenario}>
+          <DashboardInner
+            companies={companies}
+            isLoading={isLoading}
+            profileType={scenario}
+            onSelectProfile={setScenario}
+            isAdmin={isAdmin}
+          />
+        </ThesisProvider>
+      </LayoutProvider>
     </FilterProvider>
   )
 }

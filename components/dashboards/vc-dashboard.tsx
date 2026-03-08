@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { Company, formatCurrency } from "@/lib/company-data";
 import { useFilter } from "@/contexts/filter-context";
 import { useThesis } from "@/contexts/thesis-context";
+import { useLayout } from "@/contexts/layout-context";
 import { KPICard } from "@/components/widgets/kpi-card";
 import { WidgetCard } from "@/components/widgets/widget-card";
 import { VizFilterBar } from "@/components/viz-filter-bar";
@@ -11,6 +12,7 @@ import { BubbleChart } from "@/components/charts/bubble-chart";
 import { QuadrantChart } from "@/components/charts/quadrant-chart";
 import { PeriodicTable } from "@/components/charts/periodic-table";
 import { NetworkGraph } from "@/components/charts/network-graph";
+import { AdminAnalyticsSection } from "./admin-analytics";
 import { AlertTriangle, BarChart3, Target, CheckCircle2, DollarSign } from "lucide-react";
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
 import { Badge } from "@/components/ui/badge";
@@ -46,9 +48,13 @@ function CompanyDetail({ company: c, score }: { company: Company; score?: number
     );
 }
 
-export function VCDashboard({ data, isLoading }: { data: Company[]; isLoading: boolean }) {
+const SCENARIO = "vc_investor";
+
+export function VCDashboard({ data, isLoading, isAdmin = false }: { data: Company[]; isLoading: boolean; isAdmin?: boolean }) {
     const { filterCompany } = useFilter();
     const { activeThesis, scoreCompanies } = useThesis();
+    const { getEnabledWidgets } = useLayout();
+    const enabled = getEnabledWidgets(SCENARIO);
 
     const hasThesis = activeThesis === "vc" || activeThesis === "founder";
     const scored = useMemo(() => scoreCompanies(data), [scoreCompanies, data]);
@@ -67,6 +73,8 @@ export function VCDashboard({ data, isLoading }: { data: Company[]; isLoading: b
     const matchAvgScore = matches.length > 0
         ? (matches.reduce((s, r) => s + r.score, 0) / matches.length).toFixed(0)
         : "0";
+
+    const show = (id: string) => enabled.includes(id);
 
     return (
         <div className="space-y-6">
@@ -116,26 +124,38 @@ export function VCDashboard({ data, isLoading }: { data: Company[]; isLoading: b
                 </div>
             )}
 
-            <WidgetCard title="Ecosystem Network" subtitle={`${data.length} companies`}>
-                <NetworkGraph data={data} className="min-h-[500px]" />
-            </WidgetCard>
+            {show("network") && (
+                <WidgetCard title="Ecosystem Network" subtitle={`${data.length} companies`}>
+                    <NetworkGraph data={data} className="min-h-[500px]" />
+                </WidgetCard>
+            )}
 
             {hasThesis && filtered.length > 0 && (
                 <>
-                    <WidgetCard title="Global Deal Flow" subtitle={`${filtered.length} companies`}>
-                        <MapChart data={filtered} className="min-h-[500px]" />
-                    </WidgetCard>
-                    <WidgetCard title="Funding Distribution" subtitle={`${filtered.length} thesis matches`}>
-                        <BubbleChart data={filtered} className="h-[500px]" />
-                    </WidgetCard>
-                    <WidgetCard title="Competitive Positioning" subtitle={`${filtered.length} thesis matches`}>
-                        <QuadrantChart data={filtered} className="h-[500px]" />
-                    </WidgetCard>
-                    <WidgetCard title="Intelligence Master List" subtitle={`${filtered.length} thesis matches`}>
-                        <PeriodicTable data={filtered} compact={true} />
-                    </WidgetCard>
+                    {show("map") && (
+                        <WidgetCard title="Global Deal Flow" subtitle={`${filtered.length} companies`}>
+                            <MapChart data={filtered} className="min-h-[500px]" />
+                        </WidgetCard>
+                    )}
+                    {show("bubble") && (
+                        <WidgetCard title="Funding Distribution" subtitle={`${filtered.length} thesis matches`}>
+                            <BubbleChart data={filtered} className="h-[500px]" />
+                        </WidgetCard>
+                    )}
+                    {show("quadrant") && (
+                        <WidgetCard title="Competitive Positioning" subtitle={`${filtered.length} thesis matches`}>
+                            <QuadrantChart data={filtered} className="h-[500px]" />
+                        </WidgetCard>
+                    )}
+                    {show("periodic-table") && (
+                        <WidgetCard title="Intelligence Master List" subtitle={`${filtered.length} thesis matches`}>
+                            <PeriodicTable data={filtered} compact={true} />
+                        </WidgetCard>
+                    )}
                 </>
             )}
+
+            {isAdmin && <AdminAnalyticsSection data={data} filtered={filtered} enabledWidgets={enabled} />}
         </div>
     );
 }
