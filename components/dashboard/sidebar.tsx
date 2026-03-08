@@ -143,10 +143,8 @@ export function Sidebar({ collapsed, onToggle, onSelectScenario, activeScenario,
   const hasThesis = !!thesis?.activeThesis;
   const [focusMenuOpen, setFocusMenuOpen] = useState(false);
 
-  // Hide admin-only viz items from non-admin users
-  const visibleVizItems = isAdmin
-    ? VIZ_ITEMS
-    : VIZ_ITEMS.filter(item => !ADMIN_VIZ_HREFS.has(item.href));
+  // All viz items visible to all authenticated users — page-level Paywall handles access control
+  const visibleVizItems = VIZ_ITEMS;
 
   const activeScenarioData = FOCUS_SCENARIOS.find(s => s.key === activeScenario);
 
