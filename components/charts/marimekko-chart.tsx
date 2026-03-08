@@ -23,9 +23,9 @@ interface MarimekkoChartProps {
 }
 
 const FUNDING_ROUND_ORDER = [
-  "Pre-Seed", "Seed", "Angel Round", "Grants", "Series A", "Series B",
-  "Series C", "Series D", "Series E", "Series F",
-  "Corporate Venture", "Bootstrapped", "Undisclosed or unknown",
+  "Stealth", "Bootstrapped", "Pre-Seed", "Seed", "Angel Round", "Grants",
+  "Series A", "Series B", "Series C", "Series D", "Series E", "Series F",
+  "Corporate Venture", "Undisclosed or unknown",
 ]
 
 function normalizeKey(val: string | undefined, dim: DimensionKey): string {
