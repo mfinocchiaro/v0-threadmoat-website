@@ -245,7 +245,7 @@ export function Sidebar({ collapsed, onToggle, onSelectScenario, activeScenario,
         )}
 
         {/* Scrollable nav */}
-        <ScrollArea className="flex-1 py-2">
+        <ScrollArea className="flex-1 min-h-0 py-2">
           <nav className="space-y-0.5 px-2">
             {NAV_ITEMS.map(item => (
               <NavLink key={item.href} {...item} collapsed={collapsed} />

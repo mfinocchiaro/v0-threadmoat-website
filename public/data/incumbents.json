@@ -130,6 +130,18 @@
     "hq": "Sweden"
   },
   {
+    "id": "Inductive Automation Ignition",
+    "vendor": "Inductive Automation",
+    "product": "Ignition",
+    "category": "Factory Futures (MES, IIOT)",
+    "subcategories": ["SCADA", "MES", "IIoT", "HMI"],
+    "url": "https://inductiveautomation.com/ignition/",
+    "revenueB": 0.25,
+    "revenueNote": "Private; est. ~$200-250M ARR; rapid growth via unlimited licensing model",
+    "founded": 2003,
+    "hq": "United States"
+  },
+  {
     "id": "Aras Innovator",
     "vendor": "Aras",
     "product": "Aras Innovator",

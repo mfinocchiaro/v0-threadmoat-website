@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useRef, useState, useMemo, useDeferredValue } from "react"
+import React, { useEffect, useRef, useState, useMemo, useDeferredValue, startTransition } from "react"
 import * as d3 from "d3"
 import { Company } from "@/lib/company-data"
 import { getInvestmentColor, INVESTMENT_LIST_COLORS } from "@/lib/investment-colors"
@@ -572,7 +572,7 @@ export function NetworkGraph({ data, className, preview = false }: NetworkGraphP
         <div className="flex flex-wrap gap-4 items-center">
           <div className="space-y-1">
             <label className="text-xs font-medium text-muted-foreground">Metric Sizing</label>
-            <Select value={metric} onValueChange={setMetric}>
+            <Select value={metric} onValueChange={v => startTransition(() => setMetric(v))}>
               <SelectTrigger className="w-[140px] h-8"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="headcount">Headcount</SelectItem>
@@ -584,7 +584,7 @@ export function NetworkGraph({ data, className, preview = false }: NetworkGraphP
           </div>
           <div className="space-y-1">
             <label className="text-xs font-medium text-muted-foreground">Primary Cluster</label>
-            <Select value={primaryType} onValueChange={setPrimaryType}>
+            <Select value={primaryType} onValueChange={v => startTransition(() => setPrimaryType(v))}>
               <SelectTrigger className="w-[170px] h-8"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="investment">Investment List</SelectItem>
@@ -594,7 +594,7 @@ export function NetworkGraph({ data, className, preview = false }: NetworkGraphP
           </div>
           <div className="space-y-1">
             <label className="text-xs font-medium text-muted-foreground">Secondary Link</label>
-            <Select value={secondaryType} onValueChange={setSecondaryType}>
+            <Select value={secondaryType} onValueChange={v => startTransition(() => setSecondaryType(v))}>
               <SelectTrigger className="w-[170px] h-8"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="subcategory">Subcategory</SelectItem>
@@ -616,7 +616,7 @@ export function NetworkGraph({ data, className, preview = false }: NetworkGraphP
             variant={showIncumbents ? "default" : "outline"}
             size="sm"
             className="h-8"
-            onClick={() => setShowIncumbents(v => !v)}
+            onClick={() => startTransition(() => setShowIncumbents(v => !v))}
           >
             <Building2 className="mr-2 h-3 w-3" />
             Incumbents {showIncumbents ? "On" : "Off"}

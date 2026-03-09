@@ -291,7 +291,7 @@ export function ConfigPanel({ companies, profileType, isAdmin, onSelectScenario 
 
           {/* ─── Thesis Tab ──────────────────────────── */}
           <TabsContent value="thesis" className="flex-1 flex flex-col min-h-0 mt-0">
-            <ScrollArea className="flex-1">
+            <ScrollArea className="flex-1 min-h-0">
               <div className="px-4 py-3 space-y-4">
                 {/* Saved theses section */}
                 {scenarioSaved.length > 0 && (
@@ -387,7 +387,7 @@ export function ConfigPanel({ companies, profileType, isAdmin, onSelectScenario 
 
           {/* ─── Layout Tab ──────────────────────────── */}
           <TabsContent value="layout" className="flex-1 flex flex-col min-h-0 mt-0">
-            <ScrollArea className="flex-1">
+            <ScrollArea className="flex-1 min-h-0">
               <div className="px-4 py-3 space-y-6">
                 <div>
                   <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
