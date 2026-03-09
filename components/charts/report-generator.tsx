@@ -152,35 +152,23 @@ function ICReport({ company }: { company: Company }) {
         return (
           <div>
             <div className="text-xs font-semibold uppercase text-muted-foreground mb-2">Known Customers</div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {customers.map(name => {
-                const logoUrl = getCustomerLogoUrl(name, 48)
+                const logoUrl = getCustomerLogoUrl(name, 32)
                 return (
                   <div
                     key={name}
-                    title={name}
-                    className="w-8 h-8 rounded border border-border bg-white dark:bg-muted/50 overflow-hidden flex items-center justify-center"
+                    className="flex items-center gap-1 rounded border border-border bg-muted/40 px-1.5 py-0.5"
                   >
-                    {logoUrl ? (
-                      <>
-                        <img
-                          src={logoUrl}
-                          alt={name}
-                          className="w-full h-full object-contain p-0.5"
-                          onError={e => {
-                            e.currentTarget.style.display = "none";
-                            (e.currentTarget.nextSibling as HTMLElement).style.display = "flex"
-                          }}
-                        />
-                        <span className="hidden w-full h-full items-center justify-center text-[8px] font-bold text-muted-foreground">
-                          {name.slice(0, 3).toUpperCase()}
-                        </span>
-                      </>
-                    ) : (
-                      <span className="flex w-full h-full items-center justify-center text-[8px] font-bold text-muted-foreground">
-                        {name.slice(0, 3).toUpperCase()}
-                      </span>
+                    {logoUrl && (
+                      <img
+                        src={logoUrl}
+                        alt=""
+                        style={{ width: 13, height: 13, objectFit: "contain", flexShrink: 0, display: "block" }}
+                        onError={e => { e.currentTarget.style.display = "none" }}
+                      />
                     )}
+                    <span className="text-xs text-foreground/80">{name}</span>
                   </div>
                 )
               })}

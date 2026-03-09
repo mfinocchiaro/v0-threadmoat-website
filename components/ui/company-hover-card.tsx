@@ -13,6 +13,24 @@ interface CompanyHoverCardProps {
   className?: string
 }
 
+/** Small logo icon + name chip — always readable, logo is a bonus. */
+function CustomerChip({ name }: { name: string }) {
+  const logoUrl = getCustomerLogoUrl(name, 32)
+  return (
+    <div className="flex items-center gap-1 rounded border border-border bg-muted/40 px-1.5 py-0.5 max-w-[140px]">
+      {logoUrl && (
+        <img
+          src={logoUrl}
+          alt=""
+          style={{ width: 13, height: 13, objectFit: "contain", flexShrink: 0, display: "block" }}
+          onError={e => { e.currentTarget.style.display = "none" }}
+        />
+      )}
+      <span className="text-[10px] text-foreground/80 truncate leading-tight">{name}</span>
+    </div>
+  )
+}
+
 /** Shared hover/detail card used by Landscape, Periodic Table, and IC Reports. */
 export function CompanyHoverCard({ company, onClose, className }: CompanyHoverCardProps) {
   const logoPath = `/logos/${normalizeLogoName(company.name)}/logo_sm.png`
@@ -32,17 +50,15 @@ export function CompanyHoverCard({ company, onClose, className }: CompanyHoverCa
 
       {/* ── Header: startup logo + name + location ── */}
       <div className="flex items-start gap-2.5 p-3 border-b border-border">
-        <div className="w-9 h-9 shrink-0 rounded bg-muted border border-border overflow-hidden flex items-center justify-center">
+        <div className="w-9 h-9 shrink-0 rounded bg-muted border border-border overflow-hidden flex items-center justify-center relative">
           <img
             src={logoPath}
             alt={company.name}
             className="w-full h-full object-contain p-0.5"
-            onError={e => {
-              e.currentTarget.style.display = "none";
-              (e.currentTarget.nextSibling as HTMLElement).style.display = "flex"
-            }}
+            onError={e => { e.currentTarget.style.display = "none" }}
           />
-          <span className="hidden w-full h-full items-center justify-center text-[10px] font-bold text-muted-foreground">
+          {/* initials always rendered underneath — visible if img hides itself */}
+          <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-muted-foreground -z-10">
             {initials}
           </span>
         </div>
@@ -94,17 +110,14 @@ export function CompanyHoverCard({ company, onClose, className }: CompanyHoverCa
           <div key={s.label} className="flex items-center gap-2">
             <span className="w-[68px] text-[10px] text-muted-foreground shrink-0">{s.label}</span>
             <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
-              <div
-                className="h-full rounded-full bg-primary"
-                style={{ width: `${((s.value || 0) / s.max) * 100}%` }}
-              />
+              <div className="h-full rounded-full bg-primary" style={{ width: `${((s.value || 0) / s.max) * 100}%` }} />
             </div>
             <span className="text-[10px] font-medium w-6 text-right">{(s.value || 0).toFixed(1)}</span>
           </div>
         ))}
       </div>
 
-      {/* ── Badges: round / phase / subsegment ── */}
+      {/* ── Badges ── */}
       <div className="px-3 py-2 flex flex-wrap gap-1 border-b border-border">
         {company.latestFundingRound && (
           <Badge variant="secondary" className="text-[10px] h-5">{company.latestFundingRound}</Badge>
@@ -124,46 +137,16 @@ export function CompanyHoverCard({ company, onClose, className }: CompanyHoverCa
         </div>
       )}
 
-      {/* ── Known Customers ── */}
+      {/* ── Known Customers — named chips, logo is a bonus prefix ── */}
       {customers.length > 0 && (
         <div className="px-3 py-2.5">
           <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground mb-2">Known Customers</p>
-          <div className="flex flex-wrap gap-1.5">
-            {customers.slice(0, 10).map(name => {
-              const logoUrl = getCustomerLogoUrl(name, 48)
-              return (
-                <div
-                  key={name}
-                  title={name}
-                  className="w-7 h-7 rounded border border-border bg-white dark:bg-muted/50 overflow-hidden flex items-center justify-center"
-                >
-                  {logoUrl ? (
-                    <>
-                      <img
-                        src={logoUrl}
-                        alt={name}
-                        className="w-full h-full object-contain p-0.5"
-                        onError={e => {
-                          e.currentTarget.style.display = "none";
-                          (e.currentTarget.nextSibling as HTMLElement).style.display = "flex"
-                        }}
-                      />
-                      <span className="hidden w-full h-full items-center justify-center text-[7px] font-bold text-muted-foreground leading-none text-center px-0.5">
-                        {name.slice(0, 3).toUpperCase()}
-                      </span>
-                    </>
-                  ) : (
-                    <span className="flex w-full h-full items-center justify-center text-[7px] font-bold text-muted-foreground leading-none text-center px-0.5">
-                      {name.slice(0, 3).toUpperCase()}
-                    </span>
-                  )}
-                </div>
-              )
-            })}
-            {customers.length > 10 && (
-              <div className="w-7 h-7 rounded border border-border bg-muted/50 flex items-center justify-center text-[8px] text-muted-foreground font-medium">
-                +{customers.length - 10}
-              </div>
+          <div className="flex flex-wrap gap-1">
+            {customers.slice(0, 12).map(name => (
+              <CustomerChip key={name} name={name} />
+            ))}
+            {customers.length > 12 && (
+              <span className="text-[10px] text-muted-foreground self-center">+{customers.length - 12} more</span>
             )}
           </div>
         </div>
