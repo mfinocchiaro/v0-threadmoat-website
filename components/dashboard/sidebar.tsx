@@ -78,6 +78,7 @@ const VIZ_ITEMS = [
   { href: "/dashboard/marimekko",      icon: BarChart3,        label: "Marimekko" },
   { href: "/dashboard/spiral",         icon: TrendingUp,       label: "Spiral Timeline" },
   { href: "/dashboard/patterns",       icon: GridIcon,         label: "Patterns" },
+  { href: "/dashboard/customers",      icon: Users,            label: "Customer Network" },
 ];
 
 const ADMIN_ITEMS = [
