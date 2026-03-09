@@ -173,7 +173,7 @@ export default function PricingPage() {
             </div>
             <div className="mt-6 space-y-1">
               <div>
-                <span className="text-4xl font-bold">$4,999</span>
+                <span className="text-4xl font-bold">$1,999</span>
                 <span className="text-muted-foreground">/yr</span>
               </div>
               <div className="text-sm text-muted-foreground">
@@ -190,7 +190,7 @@ export default function PricingPage() {
             </ul>
             <div className="mt-8">
               <Link href="/auth/sign-up">
-                <Button className="w-full">Get started — $4,999/yr</Button>
+                <Button className="w-full">Get started — $1,999/yr</Button>
               </Link>
             </div>
           </div>
