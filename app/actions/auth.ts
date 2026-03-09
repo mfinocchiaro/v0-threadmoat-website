@@ -48,7 +48,8 @@ export async function registerUser(data: RegisterData): Promise<ActionResult> {
     const title       = data.title.trim()
     const phone       = data.phone?.trim() || null
     const linkedinUrl = data.linkedinUrl?.trim() || null
-    const inviteCode  = data.inviteCode?.trim().toUpperCase() || null
+    const inviteCode       = data.inviteCode?.trim().toUpperCase() || null
+    const marketingConsent = data.marketingConsent === true
     const { password, profileType, companySize } = data
 
     // --- Validate lengths ---
@@ -108,7 +109,7 @@ export async function registerUser(data: RegisterData): Promise<ActionResult> {
     `
 
     await sql`
-      INSERT INTO profiles (id, full_name, company, title, profile_type, phone, linkedin_url, company_size)
+      INSERT INTO profiles (id, full_name, company, title, profile_type, phone, linkedin_url, company_size, marketing_consent)
       VALUES (
         ${user.id as string},
         ${fullName},
@@ -117,7 +118,8 @@ export async function registerUser(data: RegisterData): Promise<ActionResult> {
         ${profileType},
         ${phone},
         ${linkedinUrl},
-        ${companySize ?? null}
+        ${companySize ?? null},
+        ${marketingConsent}
       )
     `
 

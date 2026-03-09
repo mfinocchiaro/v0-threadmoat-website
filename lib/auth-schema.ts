@@ -9,6 +9,7 @@ export interface RegisterData {
   linkedinUrl?: string
   companySize?: '1-10' | '11-50' | '51-200' | '201-500' | '500+'
   inviteCode?: string
+  marketingConsent?: boolean
 }
 
 export const PASSWORD_RULES = {

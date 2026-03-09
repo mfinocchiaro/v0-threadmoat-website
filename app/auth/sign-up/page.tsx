@@ -67,6 +67,8 @@ export default function SignUpPage() {
     repeatPassword: '',
     inviteCode: '',
   })
+  const [termsAccepted, setTermsAccepted] = useState(false)
+  const [marketingConsent, setMarketingConsent] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
@@ -82,6 +84,10 @@ export default function SignUpPage() {
 
     if (!form.profileType) {
       setError('Please select your profile type')
+      return
+    }
+    if (!termsAccepted) {
+      setError('You must accept the Terms of Service and Privacy Policy to continue')
       return
     }
     if (!passwordStrong) {
@@ -105,6 +111,7 @@ export default function SignUpPage() {
       linkedinUrl: form.linkedinUrl || undefined,
       companySize: (form.companySize as RegisterData['companySize']) || undefined,
       inviteCode: form.inviteCode || undefined,
+      marketingConsent,
     })
     if (result.success) {
       router.push('/auth/sign-up-success')
@@ -295,6 +302,43 @@ export default function SignUpPage() {
                       value={form.repeatPassword}
                       onChange={set('repeatPassword')}
                     />
+                  </div>
+
+                  {/* GDPR checkboxes */}
+                  <div className="flex flex-col gap-3 pt-1">
+                    <label className="flex items-start gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
+                        checked={termsAccepted}
+                        onChange={e => setTermsAccepted(e.target.checked)}
+                        required
+                      />
+                      <span className="text-sm text-muted-foreground">
+                        I agree to the{' '}
+                        <Link href="/terms" className="underline underline-offset-4 text-foreground" target="_blank">
+                          Terms of Service
+                        </Link>{' '}
+                        and{' '}
+                        <Link href="/privacy" className="underline underline-offset-4 text-foreground" target="_blank">
+                          Privacy Policy
+                        </Link>
+                        <span className="text-red-500 ml-0.5">*</span>
+                      </span>
+                    </label>
+
+                    <label className="flex items-start gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
+                        checked={marketingConsent}
+                        onChange={e => setMarketingConsent(e.target.checked)}
+                      />
+                      <span className="text-sm text-muted-foreground">
+                        I agree to receive product updates and marketing emails from ThreadMoat.{' '}
+                        <span className="text-muted-foreground/70">(optional)</span>
+                      </span>
+                    </label>
                   </div>
 
                   {error && <p className="text-sm text-red-500">{error}</p>}
