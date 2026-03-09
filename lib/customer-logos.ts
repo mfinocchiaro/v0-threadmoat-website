@@ -90,14 +90,80 @@ const CUSTOMER_DOMAINS: Record<string, string> = {
   "Roche": "roche.com",
 }
 
-/** Get Clearbit logo URL for a customer name. Returns null if no domain mapping exists. */
+/**
+ * Get Clearbit logo URL for a customer name.
+ * Tries exact match first, then case-insensitive, then prefix/contains matching
+ * to handle variants like "BMW Group" → "BMW", "Siemens AG" → "Siemens".
+ */
 export function getCustomerLogoUrl(name: string, size = 80): string | null {
-  const domain = CUSTOMER_DOMAINS[name]
-  if (!domain) return null
-  return `https://logo.clearbit.com/${domain}?size=${size}`
+  // 1. Exact match
+  if (CUSTOMER_DOMAINS[name]) return `https://logo.clearbit.com/${CUSTOMER_DOMAINS[name]}?size=${size}`
+
+  const nameLower = name.toLowerCase().trim()
+
+  // 2. Case-insensitive exact match
+  for (const [key, domain] of Object.entries(CUSTOMER_DOMAINS)) {
+    if (key.toLowerCase() === nameLower) return `https://logo.clearbit.com/${domain}?size=${size}`
+  }
+
+  // 3. Prefix match — known brand is a prefix of the customer name (e.g., "Siemens AG" starts with "Siemens")
+  for (const [key, domain] of Object.entries(CUSTOMER_DOMAINS)) {
+    const keyLower = key.toLowerCase()
+    if (nameLower.startsWith(keyLower) && (nameLower.length === keyLower.length || /[\s\-,.]/.test(nameLower[keyLower.length]))) {
+      return `https://logo.clearbit.com/${domain}?size=${size}`
+    }
+  }
+
+  return null
 }
 
-/** Check if a customer has a known domain for logo fetching */
+/** Check if a customer has a known domain for logo fetching (uses same fuzzy logic) */
 export function hasCustomerLogo(name: string): boolean {
-  return name in CUSTOMER_DOMAINS
+  return getCustomerLogoUrl(name) !== null
+}
+
+// ── Filtering ────────────────────────────────────────────────────────────────
+
+/**
+ * Patterns that indicate a non-company / vague entry in the Known Customers field.
+ * Shared across CustomerNetwork chart and hover cards.
+ */
+const SKIP_PATTERNS = [
+  /^n[\s./]*a\.?$/i,          // "N A", "N/A", "NA", "N.A." — standalone
+  /undisclosed/i, /\bnone\b/i, /unknown/i, /not disclosed/i, /stealth/i,
+  /targeted at/i, /various/i, /multiple/i, /general/i, /several/i, /esp\./i,
+  /incl\./i, /e\.g\./i, /such as/i, /and others/i, /more$/i, /^\d/,
+  /manufacturers/i, /companies$/i, /industries/i, /engineers/i, /teams$/i,
+  /firms$/i, /clients$/i, /enterprises/i, /bureaus/i, /factories/i, /shops$/i,
+  /customers$/i, /hospitals$/i, /universities$/i, /startups$/i, /agencies/i,
+  /studios$/i, /globally/i, /users$/i, /developers$/i, /defense$/i,
+  /aerospace$/i, /automotive$/i, /medical device/i, /construction$/i,
+  /pharma$/i, /logistics$/i, /\bOEM\b/i, /mid-sized/i, /fortune/i,
+  /pipeline$/i, /innovation labs/i, /design firms/i, /\bR&D\b/i,
+  /\bAEC\b/i, /manufacturing$/i, /^major /i, /^top /i, /^leading /i,
+]
+
+function isRealCompany(name: string): boolean {
+  const trimmed = name.trim()
+  if (trimmed.length < 2 || trimmed.length > 60) return false
+  return !SKIP_PATTERNS.some(p => p.test(trimmed))
+}
+
+/**
+ * Parse the raw comma-separated Known Customers string from the CSV,
+ * filter out vague/generic entries, and return deduplicated real names.
+ */
+export function parseKnownCustomers(raw: string | undefined | null): string[] {
+  if (!raw) return []
+  const seen = new Set<string>()
+  return raw
+    .split(",")
+    .map(s => s.trim().replace(/^["']|["']$/g, ""))
+    .filter(name => {
+      if (!isRealCompany(name)) return false
+      const key = name.toLowerCase()
+      if (seen.has(key)) return false
+      seen.add(key)
+      return true
+    })
 }

@@ -5,6 +5,7 @@ import * as d3 from "d3";
 import { Company } from "@/lib/company-data";
 import { cn, normalizeLogoName } from "@/lib/utils";
 import { Search, X } from "lucide-react";
+import { CompanyHoverCard } from "@/components/ui/company-hover-card";
 import "./periodic-table.css";
 
 interface PeriodicTableProps {
@@ -508,51 +509,11 @@ export function PeriodicTable({ data, compact = false, preview = false }: Period
 
             {/* Detail panel */}
             {!preview && selectedElement && (
-                <div className="fixed right-5 top-48 w-80 bg-card border border-border rounded-xl p-5 shadow-2xl z-50">
-                    <button onClick={() => setSelectedElement(null)} className="absolute top-3 right-3 text-muted-foreground hover:text-foreground text-xl">×</button>
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="w-16 h-16 bg-primary/20 rounded-lg flex items-center justify-center text-2xl font-bold">
-                            {(() => {
-                                const words = selectedElement.name.split(/\s+/).filter(w => w);
-                                return words.length >= 2
-                                    ? (words[0][0] + words[1][0]).toUpperCase()
-                                    : selectedElement.name.substring(0, 2).toUpperCase();
-                            })()}
-                        </div>
-                        <div>
-                            <h3 className="font-semibold text-lg">
-                                {selectedElement.url ? (
-                                    <a href={selectedElement.url} target="_blank" rel="noopener noreferrer" className="hover:text-primary hover:underline">
-                                        {selectedElement.name}
-                                    </a>
-                                ) : selectedElement.name}
-                            </h3>
-                            <p className="text-sm text-muted-foreground">{selectedElement.investmentList}</p>
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3 mb-4">
-                        <div className="bg-background/50 p-3 rounded">
-                            <div className="text-xl font-bold text-primary">{selectedElement.weightedScore || "—"}</div>
-                            <div className="text-xs text-muted-foreground">Weighted Score</div>
-                        </div>
-                        <div className="bg-background/50 p-3 rounded">
-                            <div className="text-xl font-bold text-primary">${((selectedElement.totalFunding || 0) / 1e6).toFixed(1)}M</div>
-                            <div className="text-xs text-muted-foreground">Total Funding</div>
-                        </div>
-                        <div className="bg-background/50 p-3 rounded">
-                            <div className="text-xl font-bold text-primary">{selectedElement.headcount || "—"}</div>
-                            <div className="text-xs text-muted-foreground">Headcount</div>
-                        </div>
-                        <div className="bg-background/50 p-3 rounded">
-                            <div className="text-xl font-bold text-primary">{selectedElement.latestFundingRound || "—"}</div>
-                            <div className="text-xs text-muted-foreground">Funding Round</div>
-                        </div>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                        {selectedElement.tags?.slice(0, 5).map((tag, i) => (
-                            <span key={i} className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded text-xs">{tag}</span>
-                        ))}
-                    </div>
+                <div className="fixed right-5 top-24 z-50">
+                    <CompanyHoverCard
+                        company={selectedElement}
+                        onClose={() => setSelectedElement(null)}
+                    />
                 </div>
             )}
         </div>

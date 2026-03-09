@@ -4,37 +4,9 @@ import { useEffect, useRef, useState, useMemo } from "react"
 import * as d3 from "d3"
 import { Company } from "@/lib/company-data"
 import { getInvestmentColor } from "@/lib/investment-colors"
-import { getCustomerLogoUrl } from "@/lib/customer-logos"
+import { getCustomerLogoUrl, parseKnownCustomers } from "@/lib/customer-logos"
 import { cn } from "@/lib/utils"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-
-// ── Vague / non-company patterns to exclude ────────────────────────────────
-const SKIP_PATTERNS = [
-  /undisclosed/i, /none/i, /unknown/i, /n\/?a/i, /not disclosed/i, /stealth/i,
-  /targeted at/i, /various/i, /multiple/i, /general/i, /several/i, /esp\./i,
-  /incl\./i, /e\.g\./i, /such as/i, /and others/i, /more$/i, /^\d/,
-  /manufacturers/i, /companies$/i, /industries/i, /engineers/i, /teams$/i,
-  /firms$/i, /clients$/i, /enterprises/i, /bureaus/i, /factories/i, /shops$/i,
-  /customers$/i, /hospitals$/i, /universities$/i, /startups$/i, /agencies/i,
-  /studios$/i, /globally/i, /users$/i, /developers$/i, /defense$/i,
-  /aerospace$/i, /automotive$/i, /medical device/i, /construction$/i,
-  /pharma$/i, /logistics$/i, /OEM$/i, /mid-sized/i, /fortune/i,
-  /pipeline$/i, /innovation labs/i, /design firms/i, /R&D$/i,
-  /AEC /i, /manufacturing$/i, /^major /i, /^top /i, /^leading /i,
-]
-
-function isValidCustomer(name: string): boolean {
-  if (name.length < 2 || name.length > 50) return false
-  return !SKIP_PATTERNS.some(p => p.test(name))
-}
-
-function parseCustomers(raw: string): string[] {
-  if (!raw) return []
-  return raw
-    .split(",")
-    .map(s => s.trim().replace(/^["']|["']$/g, ""))
-    .filter(isValidCustomer)
-}
 
 interface CustomerNode {
   id: string
@@ -73,7 +45,7 @@ export function CustomerNetwork({ data, className }: { data: Company[]; classNam
     const startupCustomers = new Map<string, { company: Company; customers: string[] }>()
 
     for (const company of data) {
-      const customers = parseCustomers(company.knownCustomers)
+      const customers = parseKnownCustomers(company.knownCustomers)
       if (customers.length === 0) continue
       startupCustomers.set(company.id, { company, customers })
       for (const c of customers) {
@@ -264,7 +236,11 @@ export function CustomerNetwork({ data, className }: { data: Company[]; classNam
     customerNodes
       .on("mouseover", (e, d) => {
         const cn = d as CustomerNode
-        showTooltip(e, `<strong>${cn.name}</strong><br/>${cn.count} startup${cn.count > 1 ? "s" : ""}`)
+        const logoUrl = getCustomerLogoUrl(cn.name, 40)
+        const logoHtml = logoUrl
+          ? `<img src="${logoUrl}" alt="${cn.name}" style="width:28px;height:28px;object-fit:contain;border-radius:4px;border:1px solid rgba(255,255,255,.15);background:#fff;padding:2px;flex-shrink:0" onerror="this.style.display='none'" />`
+          : `<div style="width:28px;height:28px;border-radius:4px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0">${cn.name.slice(0,3).toUpperCase()}</div>`
+        showTooltip(e, `<div style="display:flex;align-items:center;gap:8px">${logoHtml}<div><strong style="font-size:13px">${cn.name}</strong><br/><span style="font-size:11px;opacity:.7">${cn.count} startup${cn.count > 1 ? "s" : ""}</span></div></div>`)
         // Highlight connected
         const connected = new Set(simLinks.filter(l => (l.source as any).id === d.id || (l.target as any).id === d.id).map(l => {
           const s = l.source as any, t = l.target as any
@@ -282,7 +258,7 @@ export function CustomerNetwork({ data, className }: { data: Company[]; classNam
     startupNodes
       .on("mouseover", (e, d) => {
         const sn = d as StartupNode
-        showTooltip(e, `<strong>${sn.name}</strong><br/>${sn.investmentList}<br/>Headcount: ${sn.headcount}`)
+        showTooltip(e, `<strong style="font-size:13px">${sn.name}</strong><br/><span style="font-size:11px;opacity:.7">${sn.investmentList || ""}</span>${sn.headcount ? `<br/><span style="font-size:11px">Headcount: ${sn.headcount}</span>` : ""}`)
         const connected = new Set(simLinks.filter(l => (l.source as any).id === d.id || (l.target as any).id === d.id).map(l => {
           const s = l.source as any, t = l.target as any
           return s.id === d.id ? t.id : s.id

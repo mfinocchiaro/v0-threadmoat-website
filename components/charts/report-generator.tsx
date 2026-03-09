@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 import { Sparkles, ChevronRight } from "lucide-react"
+import { getCustomerLogoUrl, parseKnownCustomers } from "@/lib/customer-logos"
 
 interface ReportGeneratorProps {
   data: Company[]
@@ -143,6 +144,50 @@ function ICReport({ company }: { company: Company }) {
           </div>
         </div>
       )}
+
+      {/* Known Customers */}
+      {(() => {
+        const customers = parseKnownCustomers(company.knownCustomers)
+        if (customers.length === 0) return null
+        return (
+          <div>
+            <div className="text-xs font-semibold uppercase text-muted-foreground mb-2">Known Customers</div>
+            <div className="flex flex-wrap gap-2">
+              {customers.map(name => {
+                const logoUrl = getCustomerLogoUrl(name, 48)
+                return (
+                  <div
+                    key={name}
+                    title={name}
+                    className="w-8 h-8 rounded border border-border bg-white dark:bg-muted/50 overflow-hidden flex items-center justify-center"
+                  >
+                    {logoUrl ? (
+                      <>
+                        <img
+                          src={logoUrl}
+                          alt={name}
+                          className="w-full h-full object-contain p-0.5"
+                          onError={e => {
+                            e.currentTarget.style.display = "none";
+                            (e.currentTarget.nextSibling as HTMLElement).style.display = "flex"
+                          }}
+                        />
+                        <span className="hidden w-full h-full items-center justify-center text-[8px] font-bold text-muted-foreground">
+                          {name.slice(0, 3).toUpperCase()}
+                        </span>
+                      </>
+                    ) : (
+                      <span className="flex w-full h-full items-center justify-center text-[8px] font-bold text-muted-foreground">
+                        {name.slice(0, 3).toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Website */}
       {company.url && (

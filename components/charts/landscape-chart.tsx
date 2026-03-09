@@ -6,7 +6,7 @@ import { useFilter } from "@/contexts/filter-context";
 import { cn, normalizeLogoName } from "@/lib/utils";
 import { getInvestmentColor } from "@/lib/investment-colors";
 import { X, ExternalLink, ArrowLeft } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { CompanyHoverCard } from "@/components/ui/company-hover-card";
 import {
     Select,
     SelectContent,
@@ -62,122 +62,20 @@ function getGroupColor(groupName: string, index: number, groupBy: string): strin
     return FALLBACK_PALETTE[index % FALLBACK_PALETTE.length];
 }
 
-// ---------- Rich hover card ----------
+// ---------- Hover card positioning wrapper ----------
 interface HoverCard {
     company: Company;
     x: number;
     y: number;
 }
 
-function CompanyHoverCard({ card, onClose }: { card: HoverCard; onClose: () => void }) {
+function HoverCardPositioned({ card, onClose }: { card: HoverCard; onClose: () => void }) {
     const { company, x, y } = card;
-    const logoPath = `/logos/${normalizeLogoName(company.name)}/logo_sm.png`;
-    const initials = company.name.split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join("").toUpperCase();
-
-    // Keep card on screen
     const left = Math.min(x + 12, window.innerWidth - 320);
-    const top  = Math.min(y - 8,  window.innerHeight - 440);
-
-    const scores = [
-        { label: "Weighted",   value: company.weightedScore,          max: 5 },
-        { label: "Market Opp", value: company.marketOpportunity,       max: 5 },
-        { label: "Tech Diff",  value: company.techDifferentiation,     max: 5 },
-        { label: "Team Exec",  value: company.teamExecution,           max: 5 },
-        { label: "Moat",       value: company.competitiveMoat,         max: 5 },
-    ];
-
+    const top  = Math.min(y - 8,  window.innerHeight - 480);
     return (
-        <div
-            className="fixed z-[9999] w-72 rounded-xl border border-border bg-card shadow-2xl text-sm"
-            style={{ left, top }}
-            onMouseEnter={onClose /* keep tooltip alive while hovering — handled by parent logic */}
-        >
-            {/* Header */}
-            <div className="flex items-start gap-2.5 p-3 border-b border-border">
-                <div className="w-9 h-9 shrink-0 rounded bg-muted border border-border overflow-hidden flex items-center justify-center">
-                    <img
-                        src={logoPath}
-                        alt={company.name}
-                        className="w-full h-full object-contain p-0.5"
-                        onError={e => {
-                            e.currentTarget.style.display = "none";
-                            (e.currentTarget.nextSibling as HTMLElement).style.display = "flex";
-                        }}
-                    />
-                    <span className="hidden w-full h-full items-center justify-center text-[10px] font-bold text-muted-foreground">
-                        {initials}
-                    </span>
-                </div>
-                <div className="flex-1 min-w-0">
-                    {company.url ? (
-                        <a
-                            href={company.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="font-semibold text-foreground hover:text-primary hover:underline leading-tight flex items-center gap-1 group"
-                            onClick={e => e.stopPropagation()}
-                        >
-                            <span className="truncate">{company.name}</span>
-                            <ExternalLink className="h-3 w-3 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </a>
-                    ) : (
-                        <span className="font-semibold text-foreground leading-tight block truncate">{company.name}</span>
-                    )}
-                    <p className="text-xs text-muted-foreground truncate">{company.hqLocation}</p>
-                </div>
-            </div>
-
-            {/* Key stats */}
-            <div className="grid grid-cols-3 divide-x divide-border border-b border-border text-center">
-                <div className="p-2">
-                    <p className="text-[10px] text-muted-foreground">Funding</p>
-                    <p className="font-semibold text-xs">{formatCurrency(company.totalFunding)}</p>
-                </div>
-                <div className="p-2">
-                    <p className="text-[10px] text-muted-foreground">Headcount</p>
-                    <p className="font-semibold text-xs">{company.headcount || "—"}</p>
-                </div>
-                <div className="p-2">
-                    <p className="text-[10px] text-muted-foreground">Founded</p>
-                    <p className="font-semibold text-xs">{company.founded || "—"}</p>
-                </div>
-            </div>
-
-            {/* Score bars */}
-            <div className="p-3 space-y-1.5 border-b border-border">
-                {scores.map(s => (
-                    <div key={s.label} className="flex items-center gap-2">
-                        <span className="w-[68px] text-[10px] text-muted-foreground shrink-0">{s.label}</span>
-                        <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
-                            <div
-                                className="h-full rounded-full bg-primary"
-                                style={{ width: `${((s.value || 0) / s.max) * 100}%` }}
-                            />
-                        </div>
-                        <span className="text-[10px] font-medium w-6 text-right">{(s.value || 0).toFixed(1)}</span>
-                    </div>
-                ))}
-            </div>
-
-            {/* Stage + round */}
-            <div className="px-3 py-2 flex flex-wrap gap-1 border-b border-border">
-                {company.latestFundingRound && (
-                    <Badge variant="secondary" className="text-[10px] h-5">{company.latestFundingRound}</Badge>
-                )}
-                {company.startupLifecyclePhase && (
-                    <Badge variant="outline" className="text-[10px] h-5">{company.startupLifecyclePhase}</Badge>
-                )}
-                {company.subsegment && (
-                    <Badge variant="outline" className="text-[10px] h-5 max-w-[160px] truncate">{company.subsegment}</Badge>
-                )}
-            </div>
-
-            {/* Strengths snippet */}
-            {company.strengths && (
-                <div className="px-3 py-2 text-[10px] text-muted-foreground line-clamp-2">
-                    <span className="font-medium text-foreground">Strengths: </span>{company.strengths}
-                </div>
-            )}
+        <div className="fixed z-[9999]" style={{ left, top }}>
+            <CompanyHoverCard company={company} onClose={onClose} />
         </div>
     );
 }
@@ -505,7 +403,7 @@ export function LandscapeChart({ data, className }: LandscapeChartProps) {
             {/* Hover card (fixed-position, outside column layout) */}
             {hoverCard && (
                 <div onMouseEnter={keepHover} onMouseLeave={hideHover}>
-                    <CompanyHoverCard card={hoverCard} onClose={hideHover} />
+                    <HoverCardPositioned card={hoverCard} onClose={hideHover} />
                 </div>
             )}
         </div>
