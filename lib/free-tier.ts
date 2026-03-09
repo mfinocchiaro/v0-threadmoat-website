@@ -3,7 +3,7 @@ export const FREE_TIER_PATHS = new Set([
   '/dashboard',
   '/dashboard/network',
   '/dashboard/landscape-intro',
-  '/dashboard/explore',
+  '/dashboard/map',
   '/dashboard/settings',
 ])
 

@@ -2,14 +2,14 @@
 
 import { usePathname } from "next/navigation"
 import Link from "next/link"
-import { Lock, ArrowRight, Network, Compass, Globe } from "lucide-react"
+import { Lock, ArrowRight, Network, Compass, Map } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { isFreeTierPath } from "@/lib/free-tier"
 
 const FREE_HIGHLIGHTS = [
   { icon: Network, label: "Network Graph", href: "/dashboard/network" },
   { icon: Compass, label: "Investment Landscape", href: "/dashboard/landscape-intro" },
-  { icon: Globe, label: "Globe Explorer", href: "/dashboard/explore" },
+  { icon: Map, label: "Geography Map", href: "/dashboard/map" },
 ]
 
 export function FreeUserGuard({ children }: { children: React.ReactNode }) {

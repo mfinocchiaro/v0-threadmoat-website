@@ -1,7 +1,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Check, Calendar, Database, Phone, MapPin, CalendarDays, Eye } from "lucide-react"
+import { Check, Calendar, Database, Phone, MapPin, CalendarDays, BarChart2, Network, FileText } from "lucide-react"
 
 // Update this date each week after the Monday refresh
 const LAST_UPDATED = "March 3, 2026"
@@ -9,7 +9,7 @@ const LAST_UPDATED = "March 3, 2026"
 const FREE_FEATURES = [
   "Network Graph — interactive relationship mapping",
   "Investment Landscape — 10 domains, category breakdown",
-  "Globe Explorer — geographic distribution view",
+  "Geography Map — global startup distribution",
   "Updated weekly with the full dataset",
 ]
 
@@ -137,7 +137,7 @@ export default function PricingPage() {
                 <h3 className="text-xl font-semibold">Explorer</h3>
                 <p className="mt-1 text-sm text-muted-foreground">Free forever</p>
               </div>
-              <Eye className="h-5 w-5 text-muted-foreground mt-1" />
+              <Network className="h-5 w-5 text-muted-foreground mt-1" />
             </div>
             <div className="mt-6 space-y-1">
               <div>
@@ -233,23 +233,26 @@ export default function PricingPage() {
           </p>
           <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto">
             {[
-              { label: "Funding Stage Distribution", desc: "Bar chart of companies by round (Seed → Series D+)" },
-              { label: "Discipline Breakdown", desc: "CAD / CAM / PLM / ERP / Industrial AI by headcount and funding" },
-              { label: "Bi-Monthly Briefing", desc: "30-minute one-on-one analyst call covering portfolio-relevant market moves and emerging signals" },
-            ].map(sample => (
-              <div
-                key={sample.label}
-                className="rounded-lg border border-border/40 bg-card overflow-hidden"
-              >
-                <div className="h-40 bg-muted/60 flex items-center justify-center text-muted-foreground text-sm">
-                  [screenshot]
+              { icon: BarChart2, label: "Funding Stage Distribution", desc: "Bar chart of companies by round (Seed → Series D+)" },
+              { icon: Network, label: "Discipline Breakdown", desc: "CAD / CAM / PLM / ERP / Industrial AI by headcount and funding" },
+              { icon: FileText, label: "Bi-Monthly Briefing", desc: "30-minute one-on-one analyst call covering portfolio-relevant market moves and emerging signals" },
+            ].map(sample => {
+              const Icon = sample.icon
+              return (
+                <div
+                  key={sample.label}
+                  className="rounded-lg border border-border/40 bg-card overflow-hidden"
+                >
+                  <div className="h-40 bg-gradient-to-br from-primary/5 to-primary/15 flex items-center justify-center">
+                    <Icon className="h-12 w-12 text-primary/30" />
+                  </div>
+                  <div className="p-4">
+                    <p className="font-medium text-sm">{sample.label}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{sample.desc}</p>
+                  </div>
                 </div>
-                <div className="p-4">
-                  <p className="font-medium text-sm">{sample.label}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{sample.desc}</p>
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </section>
