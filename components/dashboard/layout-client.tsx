@@ -3,6 +3,7 @@
 import { ReactNode } from "react"
 import type { Session } from "next-auth"
 import { ScenarioProvider, useScenario } from "@/contexts/scenario-context"
+import { PlanProvider } from "@/contexts/plan-context"
 import { SidebarShell } from "./sidebar-shell"
 import { FreeUserGuard } from "./free-user-guard"
 
@@ -45,10 +46,12 @@ export function DashboardLayoutClient({
   children: ReactNode
 }) {
   return (
-    <ScenarioProvider initialScenario={initialScenario}>
-      <LayoutInner user={user} profile={profile} isAdmin={isAdmin} isFreeUser={isFreeUser}>
-        {children}
-      </LayoutInner>
-    </ScenarioProvider>
+    <PlanProvider isFreeUser={isFreeUser}>
+      <ScenarioProvider initialScenario={initialScenario}>
+        <LayoutInner user={user} profile={profile} isAdmin={isAdmin} isFreeUser={isFreeUser}>
+          {children}
+        </LayoutInner>
+      </ScenarioProvider>
+    </PlanProvider>
   )
 }

@@ -15,6 +15,7 @@ import { Rocket, TrendingUp, Building2, Layers } from "lucide-react"
 import { FOCUS_SCENARIOS } from "@/components/dashboard/sidebar"
 import { LayoutProvider } from "@/contexts/layout-context"
 import { ConfigPanel } from "@/components/dashboard/config-panel"
+import { usePlan } from "@/contexts/plan-context"
 
 const SCENARIO_THESIS: Record<string, ThesisType> = {
   startup_founder: "founder",
@@ -63,6 +64,7 @@ function DashboardInner({ companies, isLoading, profileType, onSelectProfile, is
   isAdmin: boolean
 }) {
   const { applyThesis } = useThesis()
+  const { isFreeUser } = usePlan()
 
   const handleSelectProfile = useCallback((key: string) => {
     onSelectProfile(key)
@@ -91,12 +93,14 @@ function DashboardInner({ companies, isLoading, profileType, onSelectProfile, is
       {profileType === "oem_enterprise" && <OEMDashboard data={companies} isLoading={isLoading} isAdmin={isAdmin} />}
       {profileType === "isv_platform" && <ISVDashboard data={companies} isLoading={isLoading} isAdmin={isAdmin} />}
 
-      <ConfigPanel
-        companies={companies}
-        profileType={profileType}
-        isAdmin={isAdmin}
-        onSelectScenario={handleSelectProfile}
-      />
+      {!isFreeUser && (
+        <ConfigPanel
+          companies={companies}
+          profileType={profileType}
+          isAdmin={isAdmin}
+          onSelectScenario={handleSelectProfile}
+        />
+      )}
     </>
   )
 }
