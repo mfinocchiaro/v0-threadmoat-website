@@ -199,10 +199,10 @@ export function CustomerNetwork({ data, className }: { data: Company[]; classNam
 
     customerNodes.append("circle")
       .attr("r", d => rScale((d as CustomerNode).count))
-      .attr("fill", d => nameToColor(d.name))
-      .attr("stroke", "#fff")
+      .attr("fill", d => getCustomerLogoUrl(d.name) ? "#1e293b" : nameToColor(d.name))
+      .attr("stroke", d => getCustomerLogoUrl(d.name) ? "#94a3b8" : "#fff")
       .attr("stroke-width", 2)
-      .attr("stroke-opacity", 0.4)
+      .attr("stroke-opacity", 0.6)
 
     // Logo images — always render initials text first as fallback, then overlay image.
     // This way even if the image fails to load, something is always visible.

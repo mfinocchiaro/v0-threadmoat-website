@@ -79,6 +79,7 @@ const VIZ_ITEMS = [
   { href: "/dashboard/spiral",         icon: TrendingUp,       label: "Spiral Timeline" },
   { href: "/dashboard/patterns",       icon: GridIcon,         label: "Patterns" },
   { href: "/dashboard/customers",      icon: Users,            label: "Customer Network" },
+  { href: "/dashboard/investor-network", icon: GitBranch,      label: "Investor Network" },
 ];
 
 const ADMIN_ITEMS = [
