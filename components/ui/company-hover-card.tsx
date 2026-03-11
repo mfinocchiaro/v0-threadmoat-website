@@ -130,6 +130,36 @@ export function CompanyHoverCard({ company, onClose, className }: CompanyHoverCa
         )}
       </div>
 
+      {/* ── Category + Differentiation Tags ── */}
+      {((company.categoryTags?.length ?? 0) > 0 || (company.differentiationTags?.length ?? 0) > 0) && (
+        <div className="px-3 py-2 space-y-1.5 border-b border-border">
+          {company.categoryTags?.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {company.categoryTags.slice(0, 4).map(tag => (
+                <span key={tag} className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-medium bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/20">
+                  {tag}
+                </span>
+              ))}
+              {company.categoryTags.length > 4 && (
+                <span className="text-[9px] text-muted-foreground self-center">+{company.categoryTags.length - 4}</span>
+              )}
+            </div>
+          )}
+          {company.differentiationTags?.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {company.differentiationTags.slice(0, 3).map(tag => (
+                <span key={tag} className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-medium bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20">
+                  {tag}
+                </span>
+              ))}
+              {company.differentiationTags.length > 3 && (
+                <span className="text-[9px] text-muted-foreground self-center">+{company.differentiationTags.length - 3}</span>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* ── Strengths snippet ── */}
       {company.strengths && (
         <div className="px-3 py-2 text-[10px] text-muted-foreground line-clamp-2 border-b border-border">

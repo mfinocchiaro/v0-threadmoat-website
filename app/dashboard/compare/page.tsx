@@ -150,6 +150,7 @@ function CompareInner() {
                 <TabsTrigger value="overview">Overview</TabsTrigger>
                 <TabsTrigger value="moat">Scores</TabsTrigger>
                 <TabsTrigger value="funding">Funding</TabsTrigger>
+                <TabsTrigger value="tags">Tags</TabsTrigger>
               </TabsList>
 
               <TabsContent value="overview">
@@ -216,6 +217,73 @@ function CompareInner() {
                         ))}
                       </TableRow>
                     ))}
+                  </TableBody>
+                </Table>
+              </TabsContent>
+
+              <TabsContent value="tags">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-44">Dimension</TableHead>
+                      {selectedCompanies.map(c => <TableHead key={c.id}>{c.name}</TableHead>)}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell className="font-medium align-top">Category</TableCell>
+                      {selectedCompanies.map(c => (
+                        <TableCell key={c.id}>
+                          <div className="flex flex-wrap gap-1">
+                            {c.categoryTags?.map(tag => (
+                              <span key={tag} className="inline-flex px-1.5 py-0.5 rounded text-[11px] font-medium bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/20">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-medium align-top">Operating Model</TableCell>
+                      {selectedCompanies.map(c => (
+                        <TableCell key={c.id}>
+                          <div className="flex flex-wrap gap-1">
+                            {c.operatingModelTags?.map(tag => (
+                              <span key={tag} className="inline-flex px-1.5 py-0.5 rounded text-[11px] font-medium bg-muted text-foreground border border-border">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-medium align-top">Differentiators</TableCell>
+                      {selectedCompanies.map(c => (
+                        <TableCell key={c.id}>
+                          <div className="flex flex-wrap gap-1">
+                            {c.differentiationTags?.map(tag => (
+                              <span key={tag} className="inline-flex px-1.5 py-0.5 rounded text-[11px] font-medium bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-medium align-top">Industries</TableCell>
+                      {selectedCompanies.map(c => (
+                        <TableCell key={c.id}>
+                          <div className="flex flex-wrap gap-1">
+                            {c.industriesServed?.map(ind => (
+                              <Badge key={ind} variant="outline" className="text-[11px] h-5">{ind}</Badge>
+                            ))}
+                          </div>
+                        </TableCell>
+                      ))}
+                    </TableRow>
                   </TableBody>
                 </Table>
               </TabsContent>

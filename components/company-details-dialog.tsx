@@ -129,16 +129,45 @@ export function CompanyDetailsDialog({ company, open, onOpenChange }: CompanyDet
                                         ))}
                                     </div>
                                 </div>
-                                <div>
-                                    <p className="text-xs font-medium text-muted-foreground mb-1">Tags</p>
-                                    <div className="flex flex-wrap gap-1">
-                                        {company.tags?.map(tag => (
-                                            <Badge key={tag} variant="outline" className="opacity-75">{tag}</Badge>
-                                        ))}
+                                {company.categoryTags?.length > 0 && (
+                                    <div>
+                                        <p className="text-xs font-medium text-muted-foreground mb-1">Category</p>
+                                        <div className="flex flex-wrap gap-1">
+                                            {company.categoryTags.map(tag => (
+                                                <span key={tag} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/20">
+                                                    {tag}
+                                                </span>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
+                                )}
+                                {company.operatingModelTags?.length > 0 && (
+                                    <div>
+                                        <p className="text-xs font-medium text-muted-foreground mb-1">Operating Model</p>
+                                        <div className="flex flex-wrap gap-1">
+                                            {company.operatingModelTags.map(tag => (
+                                                <span key={tag} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted text-foreground border border-border">
+                                                    {tag}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </section>
+
+                        {company.differentiationTags?.length > 0 && (
+                            <section>
+                                <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wider">Differentiators</h3>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {company.differentiationTags.map(tag => (
+                                        <span key={tag} className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20">
+                                            {tag}
+                                        </span>
+                                    ))}
+                                </div>
+                            </section>
+                        )}
 
                         <section>
                             <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wider">Analysis Notes</h3>

@@ -12,6 +12,8 @@ interface FilterState {
   lifecycle: string[]
   fundingRound: string[]
   operatingModel: string[]
+  categoryTags: string[]
+  differentiationTags: string[]
   metrics: string
 }
 
@@ -33,6 +35,8 @@ export const DEFAULT_FILTERS: FilterState = {
   lifecycle: [],
   fundingRound: [],
   operatingModel: [],
+  categoryTags: [],
+  differentiationTags: [],
   metrics: "totalFunding",
 }
 
@@ -77,6 +81,16 @@ export function FilterProvider({ children }: { children: ReactNode }) {
 
     if (filters.operatingModel.length > 0) {
       const hasTag = company.operatingModelTags?.some(t => filters.operatingModel.includes(t))
+      if (!hasTag) return false
+    }
+
+    if (filters.categoryTags.length > 0) {
+      const hasTag = company.categoryTags?.some(t => filters.categoryTags.includes(t))
+      if (!hasTag) return false
+    }
+
+    if (filters.differentiationTags.length > 0) {
+      const hasTag = company.differentiationTags?.some(t => filters.differentiationTags.includes(t))
       if (!hasTag) return false
     }
 
