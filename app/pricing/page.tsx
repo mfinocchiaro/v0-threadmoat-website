@@ -1,20 +1,37 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Check, Calendar, Phone, MapPin, CalendarDays, BarChart2, Network, FileText, BookOpen, Download, ShieldCheck } from "lucide-react"
+import { Check, Calendar, Phone, MapPin, CalendarDays, BarChart2, Network, FileText, BookOpen, Download, ShieldCheck, Users, Building2, Briefcase, Castle } from "lucide-react"
 
 // Update this date each week after the Monday refresh
-const LAST_UPDATED = "March 3, 2026"
+const LAST_UPDATED = "March 11, 2026"
 
 const REPORT_FEATURES = [
   "150+ page deep-dive analysis",
-  "500+ companies, $15.5B VC funding mapped",
+  "557 companies, $15.5B VC funding mapped",
   "Incumbent landscape — $22–24B anchor vendors profiled",
   "Startup ecosystem — 10 investment categories ranked",
   "$50B+ M&A consolidation analysis (2022–2025)",
   "5-year market forecast ($120–140B by 2028)",
-  "Top 10 company rankings with scoring methodology",
-  "Delivered as PDF within 24 hours of purchase",
+  "ThreadMoat Top 25 rankings with 8-dimension scoring",
+  "Personalized, watermarked copy with unique Copy ID",
+  "12 months of updates included",
+]
+
+const GROUP_FEATURES = [
+  "Everything in Single Entity, plus:",
+  "Named subsidiaries / business units covered",
+  "ThreadMoat dashboard access (22 visualizations)",
+  "Internal distribution across licensed entities",
+  "Scenario modeling + saved views",
+]
+
+const PORTFOLIO_FEATURES = [
+  "Everything in Group, plus:",
+  "One PE/VC firm + up to 5 named portfolio companies",
+  "60-min analyst briefing with Michael Finocchiaro",
+  "Spreadsheet annex (557 companies, all scoring dimensions)",
+  "Custom sector deep-dive on one category of choice",
 ]
 
 const FREE_FEATURES = [
@@ -24,7 +41,7 @@ const FREE_FEATURES = [
   "Updated weekly with the full dataset",
 ]
 
-const WATCHTOWER_FEATURES = [
+const RED_KEEP_FEATURES = [
   "All 20+ dashboards + filters + saved views",
   "Annual Market State Report included",
   "Watchlists + alerts on portfolio companies",
@@ -33,6 +50,14 @@ const WATCHTOWER_FEATURES = [
   "Controlled dataset access / bespoke exports under contract",
   "Dedicated analyst support",
   "Quarterly strategy sessions",
+]
+
+const ADDONS = [
+  { name: "ThreadMoat Dashboard", price: "$2,999/yr", desc: "22 interactive visualizations, scenario modeling, live filters" },
+  { name: "Analyst Briefing (60 min)", price: "$1,500", desc: "One-on-one with Michael Finocchiaro — tailored to your strategy" },
+  { name: "Quarterly Data Refresh", price: "$3,999/yr", desc: "Updated company data, new entrants, revised scoring" },
+  { name: "Spreadsheet Annex", price: "$1,999", desc: "Full 557-company dataset in Excel with all scoring dimensions" },
+  { name: "Custom Sector Deep-Dive", price: "From $5,000", desc: "Bespoke analysis for your category, vertical, or competitive question" },
 ]
 
 const METHODOLOGY_FIELDS = [
@@ -129,118 +154,209 @@ export default function PricingPage() {
           with 35+ years in engineering software markets.
         </p>
         <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground border border-border/40 rounded-lg px-4 py-2 bg-muted/30">
-          <strong>Analytics access only.</strong> Raw directory available exclusively via Watchtower engagement.
+          <strong>Analytics access only.</strong> Raw directory available exclusively via Red Keep engagement.
         </p>
       </section>
 
-      {/* Pricing Cards */}
-      <section className="container mx-auto px-4 pb-24">
-        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-3">
+      {/* Report License Tiers */}
+      <section className="container mx-auto px-4 pb-16">
+        <h2 className="text-center text-2xl font-bold mb-2">Market Report Licenses</h2>
+        <p className="text-center text-muted-foreground mb-10 max-w-2xl mx-auto">
+          Every copy is personalized, watermarked, and traceable. Choose the license that fits your organization.
+        </p>
+        <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-4">
 
-          {/* 2026 Market Report */}
-          <div className="flex flex-col rounded-lg border-2 border-primary/60 bg-card p-8 shadow-md relative">
+          {/* Single Entity */}
+          <div className="flex flex-col rounded-lg border-2 border-primary/60 bg-card p-6 shadow-md relative">
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 text-xs font-semibold text-primary-foreground">
-              New Release
+              Most Popular
             </div>
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-xl font-semibold">2026 Market Report</h3>
-                <p className="mt-1 text-sm text-muted-foreground">Engineering Software &amp; Industrial AI</p>
+                <h3 className="text-lg font-semibold">Single Entity</h3>
+                <p className="mt-1 text-xs text-muted-foreground">One legal entity, internal use only</p>
               </div>
               <BookOpen className="h-5 w-5 text-primary mt-1" />
             </div>
-            <div className="mt-6 space-y-1">
-              <div>
-                <span className="text-4xl font-bold">$4,999</span>
-              </div>
-              <div className="text-sm text-muted-foreground">
-                Individual license &mdash; one-time purchase
-              </div>
+            <div className="mt-5">
+              <span className="text-3xl font-bold">$4,999</span>
+              <p className="text-xs text-muted-foreground mt-1">One-time purchase</p>
             </div>
-            <ul className="mt-8 flex-1 space-y-3">
+            <ul className="mt-6 flex-1 space-y-2.5">
               {REPORT_FEATURES.map(f => (
                 <li key={f} className="flex items-start gap-2">
-                  <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                  <span className="text-sm">{f}</span>
+                  <Check className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
+                  <span className="text-xs">{f}</span>
                 </li>
               ))}
             </ul>
-            <div className="mt-8 space-y-3">
+            <div className="mt-6 space-y-2.5">
               <Link href="/auth/sign-up?product=market-report-2026">
-                <Button className="w-full">Purchase Report</Button>
+                <Button className="w-full" size="sm">Purchase Report</Button>
               </Link>
               <a
                 href="/reports/2026-market-report-sample.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="flex items-center justify-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
-                <Download className="h-3.5 w-3.5" />
-                Download redacted sample
+                <Download className="h-3 w-3" />
+                Download free sample (30 pages)
               </a>
             </div>
           </div>
 
-          {/* Free — Explorer */}
-          <div className="flex flex-col rounded-lg border border-border/40 bg-card p-8">
+          {/* Group */}
+          <div className="flex flex-col rounded-lg border border-border/60 bg-card p-6">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-xl font-semibold">Explorer</h3>
-                <p className="mt-1 text-sm text-muted-foreground">Free forever</p>
+                <h3 className="text-lg font-semibold">Group</h3>
+                <p className="mt-1 text-xs text-muted-foreground">Named subsidiaries &amp; business units</p>
               </div>
-              <Network className="h-5 w-5 text-muted-foreground mt-1" />
+              <Users className="h-5 w-5 text-muted-foreground mt-1" />
             </div>
-            <div className="mt-6 space-y-1">
-              <div>
-                <span className="text-4xl font-bold">$0</span>
-              </div>
-              <div className="text-sm text-muted-foreground">
-                No credit card required
-              </div>
+            <div className="mt-5">
+              <span className="text-3xl font-bold">$9,999</span>
+              <p className="text-xs text-muted-foreground mt-1">One-time purchase</p>
             </div>
-            <ul className="mt-8 flex-1 space-y-3">
-              {FREE_FEATURES.map(f => (
+            <ul className="mt-6 flex-1 space-y-2.5">
+              {GROUP_FEATURES.map(f => (
                 <li key={f} className="flex items-start gap-2">
-                  <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                  <span className="text-sm">{f}</span>
+                  <Check className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
+                  <span className="text-xs">{f}</span>
                 </li>
               ))}
             </ul>
-            <div className="mt-8">
-              <Link href="/auth/sign-up">
-                <Button variant="outline" className="w-full">Sign up free</Button>
-              </Link>
+            <div className="mt-6">
+              <a href="/about#contact">
+                <Button variant="outline" className="w-full" size="sm">Contact for Group License</Button>
+              </a>
             </div>
           </div>
 
-          {/* The Watchtower — Enterprise */}
-          <div className="flex flex-col rounded-lg border border-primary/40 bg-card p-8 shadow-sm">
+          {/* Investor / Portfolio */}
+          <div className="flex flex-col rounded-lg border border-primary/40 bg-card p-6 shadow-sm">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-xl font-semibold">The Watchtower</h3>
-                <p className="mt-1 text-sm text-muted-foreground">Annual strategic engagement</p>
+                <h3 className="text-lg font-semibold">Investor / Portfolio</h3>
+                <p className="mt-1 text-xs text-muted-foreground">PE / VC + named portfolio companies</p>
               </div>
-              <ShieldCheck className="h-5 w-5 text-primary mt-1" />
+              <Briefcase className="h-5 w-5 text-primary mt-1" />
             </div>
-            <div className="mt-6">
-              <span className="text-4xl font-bold">Custom</span>
-              <p className="text-sm text-muted-foreground mt-1">Annual contract &mdash; VC / PE / Corporate</p>
+            <div className="mt-5">
+              <span className="text-3xl font-bold">$14,999</span>
+              <p className="text-xs text-muted-foreground mt-1">One-time purchase</p>
             </div>
-            <ul className="mt-8 flex-1 space-y-3">
-              {WATCHTOWER_FEATURES.map(f => (
+            <ul className="mt-6 flex-1 space-y-2.5">
+              {PORTFOLIO_FEATURES.map(f => (
                 <li key={f} className="flex items-start gap-2">
-                  <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                  <span className="text-sm">{f}</span>
+                  <Check className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
+                  <span className="text-xs">{f}</span>
                 </li>
               ))}
             </ul>
-            <div className="mt-8">
+            <div className="mt-6">
               <a href="/about#contact">
-                <Button className="w-full">Book an intro call</Button>
+                <Button className="w-full" size="sm">Contact for Portfolio License</Button>
+              </a>
+            </div>
+          </div>
+
+          {/* The Red Keep — Enterprise */}
+          <div className="flex flex-col rounded-lg border border-red-800/40 bg-gradient-to-b from-card to-red-950/10 p-6 relative overflow-hidden">
+            {/* Castle silhouette background */}
+            <div className="absolute top-0 right-0 opacity-[0.04] pointer-events-none">
+              <Castle className="h-32 w-32 -mt-4 -mr-4" />
+            </div>
+            <div className="flex items-start justify-between relative">
+              <div>
+                <h3 className="text-lg font-semibold">The Red Keep</h3>
+                <p className="mt-1 text-xs text-muted-foreground">Annual strategic intelligence</p>
+              </div>
+              <Castle className="h-5 w-5 text-red-400 mt-1" />
+            </div>
+            <div className="mt-5">
+              <span className="text-3xl font-bold">Custom</span>
+              <p className="text-xs text-muted-foreground mt-1">Annual contract</p>
+            </div>
+            <ul className="mt-6 flex-1 space-y-2.5">
+              {RED_KEEP_FEATURES.map(f => (
+                <li key={f} className="flex items-start gap-2">
+                  <Check className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
+                  <span className="text-xs">{f}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-6">
+              <a href="/about#contact">
+                <Button variant="outline" className="w-full border-red-800/40 hover:bg-red-950/20 hover:text-red-300" size="sm">Enter the Red Keep</Button>
               </a>
             </div>
           </div>
         </div>
+
+        {/* Sample download callout */}
+        <div className="mx-auto max-w-2xl mt-10 rounded-lg border border-border/60 bg-muted/30 p-6 text-center">
+          <Download className="h-6 w-6 text-primary mx-auto mb-3" />
+          <h3 className="font-semibold text-sm mb-1">Not sure yet? Download the free sample.</h3>
+          <p className="text-xs text-muted-foreground mb-4">
+            30-page preview with executive summary, methodology, sample vendor analysis, and structural trends.
+            No sign-up required.
+          </p>
+          <a
+            href="/reports/2026-market-report-sample.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button variant="outline" size="sm" className="gap-2">
+              <Download className="h-3.5 w-3.5" />
+              Download Sample Report (PDF)
+            </Button>
+          </a>
+        </div>
+      </section>
+
+      {/* Free Explorer */}
+      <section className="container mx-auto px-4 pb-16">
+        <div className="mx-auto max-w-2xl rounded-lg border border-border/40 bg-card p-8 text-center">
+          <Network className="h-6 w-6 text-primary mx-auto mb-3" />
+          <h3 className="text-xl font-semibold">Explorer</h3>
+          <p className="mt-1 text-sm text-muted-foreground mb-4">Free forever &mdash; no credit card required</p>
+          <div className="mb-6">
+            <span className="text-4xl font-bold">$0</span>
+          </div>
+          <ul className="text-left max-w-sm mx-auto space-y-2.5 mb-6">
+            {FREE_FEATURES.map(f => (
+              <li key={f} className="flex items-start gap-2">
+                <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                <span className="text-sm">{f}</span>
+              </li>
+            ))}
+          </ul>
+          <Link href="/auth/sign-up">
+            <Button variant="outline">Sign up free</Button>
+          </Link>
+        </div>
+      </section>
+
+      {/* Add-ons */}
+      <section className="container mx-auto px-4 pb-24">
+        <h2 className="text-center text-2xl font-bold mb-2">Add-Ons</h2>
+        <p className="text-center text-muted-foreground mb-10 max-w-xl mx-auto">
+          Extend your report with ongoing access, data exports, and analyst time.
+        </p>
+        <div className="mx-auto grid max-w-4xl gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {ADDONS.map(addon => (
+            <div key={addon.name} className="rounded-lg border border-border/40 bg-card p-5">
+              <h3 className="font-semibold text-sm">{addon.name}</h3>
+              <p className="text-primary font-bold text-sm mt-1">{addon.price}</p>
+              <p className="text-xs text-muted-foreground mt-2">{addon.desc}</p>
+            </div>
+          ))}
+        </div>
+        <p className="text-center text-xs text-muted-foreground mt-6">
+          All add-ons require an active report license. Contact <a href="mailto:fino@demystifyingplm.com" className="underline hover:text-foreground">fino@demystifyingplm.com</a> to configure.
+        </p>
       </section>
 
       {/* Sample Outputs */}
