@@ -201,12 +201,28 @@ export function MapChart({ data = [], className, preview = false }: MapChartProp
       }
     }
 
-    // If a city has no coordinates, try to find a nearby city or use country centroid
+    // Find country feature and compute mainland centroid
+    // For MultiPolygon countries (e.g. France with overseas territories),
+    // use only the largest polygon so the centroid lands on the mainland.
     const countryFeature = geoData.features.find((f: any) => {
       const geoName = GEO_NAME_MAP[f.properties?.name] || f.properties?.name;
       return canonicalCountry(geoName) === selectedCountry;
     });
-    const countryCentroid = countryFeature ? d3.geoCentroid(countryFeature) : null;
+    let countryCentroid: [number, number] | null = null;
+    if (countryFeature) {
+      if (countryFeature.geometry.type === "MultiPolygon") {
+        // Pick the polygon with the most coordinates (= mainland)
+        let largest = countryFeature.geometry.coordinates[0];
+        let maxLen = 0;
+        for (const poly of countryFeature.geometry.coordinates) {
+          const len = poly[0]?.length || 0;
+          if (len > maxLen) { maxLen = len; largest = poly; }
+        }
+        countryCentroid = d3.geoCentroid({ type: "Polygon", coordinates: largest } as any);
+      } else {
+        countryCentroid = d3.geoCentroid(countryFeature);
+      }
+    }
 
     const results: any[] = [];
     cityMap.forEach((val) => {
@@ -232,7 +248,7 @@ export function MapChart({ data = [], className, preview = false }: MapChartProp
     if (!cityBubbles.length) return null;
     const maxCount = d3.max(cityBubbles, (d) => d.count) || 1;
     return {
-      size: d3.scaleSqrt().domain([0, maxCount]).range([2, 8]),
+      size: d3.scaleSqrt().domain([0, maxCount]).range([2, 5]),
     };
   }, [cityBubbles]);
 
@@ -438,17 +454,17 @@ export function MapChart({ data = [], className, preview = false }: MapChartProp
             .attr("stroke", "#fff")
             .attr("stroke-width", 0.8);
 
-          if (r > 5) {
-            d3.select(this)
-              .append("text")
-              .attr("dy", 3)
-              .attr("text-anchor", "middle")
-              .style("font-size", "7px")
-              .style("font-weight", "bold")
-              .style("fill", "white")
-              .style("pointer-events", "none")
-              .text(d.count);
-          }
+          // City name label next to bubble
+          d3.select(this)
+            .append("text")
+            .attr("dx", r + 3)
+            .attr("dy", 3)
+            .attr("text-anchor", "start")
+            .style("font-size", "9px")
+            .style("fill", "#e2e8f0")
+            .style("pointer-events", "none")
+            .style("text-shadow", "0 1px 3px rgba(0,0,0,0.8)")
+            .text(`${d.name} (${d.count})`);
         });
     }
 
