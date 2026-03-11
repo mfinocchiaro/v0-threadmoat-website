@@ -1,11 +1,12 @@
 "use client"
 
-import { ReactNode } from "react"
+import { ReactNode, Suspense } from "react"
 import type { Session } from "next-auth"
 import { ScenarioProvider, useScenario } from "@/contexts/scenario-context"
 import { PlanProvider } from "@/contexts/plan-context"
 import { SidebarShell } from "./sidebar-shell"
 import { FreeUserGuard } from "./free-user-guard"
+import { CheckoutToast } from "@/components/checkout/checkout-toast"
 
 interface Profile {
   full_name?: string
@@ -25,6 +26,7 @@ function LayoutInner({ user, profile, children, isAdmin, isFreeUser }: { user: S
       isAdmin={isAdmin}
       isFreeUser={isFreeUser}
     >
+      <Suspense><CheckoutToast /></Suspense>
       {isFreeUser ? <FreeUserGuard>{children}</FreeUserGuard> : children}
     </SidebarShell>
   )

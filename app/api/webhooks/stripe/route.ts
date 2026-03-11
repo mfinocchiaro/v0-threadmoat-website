@@ -57,6 +57,22 @@ export async function POST(request: Request) {
         await handleSubscriptionDeleted(subscription)
         break
       }
+      case 'invoice.payment_failed': {
+        const invoice = event.data.object as Stripe.Invoice
+        const customerId = invoice.customer as string
+        console.error(`Payment failed for customer ${customerId}, invoice ${invoice.id}`)
+        // Mark subscription as past_due if applicable
+        if ((invoice as any).subscription) {
+          const rows = await sql`SELECT id FROM profiles WHERE stripe_customer_id = ${customerId}`
+          if (rows[0]) {
+            await sql`
+              UPDATE subscriptions SET status = 'past_due', updated_at = NOW()
+              WHERE user_id = ${rows[0].id as string}
+            `
+          }
+        }
+        break
+      }
     }
 
     return NextResponse.json({ received: true })
