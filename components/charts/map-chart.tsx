@@ -10,6 +10,7 @@ import { CompanyDetailsDialog } from "@/components/company-details-dialog";
 import { HubDetailsDialog } from "@/components/hub-details-dialog";
 import { Button } from "@/components/ui/button";
 import { RotateCcw } from "lucide-react";
+import { CITY_COORDINATES } from "@/lib/city-coordinates";
 
 interface MapChartProps {
   data: Company[];
@@ -229,12 +230,19 @@ export function MapChart({ data = [], className, preview = false }: MapChartProp
       let coords: [number, number] | null = null;
       if (val.lat !== undefined && val.lng !== undefined) {
         coords = [val.lng, val.lat];
-      } else if (countryCentroid) {
-        // Jitter around centroid for cities without coords
-        coords = [
-          countryCentroid[0] + (Math.random() - 0.5) * 2,
-          countryCentroid[1] + (Math.random() - 0.5) * 2,
-        ];
+      } else {
+        // Static geocoding lookup
+        const lookupKey = `${val.name}|${selectedCountry}`;
+        const lookup = CITY_COORDINATES[lookupKey];
+        if (lookup) {
+          coords = lookup;
+        } else if (countryCentroid) {
+          // Last resort: jitter from mainland centroid
+          coords = [
+            countryCentroid[0] + (Math.random() - 0.5) * 1.5,
+            countryCentroid[1] + (Math.random() - 0.5) * 1.5,
+          ];
+        }
       }
       if (coords) {
         results.push({ ...val, coords, countryForFlag: selectedCountry });
