@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useThesisOptional } from "@/contexts/thesis-context";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FREE_TIER_PATHS } from "@/lib/free-tier";
 import { Lock } from "lucide-react";
 
@@ -54,32 +54,86 @@ export const FOCUS_SCENARIOS = [
   },
 ];
 
-const VIZ_ITEMS = [
-  { href: "/dashboard/landscape-intro", icon: Compass,          label: "Investment Landscape" },
-  { href: "/dashboard/quadrant",       icon: GitBranch,        label: "Magic Quadrant" },
-  { href: "/dashboard/bubbles",        icon: Circle,           label: "Bubble Chart" },
-  { href: "/dashboard/network",        icon: Network,          label: "Network Graph" },
-  { href: "/dashboard/sunburst",       icon: Sun,              label: "Sunburst" },
-  { href: "/dashboard/bar-chart",      icon: BarChart2,        label: "Bar Chart" },
-  { href: "/dashboard/landscape",      icon: LayoutGrid,       label: "Landscape" },
-  { href: "/dashboard/periodic-table", icon: Table2,           label: "Periodic Table" },
-  { href: "/dashboard/map",            icon: Map,              label: "Geography Map" },
-  { href: "/dashboard/compare",        icon: GitCompare,       label: "Compare" },
-  { href: "/dashboard/treemap",        icon: TreePine,         label: "Treemap" },
-  { href: "/dashboard/sankey",         icon: Wind,             label: "Sankey Flow" },
-  { href: "/dashboard/radar",          icon: Radar,            label: "Radar Chart" },
-  { href: "/dashboard/heatmap",        icon: Flame,            label: "Heatmap" },
-  { href: "/dashboard/timeline",       icon: Clock,            label: "Timeline" },
-  { href: "/dashboard/parallel",       icon: SlidersHorizontal, label: "Parallel Coords" },
-  { href: "/dashboard/box-plot",       icon: BoxSelect,        label: "Box Plot" },
-  { href: "/dashboard/distribution",   icon: Activity,         label: "Distribution" },
-  { href: "/dashboard/wordcloud",      icon: Type,             label: "Word Cloud" },
-  { href: "/dashboard/chord",          icon: Link2,            label: "Chord Diagram" },
-  { href: "/dashboard/marimekko",      icon: BarChart3,        label: "Marimekko" },
-  { href: "/dashboard/spiral",         icon: TrendingUp,       label: "Spiral Timeline" },
-  { href: "/dashboard/patterns",       icon: GridIcon,         label: "Patterns" },
-  { href: "/dashboard/customers",      icon: Users,            label: "Customer Network" },
-  { href: "/dashboard/investor-network", icon: GitBranch,      label: "Investor Network" },
+interface VizItem {
+  href: string
+  icon: React.ElementType
+  label: string
+}
+
+interface TabGroup {
+  key: string
+  label: string
+  icon: React.ElementType
+  href: string
+  items: VizItem[]
+}
+
+export const TAB_GROUPS: TabGroup[] = [
+  {
+    key: "market",
+    label: "Market",
+    icon: Compass,
+    href: "/dashboard/tab/market",
+    items: [
+      { href: "/dashboard/landscape-intro", icon: Compass,    label: "Investment Landscape" },
+      { href: "/dashboard/quadrant",        icon: GitBranch,  label: "Magic Quadrant" },
+      { href: "/dashboard/bubbles",         icon: Circle,     label: "Bubble Chart" },
+      { href: "/dashboard/landscape",       icon: LayoutGrid, label: "Landscape" },
+      { href: "/dashboard/periodic-table",  icon: Table2,     label: "Periodic Table" },
+      { href: "/dashboard/compare",         icon: GitCompare, label: "Compare" },
+    ],
+  },
+  {
+    key: "financial",
+    label: "Financial",
+    icon: BarChart2,
+    href: "/dashboard/tab/financial",
+    items: [
+      { href: "/dashboard/bar-chart", icon: BarChart2,    label: "Bar Chart" },
+      { href: "/dashboard/treemap",   icon: TreePine,     label: "Treemap" },
+      { href: "/dashboard/marimekko", icon: BarChart3,    label: "Marimekko" },
+      { href: "/dashboard/timeline",  icon: Clock,        label: "Timeline" },
+      { href: "/dashboard/spiral",    icon: TrendingUp,   label: "Spiral Timeline" },
+      { href: "/dashboard/patterns",  icon: GridIcon,     label: "Patterns" },
+    ],
+  },
+  {
+    key: "geographic",
+    label: "Geographic",
+    icon: Map,
+    href: "/dashboard/tab/geographic",
+    items: [
+      { href: "/dashboard/map",      icon: Map, label: "Geography Map" },
+      { href: "/dashboard/sunburst", icon: Sun, label: "Sunburst" },
+    ],
+  },
+  {
+    key: "network",
+    label: "Network",
+    icon: Network,
+    href: "/dashboard/tab/network",
+    items: [
+      { href: "/dashboard/network",          icon: Network,  label: "Network Graph" },
+      { href: "/dashboard/customers",        icon: Users,    label: "Customer Network" },
+      { href: "/dashboard/investor-network", icon: GitBranch, label: "Investor Network" },
+      { href: "/dashboard/sankey",           icon: Wind,     label: "Sankey Flow" },
+      { href: "/dashboard/chord",            icon: Link2,    label: "Chord Diagram" },
+    ],
+  },
+  {
+    key: "advanced",
+    label: "Advanced",
+    icon: SlidersHorizontal,
+    href: "/dashboard/tab/advanced",
+    items: [
+      { href: "/dashboard/radar",        icon: Radar,            label: "Radar Chart" },
+      { href: "/dashboard/heatmap",      icon: Flame,            label: "Heatmap" },
+      { href: "/dashboard/parallel",     icon: SlidersHorizontal, label: "Parallel Coords" },
+      { href: "/dashboard/box-plot",     icon: BoxSelect,        label: "Box Plot" },
+      { href: "/dashboard/distribution", icon: Activity,         label: "Distribution" },
+      { href: "/dashboard/wordcloud",    icon: Type,             label: "Word Cloud" },
+    ],
+  },
 ];
 
 const ADMIN_ITEMS = [
@@ -155,13 +209,97 @@ function NavLink({ href, icon: Icon, label, collapsed, exact, locked }: {
   return link;
 }
 
+function TabGroupNav({ group, collapsed, isFreeUser, openGroups, toggleGroup }: {
+  group: TabGroup
+  collapsed: boolean
+  isFreeUser: boolean
+  openGroups: Record<string, boolean>
+  toggleGroup: (key: string) => void
+}) {
+  const pathname = usePathname();
+  const GroupIcon = group.icon;
+  const isGroupActive = group.items.some(i => pathname === i.href) || pathname === group.href;
+  const isOpen = openGroups[group.key] ?? false;
+
+  if (collapsed) {
+    return (
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger asChild>
+          <Link
+            href={group.href}
+            className={cn(
+              "flex items-center justify-center rounded-md px-2 py-2 text-sm transition-colors",
+              isGroupActive
+                ? "bg-primary/10 text-primary font-medium"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            )}
+          >
+            <GroupIcon className="h-4 w-4" />
+          </Link>
+        </TooltipTrigger>
+        <TooltipContent side="right" className="text-xs">
+          {group.label}
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex items-center">
+        <Link
+          href={group.href}
+          className={cn(
+            "flex flex-1 items-center gap-3 rounded-l-md px-3 py-2 text-sm transition-colors",
+            isGroupActive
+              ? "bg-primary/10 text-primary font-medium"
+              : "text-muted-foreground hover:bg-muted hover:text-foreground"
+          )}
+        >
+          <GroupIcon className="h-4 w-4 shrink-0" />
+          <span className="truncate">{group.label}</span>
+        </Link>
+        <button
+          onClick={() => toggleGroup(group.key)}
+          className={cn(
+            "rounded-r-md px-1.5 py-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors",
+            isGroupActive && "bg-primary/10"
+          )}
+        >
+          <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", isOpen && "rotate-180")} />
+        </button>
+      </div>
+      {isOpen && (
+        <div className="ml-4 mt-0.5 space-y-0.5 border-l border-border pl-2">
+          {group.items.map(item => (
+            <NavLink key={item.href} {...item} collapsed={false} locked={isFreeUser && !FREE_TIER_PATHS.has(item.href)} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function Sidebar({ collapsed, onToggle, onSelectScenario, activeScenario, isAdmin = false, isFreeUser = false }: SidebarProps) {
   const thesis = useThesisOptional();
   const hasThesis = !!thesis?.activeThesis;
+  const pathname = usePathname();
   const [focusMenuOpen, setFocusMenuOpen] = useState(false);
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
 
-  // All viz items visible to all authenticated users — page-level Paywall handles access control
-  const visibleVizItems = VIZ_ITEMS;
+  // Auto-expand group when user navigates to one of its child pages
+  useEffect(() => {
+    for (const group of TAB_GROUPS) {
+      if (group.items.some(i => pathname === i.href)) {
+        setOpenGroups(prev => prev[group.key] ? prev : { ...prev, [group.key]: true });
+        break;
+      }
+    }
+  }, [pathname]);
+
+  function toggleGroup(key: string) {
+    setOpenGroups(prev => ({ ...prev, [key]: !prev[key] }));
+  }
 
   const activeScenarioData = FOCUS_SCENARIOS.find(s => s.key === activeScenario);
 
@@ -264,7 +402,7 @@ export function Sidebar({ collapsed, onToggle, onSelectScenario, activeScenario,
               <NavLink key={item.href} {...item} collapsed={collapsed} />
             ))}
 
-            {/* Visualizations section */}
+            {/* Tab group visualizations */}
             {!collapsed && (
               <p className="mt-3 mb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
                 Visualizations
@@ -272,8 +410,15 @@ export function Sidebar({ collapsed, onToggle, onSelectScenario, activeScenario,
             )}
             {collapsed && <div className="my-2 border-t border-border" />}
 
-            {visibleVizItems.map(item => (
-              <NavLink key={item.href} {...item} collapsed={collapsed} locked={isFreeUser && !FREE_TIER_PATHS.has(item.href)} />
+            {TAB_GROUPS.map(group => (
+              <TabGroupNav
+                key={group.key}
+                group={group}
+                collapsed={collapsed}
+                isFreeUser={isFreeUser}
+                openGroups={openGroups}
+                toggleGroup={toggleGroup}
+              />
             ))}
 
             {/* Admin-only section */}
