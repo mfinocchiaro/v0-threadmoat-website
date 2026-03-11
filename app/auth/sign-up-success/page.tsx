@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { resendVerificationEmail } from '@/app/actions/auth'
 import {
   Card,
@@ -11,10 +12,13 @@ import {
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Mail } from 'lucide-react'
+import { Mail, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'
 
-export default function SignUpSuccessPage() {
+function SignUpSuccessContent() {
+  const searchParams = useSearchParams()
+  const emailFailed = searchParams.get('warn') === 'email'
+
   const [email, setEmail] = useState('')
   const [resent, setResent] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -42,9 +46,18 @@ export default function SignUpSuccessPage() {
             <CardDescription>Verify your email to sign in</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              We sent a verification link to your email. Click it to activate your account, then sign in.
-            </p>
+            {emailFailed ? (
+              <div className="flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30 p-3">
+                <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
+                <p className="text-sm text-amber-800 dark:text-amber-300">
+                  We had trouble sending your verification email. Enter your email below to try again.
+                </p>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                We sent a verification link to your email. Click it to activate your account, then sign in.
+              </p>
+            )}
 
             <div className="border-t pt-4 space-y-3">
               <p className="text-xs text-muted-foreground">Didn&apos;t receive it? Enter your email to resend:</p>
@@ -74,5 +87,17 @@ export default function SignUpSuccessPage() {
         </Card>
       </div>
     </div>
+  )
+}
+
+export default function SignUpSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    }>
+      <SignUpSuccessContent />
+    </Suspense>
   )
 }

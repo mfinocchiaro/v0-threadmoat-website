@@ -1,10 +1,12 @@
 "use client"
 
-import { useMemo, useEffect, useState } from "react"
+import { useMemo } from "react"
 import Link from "next/link"
-import { Company, formatCurrency, loadCompanyData } from "@/lib/company-data"
+import { Company, formatCurrency } from "@/lib/company-data"
 import { INVESTMENT_LIST_COLORS } from "@/lib/investment-colors"
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
+import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
+import { VizFilterBar } from "@/components/viz-filter-bar"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card } from "@/components/ui/card"
 import { ArrowRight } from "lucide-react"
@@ -135,12 +137,7 @@ function DonutByDomain({ domains }: { domains: { name: string; color: string; co
 }
 
 function LandscapeIntroInner() {
-  const [companies, setCompanies] = useState<Company[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    loadCompanyData().then(data => { setCompanies(data); setIsLoading(false) })
-  }, [])
+  const { companies: allCompanies, filtered: companies, isLoading } = useThesisGatedData()
 
   const domains = useMemo(() => {
     const grouped = new Map<string, Company[]>()
@@ -240,6 +237,9 @@ function LandscapeIntroInner() {
           <p className="text-xs text-muted-foreground mt-1">Countries</p>
         </Card>
       </div>
+
+      {/* Filters */}
+      <VizFilterBar companies={allCompanies} />
 
       {/* Color legend strip */}
       <div className="flex flex-wrap gap-3">

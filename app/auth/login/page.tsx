@@ -104,7 +104,10 @@ export default function LoginPage() {
                     <div className="space-y-1">
                       <p className="text-sm text-red-500">{error}</p>
                       <p className="text-xs text-muted-foreground">
-                        If you haven&apos;t verified your email yet, check your inbox for a verification link.
+                        If you haven&apos;t verified your email yet,{' '}
+                        <Link href="/auth/sign-up-success" className="underline underline-offset-4">
+                          click here to resend the verification email
+                        </Link>.
                       </p>
                     </div>
                   )}

@@ -115,7 +115,7 @@ export default function SignUpPage() {
       marketingConsent,
     })
     if (result.success) {
-      router.push('/auth/sign-up-success')
+      router.push(result.emailSent === false ? '/auth/sign-up-success?warn=email' : '/auth/sign-up-success')
     } else {
       setError(result.error)
       setIsLoading(false)

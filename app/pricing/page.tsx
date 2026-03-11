@@ -1,7 +1,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Check, Calendar, Database, Phone, MapPin, CalendarDays, BarChart2, Network, FileText } from "lucide-react"
+import { Check, Calendar, Phone, MapPin, CalendarDays, BarChart2, Network, FileText } from "lucide-react"
 
 // Update this date each week after the Monday refresh
 const LAST_UPDATED = "March 3, 2026"
@@ -13,17 +13,12 @@ const FREE_FEATURES = [
   "Updated weekly with the full dataset",
 ]
 
-const ANALYTICS_FEATURES = [
+const ENTERPRISE_FEATURES = [
   "All 20+ dashboards + filters + saved views",
   "Watchlists + alerts",
-  "Exports: charts + aggregated tables (no directory dump)",
-  "30-minute one-on-one briefings, bi-monthly on demand",
-  "Weekly release notes (\u201cwhat changed\u201d)",
-]
-
-const ENTERPRISE_FEATURES = [
+  "Exports: charts + aggregated tables",
   "Custom reports + briefings + consulting",
-  "Optional: controlled dataset access / bespoke exports under contract",
+  "Controlled dataset access / bespoke exports under contract",
   "Dedicated analyst support",
   "Quarterly strategy sessions",
 ]
@@ -128,7 +123,7 @@ export default function PricingPage() {
 
       {/* Pricing Cards */}
       <section className="container mx-auto px-4 pb-24">
-        <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-3">
+        <div className="mx-auto grid max-w-4xl gap-8 md:grid-cols-2">
 
           {/* Free — Explorer */}
           <div className="flex flex-col rounded-lg border border-border/40 bg-card p-8">
@@ -162,47 +157,14 @@ export default function PricingPage() {
             </div>
           </div>
 
-          {/* Analytics — Self-serve */}
+          {/* Enterprise */}
           <div className="flex flex-col rounded-lg border border-primary/40 bg-card p-8 shadow-sm">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-xl font-semibold">Analytics</h3>
-                <p className="mt-1 text-sm text-muted-foreground">Self-serve</p>
-              </div>
-              <Database className="h-5 w-5 text-primary mt-1" />
-            </div>
-            <div className="mt-6 space-y-1">
-              <div>
-                <span className="text-4xl font-bold">$4,999</span>
-                <span className="text-muted-foreground">/yr</span>
-              </div>
-              <div className="text-sm text-muted-foreground">
-                Billed annually
-              </div>
-            </div>
-            <ul className="mt-8 flex-1 space-y-3">
-              {ANALYTICS_FEATURES.map(f => (
-                <li key={f} className="flex items-start gap-2">
-                  <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                  <span className="text-sm">{f}</span>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-8">
-              <Link href="/auth/sign-up">
-                <Button className="w-full">Get started — $4,999/yr</Button>
-              </Link>
-            </div>
-          </div>
-
-          {/* Enterprise */}
-          <div className="flex flex-col rounded-lg border border-border/40 bg-card p-8">
-            <div className="flex items-start justify-between">
-              <div>
                 <h3 className="text-xl font-semibold">Enterprise / VC / PE</h3>
-                <p className="mt-1 text-sm text-muted-foreground">Call us</p>
+                <p className="mt-1 text-sm text-muted-foreground">Custom engagement</p>
               </div>
-              <Phone className="h-5 w-5 text-muted-foreground mt-1" />
+              <Phone className="h-5 w-5 text-primary mt-1" />
             </div>
             <div className="mt-6">
               <span className="text-4xl font-bold">Custom</span>
@@ -217,7 +179,7 @@ export default function PricingPage() {
             </ul>
             <div className="mt-8">
               <a href="/#contact">
-                <Button variant="outline" className="w-full">Book an intro call</Button>
+                <Button className="w-full">Book an intro call</Button>
               </a>
             </div>
           </div>

@@ -9,7 +9,7 @@ import { rateLimit } from '@/lib/rate-limit'
 import { validateCoupon, redeemCoupon } from '@/lib/coupons'
 import { sendVerificationEmail, sendPasswordResetEmail } from '@/lib/email'
 
-type ActionResult = { success: true } | { success: false; error: string }
+type ActionResult = { success: true; emailSent?: boolean } | { success: false; error: string }
 
 const VALID_PROFILE_TYPES = new Set([
   'startup_founder', 'vc_investor', 'oem_enterprise', 'isv_platform',
@@ -78,10 +78,9 @@ export async function registerUser(data: RegisterData): Promise<ActionResult> {
     const passwordError = validatePassword(password)
     if (passwordError) return { success: false, error: passwordError }
 
-    // --- Validate invite code if provided ---
-    let coupon = null
+    // --- Validate invite code if provided (redeemed after email verification) ---
     if (inviteCode && inviteCode.length > 0) {
-      coupon = await validateCoupon(inviteCode)
+      const coupon = await validateCoupon(inviteCode)
       if (!coupon) return { success: false, error: 'Invalid or expired invite code' }
     }
 
@@ -103,8 +102,8 @@ export async function registerUser(data: RegisterData): Promise<ActionResult> {
     const tokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
 
     const [user] = await sql`
-      INSERT INTO users (email, password_hash, email_verified, verification_token, verification_token_expires)
-      VALUES (${email}, ${passwordHash}, false, ${verificationToken}, ${tokenExpires.toISOString()})
+      INSERT INTO users (email, password_hash, email_verified, verification_token, verification_token_expires, invite_code)
+      VALUES (${email}, ${passwordHash}, false, ${verificationToken}, ${tokenExpires.toISOString()}, ${inviteCode})
       RETURNING id
     `
 
@@ -123,19 +122,17 @@ export async function registerUser(data: RegisterData): Promise<ActionResult> {
       )
     `
 
-    // --- Redeem invite code if provided ---
-    if (coupon) {
-      await redeemCoupon(coupon.id, user.id as string, coupon.duration_days)
-    }
-
     // --- Send verification email ---
+    // Coupon is redeemed after email verification (see verifyEmail), not here.
+    let emailSent = true
     try {
       await sendVerificationEmail(email, verificationToken)
     } catch (err) {
       console.error('[email verification] Failed to send:', err)
+      emailSent = false
     }
 
-    return { success: true }
+    return { success: true, emailSent }
   } catch (err) {
     console.error('[registerUser]', err)
     return { success: false, error: 'Registration failed. Please try again later.' }
@@ -172,17 +169,35 @@ export async function resendVerificationEmail(email: string): Promise<ActionResu
 export async function verifyEmail(token: string): Promise<ActionResult> {
   try {
     const rows = await sql`
-      SELECT id FROM users
+      SELECT id, invite_code FROM users
       WHERE verification_token = ${token}
         AND verification_token_expires > NOW()
     `
     if (rows.length === 0) return { success: false, error: 'Invalid or expired verification link' }
 
+    const userId = rows[0].id as string
+    const inviteCode = rows[0].invite_code as string | null
+
     await sql`
       UPDATE users
-      SET email_verified = true, verification_token = NULL, verification_token_expires = NULL
-      WHERE id = ${rows[0].id as string}
+      SET email_verified = true, verification_token = NULL, verification_token_expires = NULL,
+          invite_code = NULL
+      WHERE id = ${userId}
     `
+
+    // Redeem coupon now that email is confirmed — deferred from registration
+    if (inviteCode) {
+      try {
+        const coupon = await validateCoupon(inviteCode)
+        if (coupon) {
+          await redeemCoupon(coupon.id, userId, coupon.duration_days)
+        }
+      } catch (err) {
+        console.error('[verifyEmail] coupon redemption failed:', err)
+        // Non-fatal — user is verified; they can contact support if trial is missing
+      }
+    }
+
     return { success: true }
   } catch (err) {
     console.error('[verifyEmail]', err)

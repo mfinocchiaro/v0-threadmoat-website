@@ -2,11 +2,12 @@
 
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
+import { VizFilterBar } from "@/components/viz-filter-bar"
 import { PeriodicTable } from "@/components/charts/periodic-table"
 import { Skeleton } from "@/components/ui/skeleton"
 
 function PeriodicTableInner() {
-  const { filtered, isLoading } = useThesisGatedData()
+  const { companies, filtered, isLoading } = useThesisGatedData()
 
   if (isLoading) {
     return (
@@ -23,6 +24,7 @@ function PeriodicTableInner() {
 
   return (
     <div className="flex flex-col" style={{ height: "calc(100vh - 80px)" }}>
+      <VizFilterBar companies={companies} />
       <PeriodicTable data={filtered} />
     </div>
   )
