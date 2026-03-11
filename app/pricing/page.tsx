@@ -42,14 +42,6 @@ const RED_KEEP_FEATURES = [
   "Quarterly strategy sessions",
 ]
 
-const ADDONS = [
-  { name: "ThreadMoat Dashboard", price: "$2,999/yr", desc: "22 interactive visualizations, scenario modeling, live filters" },
-  { name: "Analyst Briefing (60 min)", price: "$1,500", desc: "One-on-one with Michael Finocchiaro — tailored to your strategy" },
-  { name: "Quarterly Data Refresh", price: "$3,999/yr", desc: "Updated company data, new entrants, revised scoring" },
-  { name: "Spreadsheet Annex", price: "$1,999", desc: "Full 557-company dataset in Excel with all scoring dimensions" },
-  { name: "Custom Sector Deep-Dive", price: "From $5,000", desc: "Bespoke analysis for your category, vertical, or competitive question" },
-]
-
 const METHODOLOGY_FIELDS = [
   { label: "Company Profile", items: ["Name, URL, HQ location, country, founded", "Estimated headcount", "Known customers"] },
   { label: "Market Position", items: ["Discipline (CAD, CAM, PLM, ERP…)", "Lifecycle phase & workflow segment", "Sector focus & industries served"] },
@@ -299,26 +291,6 @@ export default function PricingPage() {
             <Button variant="outline">Sign up free</Button>
           </Link>
         </div>
-      </section>
-
-      {/* Add-ons */}
-      <section className="container mx-auto px-4 pb-24">
-        <h2 className="text-center text-2xl font-bold mb-2">Add-Ons</h2>
-        <p className="text-center text-muted-foreground mb-10 max-w-xl mx-auto">
-          Extend your report with ongoing access, data exports, and analyst time.
-        </p>
-        <div className="mx-auto grid max-w-4xl gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {ADDONS.map(addon => (
-            <div key={addon.name} className="rounded-lg border border-border/40 bg-card p-5">
-              <h3 className="font-semibold text-sm">{addon.name}</h3>
-              <p className="text-primary font-bold text-sm mt-1">{addon.price}</p>
-              <p className="text-xs text-muted-foreground mt-2">{addon.desc}</p>
-            </div>
-          ))}
-        </div>
-        <p className="text-center text-xs text-muted-foreground mt-6">
-          All add-ons require an active report license. Contact <a href="mailto:fino@demystifyingplm.com" className="underline hover:text-foreground">fino@demystifyingplm.com</a> to configure.
-        </p>
       </section>
 
       {/* Sample Outputs */}
