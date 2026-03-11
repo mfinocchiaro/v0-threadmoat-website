@@ -9,7 +9,7 @@ status: active
 
 ## Overview
 
-Next.js web application for the **Vizera** startup analytics dashboard — the visual front-end for Michael Finocchiaro's 500+ AI startup database.
+Next.js web application for the **Vizera** startup analytics dashboard — the visual front-end for Michael Finocchiaro's 550+ AI startup database.
 
 ## Technology Stack
 
@@ -63,4 +63,4 @@ v0-threadmoat-website-main/
 ## Related
 
 - Mentioned in meetings with [[Raven - Meeting Notes|Raven]], [[Zoo - Meeting Notes|Zoo]], [[Digital CNC - Meeting Notes|Digital CNC]]
-- Database source: Airtable (500+ startups, 45 columns)
+- Database source: Airtable (550+ startups, 45 columns)

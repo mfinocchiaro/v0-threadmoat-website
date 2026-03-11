@@ -96,8 +96,8 @@ export default async function HomePage() {
           <span className="text-primary">Industrial AI &amp; Engineering Software</span>
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg text-muted-foreground">
-          Leverage 35+ years of market expertise, exclusive access to 500+ startups, and warm
-          introductions to 150+ founders to build your portfolio with tomorrow&apos;s unicorns.
+          Leverage 35+ years of market expertise, exclusive access to 550+ startups, and warm
+          introductions to 200+ founders to build your portfolio with tomorrow&apos;s unicorns.
         </p>
         <div className="mt-10 flex items-center justify-center gap-4">
           <Link href="/auth/login">
@@ -137,8 +137,8 @@ export default async function HomePage() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto mt-16 text-center">
             <div><p className="text-4xl font-bold text-primary">35+</p><p className="text-sm text-muted-foreground mt-1">Years of Market Experience</p></div>
-            <div><p className="text-4xl font-bold text-primary">500+</p><p className="text-sm text-muted-foreground mt-1">Startups in Database</p></div>
-            <div><p className="text-4xl font-bold text-primary">~150</p><p className="text-sm text-muted-foreground mt-1">Warm Founder Introductions</p></div>
+            <div><p className="text-4xl font-bold text-primary">550+</p><p className="text-sm text-muted-foreground mt-1">Startups in Database</p></div>
+            <div><p className="text-4xl font-bold text-primary">200+</p><p className="text-sm text-muted-foreground mt-1">Founder Interviews</p></div>
             <Link href="/landscape" className="hover:opacity-80 transition-opacity"><p className="text-4xl font-bold text-primary">10</p><p className="text-sm text-muted-foreground mt-1 underline underline-offset-2">Investment Domains</p></Link>
           </div>
         </div>
@@ -157,13 +157,13 @@ export default async function HomePage() {
             {
               icon: <Database className="h-6 w-6" />,
               title: "Market Intelligence",
-              desc: "Access our curated database of 500+ engineering software and Industrial AI startups.",
+              desc: "Access our curated database of 550+ engineering software and Industrial AI startups.",
               features: ["Comprehensive startup profiles", "Market trend analysis", "Investment readiness assessments"],
             },
             {
               icon: <Users className="h-6 w-6" />,
               title: "Founder Introductions",
-              desc: "Leverage our extensive network to secure warm introductions to over 150 founders.",
+              desc: "Leverage our extensive network built on 200+ founder interviews and direct relationships.",
               features: ["Pre-vetted founder relationships", "Facilitated meetings", "Ongoing relationship management"],
             },
             {
