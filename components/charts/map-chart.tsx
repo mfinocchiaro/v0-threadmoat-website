@@ -304,10 +304,22 @@ export function MapChart({ data = [], className, preview = false }: MapChartProp
 
     const path = d3.geoPath().projection(projection);
 
+    // Overlay group for city bubbles — NOT affected by zoom transform
+    const overlay = svg.append("g").attr("class", "city-overlay");
+
     const zoom = d3
       .zoom<SVGSVGElement, unknown>()
       .scaleExtent([1, 20])
-      .on("zoom", (event) => g.attr("transform", event.transform));
+      .on("zoom", (event) => {
+        g.attr("transform", event.transform);
+        // Re-project city bubbles to screen coordinates on every zoom frame
+        overlay.selectAll<SVGGElement, any>(".city-bubble").each(function (d: any) {
+          const projected = projection(d.coords);
+          if (!projected) return;
+          const [sx, sy] = event.transform.apply(projected);
+          d3.select(this).attr("transform", `translate(${sx},${sy})`);
+        });
+      });
 
     zoomRef.current = zoom;
     svg.call(zoom);
@@ -370,12 +382,23 @@ export function MapChart({ data = [], className, preview = false }: MapChartProp
         zoomToFeature(d);
       });
 
-    // City bubbles (only when a country is selected)
+    // City bubbles — drawn in overlay (screen-space, unaffected by zoom)
+    overlay.selectAll("*").remove();
     if (selectedCountry && cityBubbles.length > 0 && cityScales) {
-      g.selectAll(".city-bubble")
+      // Get current zoom transform to position bubbles correctly
+      const currentTransform = d3.zoomTransform(svg.node()!);
+
+      overlay
+        .selectAll(".city-bubble")
         .data(cityBubbles)
         .join("g")
         .attr("class", "city-bubble")
+        .attr("transform", (d: any) => {
+          const projected = projection(d.coords);
+          if (!projected) return "translate(-9999,-9999)";
+          const [sx, sy] = currentTransform.apply(projected);
+          return `translate(${sx},${sy})`;
+        })
         .style("cursor", "pointer")
         .on("mouseover", (event: MouseEvent, d: any) => {
           const iso = COUNTRY_ISO[d.countryForFlag] || "un";
@@ -405,16 +428,10 @@ export function MapChart({ data = [], className, preview = false }: MapChartProp
           handleHubClick(d);
         })
         .each(function (d: any) {
-          const pos = projection(d.coords);
-          if (!pos) return;
-
-          const [cx, cy] = pos;
           const r = cityScales.size(d.count);
 
           d3.select(this)
             .append("circle")
-            .attr("cx", cx)
-            .attr("cy", cy)
             .attr("r", r)
             .attr("fill", "#ef4444")
             .attr("fill-opacity", 0.7)
@@ -424,8 +441,6 @@ export function MapChart({ data = [], className, preview = false }: MapChartProp
           if (r > 5) {
             d3.select(this)
               .append("text")
-              .attr("x", cx)
-              .attr("y", cy)
               .attr("dy", 3)
               .attr("text-anchor", "middle")
               .style("font-size", "7px")
