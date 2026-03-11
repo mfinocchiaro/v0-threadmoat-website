@@ -9,6 +9,7 @@ const LAST_UPDATED = "March 11, 2026"
 const REPORT_FEATURES = [
   "150+ page deep-dive analysis",
   "557 companies, $15.5B VC funding mapped",
+  "Based on 200+ primary research interviews",
   "Incumbent landscape — $22–24B anchor vendors profiled",
   "Startup ecosystem — 10 investment categories ranked",
   "$50B+ M&A consolidation analysis (2022–2025)",
@@ -43,7 +44,7 @@ const FREE_FEATURES = [
 
 const RED_KEEP_FEATURES = [
   "All 20+ dashboards + filters + saved views",
-  "Annual Market State Report included",
+  "Annual Market State Reports included (all quarters)",
   "Watchlists + alerts on portfolio companies",
   "Exports: charts + aggregated tables",
   "Custom reports + briefings + consulting",
@@ -160,7 +161,7 @@ export default function PricingPage() {
 
       {/* Report License Tiers */}
       <section className="container mx-auto px-4 pb-16">
-        <h2 className="text-center text-2xl font-bold mb-2">Market Report Licenses</h2>
+        <h2 className="text-center text-2xl font-bold mb-2">Q1 Market Report Licenses</h2>
         <p className="text-center text-muted-foreground mb-10 max-w-2xl mx-auto">
           Every copy is personalized, watermarked, and traceable. Choose the license that fits your organization.
         </p>
@@ -191,11 +192,11 @@ export default function PricingPage() {
               ))}
             </ul>
             <div className="mt-6 space-y-2.5">
-              <Link href="/auth/sign-up?product=market-report-2026">
+              <Link href="/auth/sign-up?product=market-report-2026-q1">
                 <Button className="w-full" size="sm">Purchase Report</Button>
               </Link>
               <a
-                href="/reports/2026-market-report-sample.pdf"
+                href="/reports/2026-q1-market-report-sample.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
@@ -304,7 +305,7 @@ export default function PricingPage() {
             No sign-up required.
           </p>
           <a
-            href="/reports/2026-market-report-sample.pdf"
+            href="/reports/2026-q1-market-report-sample.pdf"
             target="_blank"
             rel="noopener noreferrer"
           >

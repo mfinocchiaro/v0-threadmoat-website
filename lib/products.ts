@@ -10,8 +10,8 @@ export interface Product {
 
 export const PRODUCTS: Product[] = [
   {
-    id: "market-report-2026",
-    name: "2026 Market State Report",
+    id: "market-report-2026-q1",
+    name: "2026 Q1 Market State Report",
     description:
       "Engineering Software & Industrial AI — 150+ page analysis covering 500+ companies, $15.5B in VC funding, M&A trends, and 5-year market forecasts.",
     priceInCents: 499900, // $4,999
