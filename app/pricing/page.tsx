@@ -56,7 +56,7 @@ const METHODOLOGY_FIELDS = [
   { label: "Technical Stack", items: ["Differentiation tags", "Operating model (SaaS, B2B, cloud-native…)", "Manufacturing type & integration points"] },
   { label: "Financials", items: ["Latest funding round & year", "Total known funding level", "Estimated revenue & market value"] },
   { label: "Investment Context", items: ["Investors & VCs", "Investment list membership", "Stripe customer & buyer maturity signals"] },
-  { label: "Competitive Scoring", items: ["Team & execution", "Technology differentiation", "Funding efficiency, growth metrics", "Industry impact, competitive moat", "Weighted score (0–10)"] },
+  { label: "Competitive Scoring", items: ["Market Opportunity", "Team & Execution", "Funding Efficiency", "Growth Metrics", "Technical Differentiation", "Industry Impact", "Competitive Moat", "Weighted score (0–10)"] },
 ]
 
 export default function PricingPage() {
