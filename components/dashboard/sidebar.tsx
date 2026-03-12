@@ -142,6 +142,7 @@ const ADMIN_ITEMS = [
   { href: "/dashboard/correlation",       icon: GridIcon,  label: "Correlation Matrix" },
   { href: "/dashboard/reports",           icon: FileText,  label: "Report Generator" },
   { href: "/dashboard/investor-views",    icon: Eye,       label: "Investor Views" },
+  { href: "/dashboard/maturity-matrix",   icon: ScatterChart, label: "Maturity Matrix" },
 ];
 
 const BOTTOM_ITEMS = [
@@ -155,6 +156,7 @@ const ADMIN_VIZ_HREFS = new Set([
   "/dashboard/correlation",
   "/dashboard/reports",
   "/dashboard/investor-views",
+  "/dashboard/maturity-matrix",
 ])
 
 interface SidebarProps {

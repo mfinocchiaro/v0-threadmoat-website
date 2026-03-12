@@ -41,6 +41,7 @@ export const ADMIN_WIDGETS: WidgetDef[] = [
   { id: "wordcloud",           label: "Word Cloud",             scenarios: [], adminOnly: true },
   { id: "chord",               label: "Chord Diagram",          scenarios: [], adminOnly: true },
   { id: "treemap",             label: "Treemap",                scenarios: [], adminOnly: true },
+  { id: "maturity-matrix",     label: "Maturity Matrix",        scenarios: [], adminOnly: true },
 ];
 
 export const ALL_WIDGETS = [...STANDARD_WIDGETS, ...ADMIN_WIDGETS];
