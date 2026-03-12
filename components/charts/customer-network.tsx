@@ -8,7 +8,14 @@ import { getCustomerLogoUrl, parseKnownCustomers } from "@/lib/customer-logos"
 import { cn } from "@/lib/utils"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Search, X } from "lucide-react"
+
+interface NodeDialogData {
+  type: "customer" | "startup"
+  name: string
+  connectedNames: { name: string; detail: string }[]
+}
 
 interface CustomerNode {
   id: string
@@ -52,6 +59,9 @@ export function CustomerNetwork({ data, className }: { data: Company[]; classNam
   const [minCount, setMinCount] = useState("3")
   const [searchQuery, setSearchQuery] = useState("")
   const deferredQuery = useDeferredValue(searchQuery)
+  const [dialogData, setDialogData] = useState<NodeDialogData | null>(null)
+  const dialogRef = useRef<(d: NodeDialogData | null) => void>(setDialogData)
+  dialogRef.current = setDialogData
 
   // Refs to live D3 selections — updated each time the effect re-runs
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -331,6 +341,8 @@ export function CustomerNetwork({ data, className }: { data: Company[]; classNam
       })
       .on("click", (e, d) => {
         e.stopPropagation()
+        hideTooltip()
+        const cn = d as CustomerNode
         const id = (d as any).id
         applySelection(selectedId === id ? null : id)
         if (selectedId !== null) {
@@ -344,6 +356,23 @@ export function CustomerNetwork({ data, className }: { data: Company[]; classNam
               d3.zoomIdentity.translate(tx, ty).scale(scale)
             )
           }
+          // Open dialog with connected startups
+          const connected = simLinks
+            .filter(l => (l.source as any).id === id || (l.target as any).id === id) // eslint-disable-line @typescript-eslint/no-explicit-any
+            .map(l => {
+              const t = (l.target as any) // eslint-disable-line @typescript-eslint/no-explicit-any
+              const targetId = (t.id ?? t) === id ? ((l.source as any).id ?? l.source) : (t.id ?? t) // eslint-disable-line @typescript-eslint/no-explicit-any
+              const sNode = simNodes.find(n => n.id === targetId)
+              if (!sNode || sNode.type !== "startup") return null
+              const sn = sNode as unknown as StartupNode
+              return { name: sn.name, detail: sn.investmentList || "" }
+            })
+            .filter(Boolean) as { name: string; detail: string }[]
+          dialogRef.current({
+            type: "customer",
+            name: cn.name,
+            connectedNames: connected.sort((a, b) => a.name.localeCompare(b.name)),
+          })
         }
       })
 
@@ -367,8 +396,24 @@ export function CustomerNetwork({ data, className }: { data: Company[]; classNam
       })
       .on("click", (e, d) => {
         e.stopPropagation()
+        hideTooltip()
         const sn = d as StartupNode
-        showTooltip(e, `<strong style="font-size:13px">${sn.name}</strong><br/><span style="font-size:11px;opacity:.7">${sn.investmentList || ""}</span>${sn.headcount ? `<br/><span style="font-size:11px">Headcount: ${sn.headcount}</span>` : ""}`)
+        // Find all customers connected to this startup
+        const connected = simLinks
+          .filter(l => (l.source as any).id === d.id || (l.target as any).id === d.id) // eslint-disable-line @typescript-eslint/no-explicit-any
+          .map(l => {
+            const s = (l.source as any) // eslint-disable-line @typescript-eslint/no-explicit-any
+            const custId = (s.id ?? s) === (d as any).id ? ((l.target as any).id ?? l.target) : (s.id ?? s) // eslint-disable-line @typescript-eslint/no-explicit-any
+            const cNode = simNodes.find(n => n.id === custId)
+            if (!cNode || cNode.type !== "customer") return null
+            return { name: cNode.name, detail: `${(cNode as unknown as CustomerNode).count} startups` }
+          })
+          .filter(Boolean) as { name: string; detail: string }[]
+        dialogRef.current({
+          type: "startup",
+          name: sn.name,
+          connectedNames: connected.sort((a, b) => a.name.localeCompare(b.name)),
+        })
       })
 
     // Click background → clear selection
@@ -595,6 +640,46 @@ export function CustomerNetwork({ data, className }: { data: Company[]; classNam
         className="fixed z-50 rounded-md border border-border bg-popover px-3 py-2 text-xs shadow-md opacity-0 transition-opacity"
         style={{ pointerEvents: "none" }}
       />
+
+      <Dialog open={!!dialogData} onOpenChange={open => { if (!open) setDialogData(null) }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{dialogData?.name}</DialogTitle>
+            <DialogDescription>
+              {dialogData?.type === "customer" && (
+                <span>{dialogData.connectedNames.length} startup{dialogData.connectedNames.length !== 1 ? "s" : ""} using this customer</span>
+              )}
+              {dialogData?.type === "startup" && (
+                <span>{dialogData.connectedNames.length} customer{dialogData.connectedNames.length !== 1 ? "s" : ""}</span>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          {dialogData && dialogData.connectedNames.length > 0 && (
+            <div className="max-h-64 overflow-y-auto -mx-1">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border text-left text-xs text-muted-foreground">
+                    <th className="px-2 py-1.5 font-medium">
+                      {dialogData.type === "customer" ? "Startup" : "Customer"}
+                    </th>
+                    <th className="px-2 py-1.5 font-medium">
+                      {dialogData.type === "customer" ? "Category" : "Network Size"}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {dialogData.connectedNames.map((c, i) => (
+                    <tr key={i} className="border-b border-border/50 last:border-0">
+                      <td className="px-2 py-1.5 font-medium">{c.name}</td>
+                      <td className="px-2 py-1.5 text-muted-foreground text-xs">{c.detail}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

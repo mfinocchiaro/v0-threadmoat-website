@@ -7,7 +7,16 @@ import { getInvestorLogoUrl } from "@/lib/investor-logos"
 import { cn } from "@/lib/utils"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Search, X } from "lucide-react"
+
+interface NodeDialogData {
+  type: "investor" | "startup"
+  name: string
+  investorType?: string
+  investmentList?: string
+  connectedNames: { name: string; investmentList: string }[]
+}
 
 interface InvestorRecord {
   id: string
@@ -65,6 +74,9 @@ export function InvestorNetwork({ className }: { className?: string }) {
   const [filterType, setFilterType] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
   const deferredQuery = useDeferredValue(searchQuery)
+  const [dialogData, setDialogData] = useState<NodeDialogData | null>(null)
+  const dialogRef = useRef<(d: NodeDialogData | null) => void>(setDialogData)
+  dialogRef.current = setDialogData
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const startupNodesRef = useRef<any>(null)
@@ -309,6 +321,8 @@ export function InvestorNetwork({ className }: { className?: string }) {
       .on("mouseout", () => { hideTooltip(); if (selectedId === null) { startupNodes.attr("opacity", 1); link.attr("stroke-opacity", 0.45) } })
       .on("click", (e, d) => {
         e.stopPropagation()
+        hideTooltip()
+        const inv = d as unknown as InvestorNode
         const id = (d as any).id // eslint-disable-line @typescript-eslint/no-explicit-any
         applySelection(selectedId === id ? null : id)
         if (selectedId !== null) {
@@ -319,6 +333,22 @@ export function InvestorNetwork({ className }: { className?: string }) {
             const ty = height / 2 - scale * node.y
             svg.transition().duration(600).call(zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(scale))
           }
+          // Open dialog with connected startups
+          const connected = simLinks
+            .filter(l => (l.source as any).id === id || (l.target as any).id === id) // eslint-disable-line @typescript-eslint/no-explicit-any
+            .map(l => {
+              const t = (l.target as any) // eslint-disable-line @typescript-eslint/no-explicit-any
+              const sNode = simNodes.find(n => n.id === (t.id ?? t))
+              if (!sNode || sNode.type !== "startup") return null
+              return { name: sNode.name, investmentList: (sNode as any).investmentList || "" }
+            })
+            .filter(Boolean) as { name: string; investmentList: string }[]
+          dialogRef.current({
+            type: "investor",
+            name: inv.name,
+            investorType: inv.investorType,
+            connectedNames: connected.sort((a, b) => a.name.localeCompare(b.name)),
+          })
         }
       })
 
@@ -333,8 +363,25 @@ export function InvestorNetwork({ className }: { className?: string }) {
       .on("mouseout", () => { hideTooltip(); if (selectedId === null) { investorNodes.select("circle").attr("opacity", 1); link.attr("stroke-opacity", 0.45) } })
       .on("click", (e, d) => {
         e.stopPropagation()
+        hideTooltip()
         const sn = d as unknown as StartupNode
-        showTooltip(e, `<strong style="font-size:13px">${sn.name}</strong>${sn.investmentList ? `<br/><span style="font-size:11px;opacity:.7">${sn.investmentList}</span>` : ""}`)
+        // Find all investors connected to this startup
+        const connected = simLinks
+          .filter(l => (l.source as any).id === d.id || (l.target as any).id === d.id) // eslint-disable-line @typescript-eslint/no-explicit-any
+          .map(l => {
+            const s = (l.source as any) // eslint-disable-line @typescript-eslint/no-explicit-any
+            const investorId = s.id === (d as any).id ? (l.target as any).id : s.id // eslint-disable-line @typescript-eslint/no-explicit-any
+            const iNode = simNodes.find(n => n.id === investorId)
+            if (!iNode || iNode.type !== "investor") return null
+            return { name: iNode.name, investmentList: (iNode as any).investorType || "" }
+          })
+          .filter(Boolean) as { name: string; investmentList: string }[]
+        dialogRef.current({
+          type: "startup",
+          name: sn.name,
+          investmentList: sn.investmentList,
+          connectedNames: connected.sort((a, b) => a.name.localeCompare(b.name)),
+        })
       })
 
     svg.on("click", () => { applySelection(null); hideTooltip() })
@@ -511,6 +558,49 @@ export function InvestorNetwork({ className }: { className?: string }) {
         className="fixed z-50 rounded-md border border-border bg-popover px-3 py-2 text-xs shadow-md opacity-0 transition-opacity"
         style={{ pointerEvents: "none" }}
       />
+
+      <Dialog open={!!dialogData} onOpenChange={open => { if (!open) setDialogData(null) }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {dialogData?.type === "investor" && dialogData.name}
+              {dialogData?.type === "startup" && dialogData.name}
+            </DialogTitle>
+            <DialogDescription>
+              {dialogData?.type === "investor" && (
+                <span>{dialogData.investorType || "Investor"} · {dialogData.connectedNames.length} startup{dialogData.connectedNames.length !== 1 ? "s" : ""} funded</span>
+              )}
+              {dialogData?.type === "startup" && (
+                <span>{dialogData.investmentList || "Startup"} · {dialogData.connectedNames.length} investor{dialogData.connectedNames.length !== 1 ? "s" : ""}</span>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          {dialogData && dialogData.connectedNames.length > 0 && (
+            <div className="max-h-64 overflow-y-auto -mx-1">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border text-left text-xs text-muted-foreground">
+                    <th className="px-2 py-1.5 font-medium">
+                      {dialogData.type === "investor" ? "Startup" : "Investor"}
+                    </th>
+                    <th className="px-2 py-1.5 font-medium">
+                      {dialogData.type === "investor" ? "Category" : "Type"}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {dialogData.connectedNames.map((c, i) => (
+                    <tr key={i} className="border-b border-border/50 last:border-0">
+                      <td className="px-2 py-1.5 font-medium">{c.name}</td>
+                      <td className="px-2 py-1.5 text-muted-foreground text-xs">{c.investmentList}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
