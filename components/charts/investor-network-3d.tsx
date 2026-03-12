@@ -67,10 +67,17 @@ export function InvestorNetwork3D({ className }: { className?: string }) {
     return () => ro.disconnect()
   }, [])
 
+  const [startupListMap, setStartupListMap] = useState<Record<string, string>>({})
+
   useEffect(() => {
     fetch("/api/investors")
       .then(r => r.json())
-      .then(json => { if (json.success) setInvestors(json.data); else setError("Failed to load") })
+      .then(json => {
+        if (json.success) {
+          setInvestors(json.data)
+          if (json.startupInvestmentMap) setStartupListMap(json.startupInvestmentMap)
+        } else setError("Failed to load")
+      })
       .catch(() => setError("Failed to load investor data"))
       .finally(() => setLoading(false))
   }, [])
@@ -94,9 +101,10 @@ export function InvestorNetwork3D({ className }: { className?: string }) {
 
     for (const inv of filtered) {
       nodes.push({ id: `i:${inv.id}`, type: "investor", name: inv.name, count: inv.startupCount, investorType: inv.investorType })
-      inv.startupNames.forEach((sName, idx) => {
-        const sid = `s:${sName.toLowerCase().replace(/\s+/g, "-")}`
-        if (!startupMap.has(sid)) startupMap.set(sid, { name: sName.trim(), investmentList: inv.investmentLists[idx] ?? "" })
+      inv.startupNames.forEach((sName) => {
+        const trimmed = sName.trim()
+        const sid = `s:${trimmed.toLowerCase().replace(/\s+/g, "-")}`
+        if (!startupMap.has(sid)) startupMap.set(sid, { name: trimmed, investmentList: startupListMap[trimmed] || "" })
         links.push({ source: `i:${inv.id}`, target: sid })
       })
     }
@@ -108,7 +116,7 @@ export function InvestorNetwork3D({ className }: { className?: string }) {
     }
 
     return { graphData: { nodes, links }, investorCount: filtered.length }
-  }, [investors, minCount, filterType])
+  }, [investors, minCount, filterType, startupListMap])
 
   const maxCount = useMemo(
     () => Math.max(...graphData.nodes.filter(n => n.type === "investor").map(n => (n as InvestorNode).count), 1),

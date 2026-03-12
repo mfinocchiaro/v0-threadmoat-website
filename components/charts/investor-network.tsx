@@ -71,6 +71,7 @@ export function InvestorNetwork({ className }: { className?: string }) {
   const tooltipRef = useRef<HTMLDivElement>(null)
 
   const [investors, setInvestors] = useState<InvestorRecord[]>([])
+  const [startupListMap, setStartupListMap] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -95,8 +96,10 @@ export function InvestorNetwork({ className }: { className?: string }) {
     fetch("/api/investors")
       .then(r => r.json())
       .then(json => {
-        if (json.success) setInvestors(json.data)
-        else setError("Failed to load investor data")
+        if (json.success) {
+          setInvestors(json.data)
+          if (json.startupInvestmentMap) setStartupListMap(json.startupInvestmentMap)
+        } else setError("Failed to load investor data")
       })
       .catch(() => setError("Failed to load investor data"))
       .finally(() => setLoading(false))
@@ -129,12 +132,13 @@ export function InvestorNetwork({ className }: { className?: string }) {
         investorType: inv.investorType,
       })
 
-      inv.startupNames.forEach((sName, idx) => {
-        const sid = `s:${sName.toLowerCase().replace(/\s+/g, "-")}`
-        const investmentList = inv.investmentLists[idx] ?? ""
+      inv.startupNames.forEach((sName) => {
+        const trimmed = sName.trim()
+        const sid = `s:${trimmed.toLowerCase().replace(/\s+/g, "-")}`
+        const investmentList = startupListMap[trimmed] || ""
 
         if (!startupMap.has(sid)) {
-          startupMap.set(sid, { name: sName.trim(), investmentList })
+          startupMap.set(sid, { name: trimmed, investmentList })
         }
         links.push({ source: `i:${inv.id}`, target: sid })
       })
@@ -148,7 +152,7 @@ export function InvestorNetwork({ className }: { className?: string }) {
     }
 
     return { nodes, links, investorCount: filtered.length }
-  }, [investors, minCount, filterType])
+  }, [investors, minCount, filterType, startupListMap])
 
   useEffect(() => {
     if (!svgRef.current || nodes.length === 0) return

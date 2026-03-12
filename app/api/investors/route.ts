@@ -18,6 +18,18 @@ export async function GET() {
   }
 
   try {
+    // Build startup name → investment list lookup from Startups CSV
+    const startupCsvPath = path.join(process.cwd(), 'data', 'Startups-Grid view.csv')
+    let startupCsv = await fs.readFile(startupCsvPath, 'utf-8')
+    if (startupCsv.charCodeAt(0) === 0xFEFF) startupCsv = startupCsv.slice(1)
+    const startupParsed = Papa.parse(startupCsv, { header: true, skipEmptyLines: true })
+    const startupInvestmentMap: Record<string, string> = {}
+    for (const row of startupParsed.data as Record<string, string>[]) {
+      const name = (row['Company'] || '').trim()
+      const list = (row['Investment List'] || '').trim()
+      if (name && list) startupInvestmentMap[name] = list
+    }
+
     const csvPath = path.join(process.cwd(), 'data', 'Investors-Grid view.csv')
     let csvContent = await fs.readFile(csvPath, 'utf-8')
 
@@ -30,14 +42,40 @@ export async function GET() {
 
     const EXCLUDED = ['undisclosed angel investors', 'bootstrapped', 'unknown', 'n/a', 'n a']
 
-    // Investment Lists field contains quoted CSV values like:
-    // "Factory Futures (MES, IIOT)",Streamlined Supply Chain (SCM)
-    // Use Papa to parse each field as a CSV row, then deduplicate
+    // Simple comma-separated parser for fields without internal commas (company names)
     function parseNestedCsv(field: string): string[] {
       if (!field) return []
       const result = Papa.parse(field, { header: false })
       const values = (result.data[0] as string[] || []).map(s => s.trim()).filter(Boolean)
       return Array.from(new Set(values))
+    }
+
+    // Investment Lists contain commas inside parentheses, e.g.:
+    // "Factory Futures (MES, IIOT), Streamlined Supply Chain (SCM)"
+    // PapaParse splits on inner commas, so we recombine fragments.
+    // Each valid entry has balanced parentheses: "Name (ABBR, ABBR)"
+    function parseInvestmentLists(field: string): string[] {
+      if (!field) return []
+      const result = Papa.parse(field, { header: false })
+      const fragments = (result.data[0] as string[] || []).map(s => s.trim()).filter(Boolean)
+      const merged: string[] = []
+      let current = ''
+      for (const frag of fragments) {
+        if (current) {
+          current += ', ' + frag
+        } else {
+          current = frag
+        }
+        // A complete entry has balanced parens or no parens at all
+        const opens = (current.match(/\(/g) || []).length
+        const closes = (current.match(/\)/g) || []).length
+        if (opens === closes) {
+          merged.push(current)
+          current = ''
+        }
+      }
+      if (current) merged.push(current) // flush remainder
+      return Array.from(new Set(merged))
     }
 
     const investors = rawData
@@ -50,7 +88,7 @@ export async function GET() {
         name: (row['Name (Institution or Individual)'] || '').trim(),
         startupNames: parseNestedCsv(row['Company (from Associated Startups)'] || ''),
         startupCount: parseInt(row['Startup Count']) || 0,
-        investmentLists: parseNestedCsv(row['Investment Lists'] || ''),
+        investmentLists: parseInvestmentLists(row['Investment Lists'] || ''),
         linkedInProfile: (row['LinkedIn Profile'] || '').trim(),
         email: (row['Email'] || '').trim(),
         notes: (row['Notes'] || '').trim(),
@@ -68,7 +106,7 @@ export async function GET() {
         return inv
       })
 
-    return NextResponse.json({ success: true, count: investors.length, data: investors })
+    return NextResponse.json({ success: true, count: investors.length, data: investors, startupInvestmentMap })
   } catch (error) {
     return NextResponse.json(
       { success: false, error: 'Failed to load investor data' },
