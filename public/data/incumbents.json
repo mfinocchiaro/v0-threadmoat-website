@@ -574,26 +574,28 @@
       "Process Industries"
     ],
     "url": "https://www.bentley.com/software/openplant/",
-    "revenueB": 0.07,
-    "revenueNote": "~6% of Bentley; niche process plant product",
+    "revenueB": 0.05,
+    "revenueNote": "~6% of Bentley; niche process plant design and lifecycle",
     "founded": 2010,
     "hq": "United States"
   },
   {
-    "id": "GE Predix",
-    "vendor": "GE Digital",
-    "product": "Predix",
+    "id": "GE Proficy (TPG)",
+    "vendor": "TPG",
+    "product": "GE Proficy (MES, Historian, SCADA)",
     "category": "Factory Futures (MES, IIOT)",
     "subcategories": [
-      "IIoT",
-      "Asset Performance",
-      "Digital Twin"
+      "MES",
+      "SCADA",
+      "Historian",
+      "IIoT"
     ],
-    "url": "https://www.ge.com/digital/applications/industrial-internet",
-    "revenueB": 0.12,
-    "revenueNote": "Declining; GE Digital ~$600M total, Predix rebranding into GE Vernova stack",
-    "founded": 2015,
-    "hq": "United States"
+    "url": "https://www.ge.com/digital/applications/proficy",
+    "revenueB": 0.2,
+    "revenueNote": "Sold by GE Vernova to TPG for $600M (completed March 2026); ~$200M annual revenue est. from sale price at ~3x revenue",
+    "founded": 2003,
+    "hq": "United States",
+    "acquisitionNote": "Acquired by TPG from GE Vernova for $600M, March 2026"
   },
   {
     "id": "Honeywell Forge",
@@ -671,25 +673,149 @@
     ],
     "url": "https://plm.sw.siemens.com/en-US/opcenter/",
     "revenueB": 0.28,
-    "revenueNote": "~5% of Siemens DISW; smaller MES line",
+    "revenueNote": "Includes legacy SIMATIC IT; IDC and Gartner Leader 6 consecutive years; Opcenter X cloud MES for SMBs; part of Siemens DISW ~€7B+",
     "founded": 2018,
     "hq": "Germany"
   },
   {
-    "id": "TPG ThingWorx",
+    "id": "TPG ThingWorx + Kepware",
     "vendor": "TPG",
-    "product": "ThingWorx",
+    "product": "ThingWorx + Kepware",
     "category": "Factory Futures (MES, IIOT)",
     "subcategories": [
       "IIoT",
-      "MES",
+      "Edge Computing",
+      "OT Connectivity",
       "Digital Twin"
     ],
     "url": "https://www.ptc.com/en/products/thingworx",
-    "revenueB": 0.22,
-    "revenueNote": "Sold to TPG in 2025",
+    "revenueB": 0.2,
+    "revenueNote": "Sold by PTC to TPG for up to $725M ($600M cash + $125M contingent); ~$200M combined annual revenue; TPG building industrial software portfolio with Proficy",
     "founded": 2009,
-    "hq": "United States"
+    "hq": "United States",
+    "acquisitionNote": "Acquired by TPG from PTC, closing H1 2026"
+  },
+  {
+    "id": "Dassault DELMIA Apriso",
+    "vendor": "Dassault Systèmes",
+    "product": "DELMIA Apriso (MES)",
+    "category": "Factory Futures (MES, IIOT)",
+    "subcategories": [
+      "MES",
+      "Manufacturing Execution",
+      "Traceability",
+      "Batch Records"
+    ],
+    "url": "https://www.3ds.com/products/delmia/delmia-apriso",
+    "revenueB": 0.4,
+    "revenueNote": "MES portion of DELMIA; within Dassault Industrial Innovation segment (€2.25B for 9 months 2025); serves aerospace, automotive, CPG, life sciences",
+    "founded": 2013,
+    "hq": "France",
+    "acquisitionNote": "Apriso acquired by Dassault Systèmes 2013"
+  },
+  {
+    "id": "Emerson AspenTech",
+    "vendor": "Emerson",
+    "product": "AspenTech (Process Optimization)",
+    "category": "Factory Futures (MES, IIOT)",
+    "subcategories": [
+      "Process Optimization",
+      "Asset Performance",
+      "MES",
+      "Digital Twin"
+    ],
+    "url": "https://www.aspentech.com",
+    "revenueB": 0.55,
+    "revenueNote": "AspenTech ACV $965M total; factory-relevant portion est. ~$550M; Emerson completed full acquisition March 2025 for $7.2B total enterprise value",
+    "founded": 1981,
+    "hq": "United States",
+    "acquisitionNote": "Fully acquired by Emerson March 2025 ($7.2B for remaining 45%)"
+  },
+  {
+    "id": "ABB Ability",
+    "vendor": "ABB",
+    "product": "ABB Ability (Industrial Software)",
+    "category": "Factory Futures (MES, IIOT)",
+    "subcategories": [
+      "MES",
+      "Process Automation",
+      "Asset Performance",
+      "GenAI"
+    ],
+    "url": "https://new.abb.com/ability",
+    "revenueB": 0.35,
+    "revenueNote": "180+ Ability applications; MES/MOM portion est. ~$350M within ABB Process Automation ($33.2B total 2025); Genix Copilot GenAI",
+    "founded": 2017,
+    "hq": "Switzerland"
+  },
+  {
+    "id": "Körber PAS-X",
+    "vendor": "Körber Group",
+    "product": "PAS-X (Pharma MES)",
+    "category": "Factory Futures (MES, IIOT)",
+    "subcategories": [
+      "MES",
+      "Pharma Manufacturing",
+      "GxP Compliance",
+      "Batch Records"
+    ],
+    "url": "https://www.koerber-pharma.com/products/pas-x-mes",
+    "revenueB": 0.22,
+    "revenueNote": "Dominant pharma MES; top 20 global pharma companies; managed cloud on AWS (2025); within €2.8B Körber group",
+    "founded": 1998,
+    "hq": "Germany"
+  },
+  {
+    "id": "MPDV HYDRA X",
+    "vendor": "MPDV",
+    "product": "HYDRA X (MES)",
+    "category": "Factory Futures (MES, IIOT)",
+    "subcategories": [
+      "MES",
+      "Production Planning",
+      "Quality Management",
+      "SMB Manufacturing"
+    ],
+    "url": "https://www.mpdv.com/en/products/hydra-x/",
+    "revenueB": 0.1,
+    "revenueNote": "Private, German; ~500 employees; 900,000 users across 1,400+ manufacturing entities; 40+ years in MES",
+    "founded": 1977,
+    "hq": "Germany"
+  },
+  {
+    "id": "Critical Manufacturing MES",
+    "vendor": "ASMPT",
+    "product": "Critical Manufacturing MES",
+    "category": "Factory Futures (MES, IIOT)",
+    "subcategories": [
+      "MES",
+      "Semiconductor Manufacturing",
+      "Electronics",
+      "Industry 4.0"
+    ],
+    "url": "https://www.criticalmanufacturing.com",
+    "revenueB": 0.05,
+    "revenueNote": "Fast-growing; IDC MarketScape and Gartner Leader; dominant in semiconductor and electronics; within ASMPT ($2B+ parent)",
+    "founded": 2009,
+    "hq": "Portugal",
+    "acquisitionNote": "Majority stake acquired by ASMPT (formerly ASM Pacific)"
+  },
+  {
+    "id": "COMSOL Multiphysics",
+    "vendor": "COMSOL",
+    "product": "COMSOL Multiphysics",
+    "category": "Extreme Analysis (CAE, CFD, FEA, QC)",
+    "subcategories": [
+      "Multiphysics",
+      "FEA",
+      "CFD",
+      "Simulation"
+    ],
+    "url": "https://www.comsol.com",
+    "revenueB": 0.2,
+    "revenueNote": "Private, Swedish; est. ~$200M+ revenue; dominant in coupled multiphysics simulation; strong in academia and R&D",
+    "founded": 1986,
+    "hq": "Sweden"
   },
   {
     "id": "ETQ Reliance",
@@ -952,6 +1078,132 @@
     "revenueB": 1.2,
     "revenueNote": "Est. ~$1.2B; bundled in SAP Spend Management; acquired by SAP 2012 for $4.3B",
     "founded": 1996,
+    "hq": "United States"
+  },
+  {
+    "id": "Mastercam",
+    "vendor": "CNC Software (Sandvik)",
+    "product": "Mastercam",
+    "category": "Adaptive Manufacturing (AM, CAM, CNC)",
+    "subcategories": ["CAM", "CNC Programming", "Milling", "Turning"],
+    "url": "https://www.mastercam.com",
+    "revenueB": 0.35,
+    "revenueNote": "World's most-installed CAM software; acquired by Sandvik 2021; ~60K licenses/yr",
+    "founded": 1983,
+    "hq": "United States",
+    "acquisitionNote": "Acquired by Sandvik Coromant 2021"
+  },
+  {
+    "id": "Esprit CAM",
+    "vendor": "Hexagon",
+    "product": "Esprit CAM",
+    "category": "Adaptive Manufacturing (AM, CAM, CNC)",
+    "subcategories": ["CAM", "CNC Programming", "Multi-Axis"],
+    "url": "https://www.espritcam.com",
+    "revenueB": 0.18,
+    "revenueNote": "Acquired by Hexagon from DP Technology; multi-axis CNC programming",
+    "founded": 1987,
+    "hq": "United States",
+    "acquisitionNote": "Acquired by Hexagon (via DP Technology)"
+  },
+  {
+    "id": "Materialise",
+    "vendor": "Materialise NV",
+    "product": "Materialise (Magics, Mimics, 3-matic)",
+    "category": "Adaptive Manufacturing (AM, CAM, CNC)",
+    "subcategories": ["Additive Manufacturing", "3D Printing Software", "Medical 3D"],
+    "url": "https://www.materialise.com",
+    "revenueB": 0.25,
+    "revenueNote": "Publicly traded (MTLS); AM software + services; Magics is industry standard for build prep",
+    "founded": 1990,
+    "hq": "Belgium"
+  },
+  {
+    "id": "ZEISS Quality Suite",
+    "vendor": "ZEISS",
+    "product": "ZEISS Quality Suite (CALYPSO, PiWeb)",
+    "category": "Adaptive Manufacturing (AM, CAM, CNC)",
+    "subcategories": ["Metrology", "Quality Control", "Dimensional Inspection"],
+    "url": "https://www.zeiss.com/metrology",
+    "revenueB": 0.45,
+    "revenueNote": "CALYPSO, CONTURA, PiWeb; industrial metrology software; within ZEISS IQS (~€2B)",
+    "founded": 1846,
+    "hq": "Germany"
+  },
+  {
+    "id": "ServiceMax",
+    "vendor": "PTC",
+    "product": "ServiceMax",
+    "category": "Augmented Operations (MOM, CMMS, AR/VR, SLM)",
+    "subcategories": ["Field Service Management", "SLM", "Asset Management"],
+    "url": "https://www.servicemax.com",
+    "revenueB": 0.30,
+    "revenueNote": "Acquired by PTC 2023 for $1.5B; leading FSM platform; GE, Schneider, Coca-Cola",
+    "founded": 2007,
+    "hq": "United States",
+    "acquisitionNote": "Acquired by PTC 2023 for $1.5B"
+  },
+  {
+    "id": "PTC Vuforia",
+    "vendor": "PTC",
+    "product": "Vuforia",
+    "category": "Augmented Operations (MOM, CMMS, AR/VR, SLM)",
+    "subcategories": ["AR", "VR", "Remote Assist", "Industrial AR"],
+    "url": "https://www.ptc.com/en/products/vuforia",
+    "revenueB": 0.10,
+    "revenueNote": "Industrial AR/VR; remote assist, step-check, instruct; ~$100M ARR est.",
+    "founded": 2011,
+    "hq": "United States",
+    "acquisitionNote": "Acquired by PTC 2015 for $65M"
+  },
+  {
+    "id": "Rockwell Fiix",
+    "vendor": "Rockwell Automation",
+    "product": "Fiix CMMS",
+    "category": "Augmented Operations (MOM, CMMS, AR/VR, SLM)",
+    "subcategories": ["CMMS", "Maintenance Management", "Asset Management"],
+    "url": "https://www.fiixsoftware.com",
+    "revenueB": 0.10,
+    "revenueNote": "Cloud CMMS acquired by Rockwell 2020; AI-driven maintenance scheduling for discrete manufacturing",
+    "founded": 2008,
+    "hq": "Canada",
+    "acquisitionNote": "Acquired by Rockwell Automation 2020"
+  },
+  {
+    "id": "Granta Design",
+    "vendor": "Ansys (Synopsys)",
+    "product": "Granta MI (Materials Data)",
+    "category": "Knowledge Engineering (R&D, Learning)",
+    "subcategories": ["Materials Data", "Materials Selection", "Restricted Substances"],
+    "url": "https://www.ansys.com/products/materials",
+    "revenueB": 0.12,
+    "revenueNote": "Materials information management; acquired by Ansys 2019; within Synopsys post-2024",
+    "founded": 1994,
+    "hq": "United Kingdom",
+    "acquisitionNote": "Acquired by Ansys 2019, now part of Synopsys"
+  },
+  {
+    "id": "PTC Mathcad",
+    "vendor": "PTC",
+    "product": "Mathcad",
+    "category": "Knowledge Engineering (R&D, Learning)",
+    "subcategories": ["Engineering Calculation", "Technical Documentation", "Math Software"],
+    "url": "https://www.ptc.com/en/products/mathcad",
+    "revenueB": 0.08,
+    "revenueNote": "Engineering calculation management; ~$80M ARR est.; integrates with Creo/Windchill",
+    "founded": 1986,
+    "hq": "United States"
+  },
+  {
+    "id": "Wolfram Research",
+    "vendor": "Wolfram",
+    "product": "Mathematica / Wolfram Language",
+    "category": "Knowledge Engineering (R&D, Learning)",
+    "subcategories": ["Computational Mathematics", "Symbolic Computation", "R&D Tools"],
+    "url": "https://www.wolfram.com",
+    "revenueB": 0.20,
+    "revenueNote": "Private; Mathematica dominant in symbolic/numerical computation for engineering R&D",
+    "founded": 1987,
     "hq": "United States"
   }
 ]

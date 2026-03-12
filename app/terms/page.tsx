@@ -33,9 +33,9 @@ export default function TermsPage() {
         <section className="mb-8">
           <h2 className="text-lg font-semibold mb-3">3. Market reports</h2>
           <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-            <li>Each report is licensed to the purchasing entity as specified at checkout (Single Entity or Investor/Portfolio).</li>
+            <li>Each report is licensed to the purchasing entity as specified at checkout (Latest Quarterly Report or Annual Report Subscription).</li>
             <li>Reports are personalized, watermarked, and carry a unique Copy ID. Redistribution outside the licensed entity is prohibited.</li>
-            <li>Pricing is per quarterly edition. Each quarter&rsquo;s report is a separate purchase.</li>
+            <li>Latest Quarterly Reports are priced per edition. Annual Report Subscriptions include all four quarterly editions.</li>
             <li>All sales are final. Refunds are at our sole discretion.</li>
           </ul>
         </section>

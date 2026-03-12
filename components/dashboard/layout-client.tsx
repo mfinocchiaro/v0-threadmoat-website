@@ -15,7 +15,7 @@ interface Profile {
   profile_type?: string
 }
 
-function LayoutInner({ user, profile, children, isAdmin, isFreeUser }: { user: Session["user"]; profile?: Profile; children: ReactNode; isAdmin: boolean; isFreeUser: boolean }) {
+function LayoutInner({ user, profile, children, isAdmin, isFreeUser, isExpiredTrial, daysRemaining }: { user: Session["user"]; profile?: Profile; children: ReactNode; isAdmin: boolean; isFreeUser: boolean; isExpiredTrial: boolean; daysRemaining: number | null }) {
   const { scenario, setScenario } = useScenario()
   return (
     <SidebarShell
@@ -27,7 +27,7 @@ function LayoutInner({ user, profile, children, isAdmin, isFreeUser }: { user: S
       isFreeUser={isFreeUser}
     >
       <Suspense><CheckoutToast /></Suspense>
-      {isFreeUser ? <FreeUserGuard>{children}</FreeUserGuard> : children}
+      {isFreeUser ? <FreeUserGuard isExpiredTrial={isExpiredTrial} daysRemaining={daysRemaining}>{children}</FreeUserGuard> : children}
     </SidebarShell>
   )
 }
@@ -38,6 +38,8 @@ export function DashboardLayoutClient({
   initialScenario,
   isAdmin = false,
   isFreeUser = false,
+  isExpiredTrial = false,
+  daysRemaining = null,
   children,
 }: {
   user: Session["user"]
@@ -45,12 +47,14 @@ export function DashboardLayoutClient({
   initialScenario?: string
   isAdmin?: boolean
   isFreeUser?: boolean
+  isExpiredTrial?: boolean
+  daysRemaining?: number | null
   children: ReactNode
 }) {
   return (
     <PlanProvider isFreeUser={isFreeUser}>
       <ScenarioProvider initialScenario={initialScenario}>
-        <LayoutInner user={user} profile={profile} isAdmin={isAdmin} isFreeUser={isFreeUser}>
+        <LayoutInner user={user} profile={profile} isAdmin={isAdmin} isFreeUser={isFreeUser} isExpiredTrial={isExpiredTrial} daysRemaining={daysRemaining}>
           {children}
         </LayoutInner>
       </ScenarioProvider>

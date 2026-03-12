@@ -253,6 +253,15 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Full Access CTA */}
+      <section className="container mx-auto px-4 py-12 text-center">
+        <Link href="/pricing">
+          <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-base px-8 py-6 gap-2 shadow-lg">
+            For full access, click here for Pricing
+          </Button>
+        </Link>
+      </section>
+
       {/* Footer */}
       <footer className="border-t border-border/40">
         <div className="container mx-auto flex h-16 items-center justify-between px-4 text-sm text-muted-foreground">

@@ -53,10 +53,14 @@ export default async function DashboardLayout({
     || adminEmails.includes(baseEmail)
 
   let hasSubscription = false
+  let isExpiredTrial = false
+  let daysRemaining: number | null = null
   if (!isAdmin) {
     try {
       const subscription = await getUserSubscription(userId)
       hasSubscription = subscription.hasActiveSubscription
+      isExpiredTrial = subscription.isExpiredTrial
+      daysRemaining = subscription.daysRemaining
     } catch {
       // DB unavailable
     }
@@ -75,6 +79,8 @@ export default async function DashboardLayout({
       initialScenario={profile?.profile_type}
       isAdmin={isAdmin}
       isFreeUser={isFreeUser}
+      isExpiredTrial={isExpiredTrial}
+      daysRemaining={daysRemaining}
     >
       {children}
     </DashboardLayoutClient>

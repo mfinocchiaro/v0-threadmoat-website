@@ -81,7 +81,13 @@ export function InvestorExplorerChart({ data, className }: InvestorExplorerChart
       if (!company.investors || company.investors.length === 0) return
 
       company.investors
-        .filter((inv) => !EXCLUDED_INVESTORS.includes(inv.toLowerCase().trim()))
+        .filter((inv) => {
+          const lower = inv.toLowerCase().trim()
+          if (EXCLUDED_INVESTORS.includes(lower)) return false
+          // Filter out raw Airtable dict fragments
+          if (inv.includes("'state'") || inv.includes("'isStale'") || inv.includes("'value'") || inv.startsWith("{") || inv.endsWith("}")) return false
+          return true
+        })
         .forEach((investor) => {
         const existing = map.get(investor)
         if (existing) {

@@ -9,6 +9,27 @@ function cleanField(value: string | undefined): string {
   return JUNK_VALUES.has(v.toLowerCase()) ? '' : v
 }
 
+/**
+ * Airtable AI fields are stored as Python dict strings:
+ *   {'state': 'generated', 'value': 'actual text here', 'isStale': False}
+ * This extracts the 'value' field, or returns the original string if not a dict.
+ */
+function extractAirtableValue(raw: string | undefined): string {
+  if (!raw) return ''
+  const s = raw.trim()
+  if (!s.startsWith('{') || !s.endsWith('}')) return s
+  // Extract value between 'value': ' and the next unescaped '
+  const match = s.match(/'value':\s*'((?:[^'\\]|\\.)*)'/)
+  if (match) return match[1].replace(/\\'/g, "'")
+  // Try double quotes
+  const match2 = s.match(/'value':\s*"((?:[^"\\]|\\.)*)"/)
+  if (match2) return match2[1]
+  // Try multiline: value spans multiple lines — grab everything between 'value': ' and ', 'isStale
+  const match3 = s.match(/'value':\s*'([\s\S]*)',\s*'isStale/)
+  if (match3) return match3[1].replace(/\\'/g, "'")
+  return s
+}
+
 function parseCurrency(value: string | undefined): number {
   if (!value) return 0
   const cleaned = value.replace(/[$,\s]/g, '')
@@ -56,8 +77,8 @@ export async function loadCompaniesFromCSV(): Promise<Company[]> {
     founded: parseInt(row['Founded']) || 0,
     headcount: parseInt(row['Estimated Headcount']) || 0,
     knownCustomers: row['Known Customers'] || '',
-    strengths: row['Strengths'] || '',
-    weaknesses: row['Weaknesses'] || '',
+    strengths: extractAirtableValue(row['Strengths']),
+    weaknesses: extractAirtableValue(row['Weaknesses']),
     discipline: row['Discipline'] || '',
     lifecyclePhase: cleanField(row['Lifecycle Phase']),
     workflowSegment: row['Workflow Segment'] || '',
@@ -91,9 +112,9 @@ export async function loadCompaniesFromCSV(): Promise<Company[]> {
     totalFunding: parseCurrency(row['Total Current Known Funding Level']),
     estimatedRevenue: parseCurrency(row['Current Estimated Annual Revenue']),
     estimatedMarketValue: parseCurrency(row['Estimated Market Value']),
-    financialNotes: row['Financials Notes'] || '',
+    financialNotes: extractAirtableValue(row['Financials Notes']),
     investors: Array.from(new Set(
-      (row['Investors and VCs'] || '')
+      extractAirtableValue(row['Investors and VCs'])
         .split(/[\n,]+/)
         .map(t => t.trim())
         .filter(t => t && ![
@@ -104,19 +125,19 @@ export async function loadCompaniesFromCSV(): Promise<Company[]> {
         ].includes(t))
     )),
     marketOpportunity: parseNum(row['Market Opportunity']),
-    marketOpportunityJustification: row['Market Opportunity Justification'] || '',
+    marketOpportunityJustification: extractAirtableValue(row['Market Opportunity Justification']),
     teamExecution: parseNum(row['Team & Execution']),
-    teamExecutionJustification: row['Team & Execution Justification'] || '',
+    teamExecutionJustification: extractAirtableValue(row['Team & Execution Justification']),
     techDifferentiation: parseNum(row['Technology Differentiation']),
-    techDifferentiationJustification: row['Technology Differentiation Justification'] || '',
+    techDifferentiationJustification: extractAirtableValue(row['Technology Differentiation Justification']),
     fundingEfficiency: parseNum(row['Funding Efficiency']),
-    fundingEfficiencyJustification: row['Funding Efficiency Justification'] || '',
+    fundingEfficiencyJustification: extractAirtableValue(row['Funding Efficiency Justification']),
     growthMetrics: parseNum(row['Growth Metrics']),
-    growthMetricsJustification: row['Growth Metrics Justification'] || '',
+    growthMetricsJustification: extractAirtableValue(row['Growth Metrics Justification']),
     industryImpact: parseNum(row['Industry Impact']),
-    industryImpactJustification: row['Industry Impact Justification'] || '',
+    industryImpactJustification: extractAirtableValue(row['Industry Impact Justification']),
     competitiveMoat: parseNum(row['Competitive Moat']),
-    competitiveMoatJustification: row['Competitive Moat Justification'] || '',
+    competitiveMoatJustification: extractAirtableValue(row['Competitive Moat Justification']),
     weightedScore: parseNum(row['Weighted Score']),
   }))
 }

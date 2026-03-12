@@ -227,7 +227,7 @@ export default function PricingPage() {
               <Briefcase className="h-5 w-5 text-primary mt-1" />
             </div>
             <div className="mt-5">
-              <span className="text-3xl font-bold">$14,999</span>
+              <span className="text-3xl font-bold">$17,999</span>
               <span className="text-lg text-muted-foreground font-normal">/year</span>
               <p className="text-xs text-muted-foreground mt-1">Annual subscription</p>
             </div>
@@ -260,8 +260,7 @@ export default function PricingPage() {
               <Castle className="h-5 w-5 text-red-400 mt-1" />
             </div>
             <div className="mt-5">
-              <span className="text-3xl font-bold">$17,999</span>
-              <span className="text-lg text-muted-foreground font-normal">/year</span>
+              <span className="text-3xl font-bold">Call For Quote</span>
               <p className="text-xs text-muted-foreground mt-1">Annual contract</p>
             </div>
             <ul className="mt-6 flex-1 space-y-2.5">

@@ -7,6 +7,7 @@ import { PASSWORD_RULES } from '@/lib/auth-schema'
 import type { RegisterData } from '@/lib/auth-schema'
 import { rateLimit } from '@/lib/rate-limit'
 import { validateCoupon, redeemCoupon } from '@/lib/coupons'
+import { createExplorerTrial } from '@/lib/explorer-trial'
 import { sendVerificationEmail, sendPasswordResetEmail } from '@/lib/email'
 
 type ActionResult = { success: true; emailSent?: boolean } | { success: false; error: string }
@@ -195,6 +196,14 @@ export async function verifyEmail(token: string): Promise<ActionResult> {
       } catch (err) {
         console.error('[verifyEmail] coupon redemption failed:', err)
         // Non-fatal — user is verified; they can contact support if trial is missing
+      }
+    } else {
+      // No invite code — auto-create 30-day Explorer trial
+      try {
+        await createExplorerTrial(userId)
+      } catch (err) {
+        console.error('[verifyEmail] explorer trial creation failed:', err)
+        // Non-fatal — user still gets free-tier access
       }
     }
 
