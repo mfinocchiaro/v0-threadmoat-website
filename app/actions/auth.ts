@@ -81,8 +81,13 @@ export async function registerUser(data: RegisterData): Promise<ActionResult> {
 
     // --- Validate invite code if provided (redeemed after email verification) ---
     if (inviteCode && inviteCode.length > 0) {
-      const coupon = await validateCoupon(inviteCode)
-      if (!coupon) return { success: false, error: 'Invalid or expired invite code' }
+      try {
+        const coupon = await validateCoupon(inviteCode)
+        if (!coupon) return { success: false, error: 'Invalid or expired invite code' }
+      } catch (err) {
+        console.error('[registerUser] coupon validation error:', err)
+        return { success: false, error: 'Invalid invite code. Please check and try again.' }
+      }
     }
 
     // --- Check for existing account ---
