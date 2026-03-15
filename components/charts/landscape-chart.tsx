@@ -152,11 +152,11 @@ function SubsegmentDrill({ title, color, subcategories, onBack, drillDetail, onT
                                         const logoPath = `/logos/${normalizeLogoName(c.name)}/logo_sm.png`;
                                         const initials = c.name.split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join("").toUpperCase();
                                         return (
-                                            <div key={c.id} className="flex items-center gap-2 px-3 py-2 hover:bg-muted/30 transition-colors">
+                                            <div key={c.id} className="flex items-center gap-2 px-3 py-2 hover:bg-muted/30 transition-colors group" title={c.name}>
                                                 <div className="w-6 h-6 shrink-0 rounded bg-muted border border-border overflow-hidden flex items-center justify-center">
                                                     <img
                                                         src={logoPath}
-                                                        alt={c.name}
+                                                        alt={initials}
                                                         className="w-full h-full object-contain p-px"
                                                         onError={e => {
                                                             e.currentTarget.style.display = "none";
@@ -168,19 +168,7 @@ function SubsegmentDrill({ title, color, subcategories, onBack, drillDetail, onT
                                                     </span>
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    {c.url ? (
-                                                        <a
-                                                            href={c.url}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="text-xs font-medium hover:text-primary hover:underline whitespace-nowrap flex items-center gap-1 group"
-                                                        >
-                                                            {c.name}
-                                                            <ExternalLink className="h-2.5 w-2.5 shrink-0 opacity-0 group-hover:opacity-60" />
-                                                        </a>
-                                                    ) : (
-                                                        <span className="text-xs font-medium whitespace-nowrap">{c.name}</span>
-                                                    )}
+                                                    <span className="text-xs font-bold text-foreground">{initials}</span>
                                                     <p className="text-[10px] text-muted-foreground select-text cursor-text">
                                                         {drillDetail === "funding"
                                                             ? formatCurrency(c.totalFunding)

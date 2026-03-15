@@ -7,6 +7,7 @@ import { PlanProvider } from "@/contexts/plan-context"
 import { SidebarShell } from "./sidebar-shell"
 import { FreeUserGuard } from "./free-user-guard"
 import { CheckoutToast } from "@/components/checkout/checkout-toast"
+import { useIdleTimeout } from "@/hooks/use-idle-timeout"
 import type { AccessTier } from "@/lib/tiers"
 
 interface Profile {
@@ -27,6 +28,7 @@ function LayoutInner({ user, profile, children, isAdmin, isFreeUser, isExpiredTr
   accessTier: AccessTier
 }) {
   const { scenario, setScenario } = useScenario()
+  useIdleTimeout()
   return (
     <SidebarShell
       user={user}

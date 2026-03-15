@@ -49,6 +49,27 @@ function parseBool(value: string | undefined): boolean {
   return v === 'true' || v === '1' || v === 'yes' || v === 'checked'
 }
 
+// Normalize bad city/location values from Airtable
+const CITY_FIXES: Record<string, string> = {
+  'nowhere': 'Oklahoma City',
+  'california': 'San Francisco',
+}
+
+function normalizeCity(raw: string): string {
+  const trimmed = raw.trim()
+  const fixed = CITY_FIXES[trimmed.toLowerCase()]
+  return fixed || trimmed
+}
+
+function normalizeHqLocation(raw: string): string {
+  if (!raw) return ''
+  // "Nowhere, OK, USA" → "Oklahoma City, OK, USA"
+  if (/\bnowhere\b/i.test(raw)) return raw.replace(/\bnowhere\b/i, 'Oklahoma City')
+  // "California, USA" → "San Francisco, California, USA"
+  if (/^california,/i.test(raw.trim())) return `San Francisco, ${raw.trim()}`
+  return raw
+}
+
 /**
  * Load companies from CSV on the server.
  * Used by both the API route and server components (homepage).
@@ -78,7 +99,7 @@ export async function loadCompaniesFromCSV(): Promise<Company[]> {
     id: String(i + 1),
     name: row['Company'] || '',
     url: row['Company URL'] || '',
-    hqLocation: row['HQ Location'] || '',
+    hqLocation: normalizeHqLocation(row['HQ Location'] || ''),
     country: row['Country'] || '',
     founded: parseInt(row['Founded']) || 0,
     headcount: parseInt(row['Estimated Headcount']) || 0,
@@ -150,7 +171,7 @@ export async function loadCompaniesFromCSV(): Promise<Company[]> {
     customerSignalScore: parseNum(row['Customer Signal Score']),
     startupSizeCategory: row['Startup Size Category'] || '',
     // City
-    city: row['City'] || '',
+    city: normalizeCity(row['City'] || ''),
     // Binary flags — CAD ecosystem
     flagSolidWorks: parseBool(row['SolidWorks']),
     flagCATIA: parseBool(row['CATIA']),

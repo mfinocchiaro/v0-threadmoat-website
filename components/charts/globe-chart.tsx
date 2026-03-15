@@ -222,6 +222,7 @@ interface GlobeChartProps {
 export function GlobeChart({ data }: GlobeChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dims, setDims] = useState({ width: 0, height: 0 });
+  const [selectedHub, setSelectedHub] = useState<HubPoint | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -251,7 +252,7 @@ export function GlobeChart({ data }: GlobeChartProps) {
       })
       .join("<br/>");
     const topNames = h.topCompanies.length > 0
-      ? `<div style="margin-top:6px;border-top:1px solid rgba(255,255,255,.1);padding-top:6px"><span style="color:#94a3b8;font-size:10px;text-transform:uppercase;letter-spacing:.5px">Top startups</span><br/>${h.topCompanies.map(n => `<span style="color:#e2e8f0">› ${n}</span>`).join("<br/>")}</div>`
+      ? `<div style="margin-top:6px;border-top:1px solid rgba(255,255,255,.1);padding-top:6px"><span style="color:#94a3b8;font-size:10px;text-transform:uppercase;letter-spacing:.5px">Top startups</span><br/>${h.topCompanies.map(n => { const w = n.split(/\s+/).filter(Boolean); const ini = w.length >= 2 ? (w[0][0] + w[1][0]).toUpperCase() : n.substring(0, 2).toUpperCase(); return `<span style="color:#e2e8f0">› ${ini}</span>`; }).join("<br/>")}</div>`
       : "";
     return `
       <div style="background:rgba(10,14,23,.92);border:1px solid rgba(255,255,255,.15);color:#fff;padding:10px 14px;border-radius:8px;font-size:12px;min-width:200px;line-height:1.6">
@@ -279,6 +280,7 @@ export function GlobeChart({ data }: GlobeChartProps) {
             pointRadius={0.6}
             pointLabel={buildLabel}
             pointsMerge={false}
+            onPointClick={(point: object) => setSelectedHub(point as HubPoint)}
           />
 
           {/* Category legend */}
@@ -301,14 +303,63 @@ export function GlobeChart({ data }: GlobeChartProps) {
             </div>
           </div>
 
-          {/* Hub summary */}
-          <div className="absolute top-4 right-4 rounded-lg border border-white/10 bg-black/70 px-3 py-2 backdrop-blur-sm text-white/80 text-xs">
-            <p className="font-semibold text-white mb-1">
-              {hubPoints.reduce((s, h) => s + h.count, 0)} companies · {hubPoints.length} hubs
-            </p>
-            <p className="text-white/50">Bar height = company count</p>
-            <p className="text-white/50">Hover a bar for details</p>
-          </div>
+          {/* Hub summary or selected hub detail */}
+          {selectedHub ? (
+            <div className="absolute top-4 right-4 rounded-lg border border-white/10 bg-black/80 px-4 py-3 backdrop-blur-sm text-white text-xs w-64">
+              <div className="flex items-center justify-between mb-2">
+                <p className="font-bold text-sm">{selectedHub.hub}</p>
+                <button
+                  onClick={() => setSelectedHub(null)}
+                  className="text-white/40 hover:text-white text-sm leading-none"
+                >
+                  ✕
+                </button>
+              </div>
+              <p className="text-white/60 mb-3">
+                {selectedHub.count} companies · {formatCurrency(selectedHub.totalFunding)}
+              </p>
+              <div className="space-y-1 mb-3">
+                {Object.entries(selectedHub.categories)
+                  .sort(([, a], [, b]) => b - a)
+                  .map(([cat, cnt]) => (
+                    <div key={cat} className="flex items-center gap-1.5">
+                      <span
+                        className="h-2 w-2 shrink-0 rounded-sm"
+                        style={{ background: getCategoryColor(cat) }}
+                      />
+                      <span className="text-white/80 flex-1 truncate">
+                        {cat.replace(/^\d+-/, "").replace(" Intelligence", "")}
+                      </span>
+                      <span className="text-white/50">{cnt}</span>
+                    </div>
+                  ))}
+              </div>
+              {selectedHub.topCompanies.length > 0 && (
+                <div className="border-t border-white/10 pt-2">
+                  <p className="text-[10px] uppercase tracking-wider text-white/40 mb-1">Top Startups</p>
+                  {selectedHub.topCompanies.map((name, i) => {
+                    const words = name.split(/\s+/).filter(Boolean);
+                    const initials = words.length >= 2
+                      ? (words[0][0] + words[1][0]).toUpperCase()
+                      : name.substring(0, 2).toUpperCase();
+                    return (
+                      <p key={i} className="text-white/80">
+                        <span className="text-white/50 mr-1">{i + 1}.</span> {initials}
+                      </p>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="absolute top-4 right-4 rounded-lg border border-white/10 bg-black/70 px-3 py-2 backdrop-blur-sm text-white/80 text-xs">
+              <p className="font-semibold text-white mb-1">
+                {hubPoints.reduce((s, h) => s + h.count, 0)} companies · {hubPoints.length} hubs
+              </p>
+              <p className="text-white/50">Bar height = company count</p>
+              <p className="text-white/50">Click a bar for details</p>
+            </div>
+          )}
         </>
       )}
     </div>

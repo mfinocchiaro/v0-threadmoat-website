@@ -3,7 +3,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { ArrowRight, Database, Users, TrendingUp, Mail, CheckCircle2, MapPin, CalendarDays } from "lucide-react"
+import { ArrowRight, Database, Users, TrendingUp, Mail, CheckCircle2, MapPin, CalendarDays, Link2, Shield, Layers } from "lucide-react"
 import { loadCompaniesFromCSV, stripSensitiveFields } from "@/lib/load-companies-server"
 import { HomepageDashboard } from "@/components/homepage/homepage-dashboard"
 
@@ -109,6 +109,62 @@ export default async function HomePage() {
           <Link href="/pricing">
             <Button size="lg" variant="outline">View Pricing</Button>
           </Link>
+        </div>
+      </section>
+
+      {/* Digital Thread Thesis */}
+      <section className="border-t border-border/40 bg-gradient-to-b from-muted/50 to-background">
+        <div className="container mx-auto px-4 py-20">
+          <div className="max-w-4xl mx-auto text-center mb-12">
+            <p className="text-sm font-semibold uppercase tracking-widest text-primary mb-4">Our Thesis</p>
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-6">
+              The Digital Thread Is the New Competitive Moat
+            </h2>
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              The <strong className="text-foreground">Digital Thread</strong> — the continuous, connected flow of data from design through manufacturing, operations, and service — is transforming how products are conceived, built, and maintained. Companies that master this thread don&apos;t just optimize workflows; they build an <strong className="text-foreground">unassailable moat</strong> around their competitive position.
+            </p>
+          </div>
+
+          <div className="grid gap-8 md:grid-cols-3 max-w-5xl mx-auto mb-12">
+            <div className="text-center">
+              <div className="rounded-full bg-primary/10 p-3 w-fit mx-auto mb-4">
+                <Link2 className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="font-semibold text-lg mb-2">Thread</h3>
+              <p className="text-sm text-muted-foreground">
+                550+ startups weaving the digital thread — connecting CAD, simulation, manufacturing, and service data into a single, unbroken chain of product intelligence.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="rounded-full bg-primary/10 p-3 w-fit mx-auto mb-4">
+                <Shield className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="font-semibold text-lg mb-2">Moat</h3>
+              <p className="text-sm text-muted-foreground">
+                The investors and incumbents who identify which threads will hold — and which will snap — gain a durable edge that compounds with every product generation.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="rounded-full bg-primary/10 p-3 w-fit mx-auto mb-4">
+                <Layers className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="font-semibold text-lg mb-2">Intelligence</h3>
+              <p className="text-sm text-muted-foreground">
+                We map the entire landscape — from bootstrap to Series C+ — so you can see where the thread is strongest, where it&apos;s fraying, and where the next $1B opportunity hides.
+              </p>
+            </div>
+          </div>
+
+          <div className="max-w-3xl mx-auto">
+            <blockquote className="border-l-4 border-primary pl-6 py-2">
+              <p className="text-muted-foreground italic">
+                &ldquo;In a world where every product generates a lifetime of data, the companies that own the thread own the future. ThreadMoat exists to map who&apos;s building that future — and who&apos;s investing in it.&rdquo;
+              </p>
+              <footer className="mt-3 text-sm font-medium text-foreground">
+                — Michael Finocchiaro, Founder
+              </footer>
+            </blockquote>
+          </div>
         </div>
       </section>
 

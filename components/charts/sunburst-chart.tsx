@@ -77,7 +77,11 @@ export function SunburstChart({ data, className, preview = false }: SunburstChar
       let groupChildren: any[] = []
       const leafLimit = preview ? 5 : Infinity
       if (secondaryType === "none") {
-        groupChildren = groupData.slice(0, leafLimit).map(c => ({ name: c.name, value: Math.max(c.totalFunding || 0, 500_000) }))
+        groupChildren = groupData.slice(0, leafLimit).map(c => {
+          const words = c.name.split(/\s+/).filter(Boolean);
+          const initials = words.length >= 2 ? (words[0][0] + words[1][0]).toUpperCase() : c.name.substring(0, 2).toUpperCase();
+          return { name: initials, fullName: c.name, value: Math.max(c.totalFunding || 0, 500_000) };
+        })
       } else if (secondaryType === "specific-industry") {
         const subMap = new Map<string, Company[]>()
         groupData.forEach(c => {
@@ -89,7 +93,11 @@ export function SunburstChart({ data, className, preview = false }: SunburstChar
           const limited = companies.slice(0, leafLimit)
           groupChildren.push({
             name: ind,
-            children: limited.map(c => ({ name: c.name, value: Math.max(c.totalFunding || 0, 500_000) })),
+            children: limited.map(c => {
+              const words = c.name.split(/\s+/).filter(Boolean);
+              const initials = words.length >= 2 ? (words[0][0] + words[1][0]).toUpperCase() : c.name.substring(0, 2).toUpperCase();
+              return { name: initials, fullName: c.name, value: Math.max(c.totalFunding || 0, 500_000) };
+            }),
           })
         })
       } else {
@@ -98,7 +106,11 @@ export function SunburstChart({ data, className, preview = false }: SunburstChar
           const limited = companies.slice(0, leafLimit)
           groupChildren.push({
             name: bucketName,
-            children: limited.map(c => ({ name: c.name, value: Math.max(c.totalFunding || 0, 500_000) })),
+            children: limited.map(c => {
+              const words = c.name.split(/\s+/).filter(Boolean);
+              const initials = words.length >= 2 ? (words[0][0] + words[1][0]).toUpperCase() : c.name.substring(0, 2).toUpperCase();
+              return { name: initials, fullName: c.name, value: Math.max(c.totalFunding || 0, 500_000) };
+            }),
           })
         })
       }
@@ -151,7 +163,10 @@ export function SunburstChart({ data, className, preview = false }: SunburstChar
       .on("mouseover", function () { d3.select(this).attr("fill-opacity", 1) })
       .on("mouseout", function (event, d) { d3.select(this).attr("fill-opacity", d.children ? 0.8 : 0.6) })
       .append("title")
-      .text(d => `${d.ancestors().map(d => d.data.name).reverse().join("/")}\n${d.value ? formatValue(d.value) : ""}`)
+      .text(d => {
+        const path = d.ancestors().map(d => d.data.fullName || d.data.name).reverse().join("/")
+        return `${path}\n${d.value ? formatValue(d.value) : ""}`
+      })
 
     g.selectAll("text")
       .data(rootRect.descendants().filter(d => d.depth && (d.y0 + d.y1) / 2 * (d.x1 - d.x0) > 10))

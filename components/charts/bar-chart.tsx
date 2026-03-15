@@ -36,11 +36,18 @@ export function BarChart({ data, className }: BarChartProps) {
             .filter(filterCompany)
             .sort((a, b) => (b[metric] as number) - (a[metric] as number))
             .slice(0, topCount)
-            .map(c => ({
-                name: c.name,
-                value: c[metric],
-                fullCompany: c,
-            }));
+            .map(c => {
+                const words = c.name.split(/\s+/).filter(Boolean);
+                const initials = words.length >= 2
+                    ? (words[0][0] + words[1][0]).toUpperCase()
+                    : c.name.substring(0, 2).toUpperCase();
+                return {
+                    name: c.name,
+                    initials,
+                    value: c[metric],
+                    fullCompany: c,
+                };
+            });
     }, [data, filterCompany, metric, topCount]);
 
     const activeConfig = METRICS[metric];
@@ -91,9 +98,9 @@ export function BarChart({ data, className }: BarChartProps) {
                             fontSize={11}
                         />
                         <YAxis
-                            dataKey="name"
+                            dataKey="initials"
                             type="category"
-                            width={130}
+                            width={50}
                             tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
                         />
                         <Tooltip

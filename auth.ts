@@ -40,7 +40,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
-  session: { strategy: 'jwt' },
+  session: { strategy: 'jwt', maxAge: 30 * 60 },  // 30-minute session expiry
   pages: {
     signIn: '/auth/login',
     error: '/auth/error',

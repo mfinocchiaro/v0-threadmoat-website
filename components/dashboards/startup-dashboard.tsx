@@ -63,12 +63,15 @@ export function StartupDashboard({ data, isLoading, isAdmin = false }: { data: C
             {hasThesis && topCompetitors.length > 0 && (
                 <WidgetCard title="Top Competitors" subtitle="Highest-scoring companies matching your competitive moat">
                     <div className="space-y-3">
-                        {topCompetitors.map(({ company: c, score }) => (
+                        {topCompetitors.map(({ company: c, score }) => {
+                            const words = c.name.split(/\s+/).filter(Boolean);
+                            const initials = words.length >= 2 ? (words[0][0] + words[1][0]).toUpperCase() : c.name.substring(0, 2).toUpperCase();
+                            return (
                             <HoverCard key={c.id} openDelay={200} closeDelay={100}>
                                 <HoverCardTrigger asChild>
                                     <div className="bg-muted p-3 rounded-lg border-l-4 border-amber-500 cursor-default">
                                         <div className="flex items-center justify-between mb-1">
-                                            <h4 className="font-semibold text-sm">{c.name}</h4>
+                                            <h4 className="font-semibold text-sm">{initials}</h4>
                                             <span className="text-sm font-medium">{score}% match</span>
                                         </div>
                                         <p className="text-xs text-muted-foreground">
@@ -93,7 +96,8 @@ export function StartupDashboard({ data, isLoading, isAdmin = false }: { data: C
                                     </div>
                                 </HoverCardContent>
                             </HoverCard>
-                        ))}
+                        );
+                        })}
                     </div>
                 </WidgetCard>
             )}

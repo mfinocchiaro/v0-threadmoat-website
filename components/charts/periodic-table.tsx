@@ -96,7 +96,7 @@ export function PeriodicTable({ data, compact = false, preview = false }: Period
     const [elementSize, setElementSize] = useState<"small" | "medium" | "large">("medium");
     const [showLogos, setShowLogos] = useState(false);
     const [showCountry, setShowCountry] = useState(true);
-    const [showCompanyNames, setShowCompanyNames] = useState(true);
+    const [showCompanyNames, setShowCompanyNames] = useState(false);
     const [selectedElement, setSelectedElement] = useState<Company | null>(null);
     const [activeMode, setActiveMode] = useState<"global" | "linkedin" | "custom">(preview ? "linkedin" : "global");
     const [customList, setCustomList] = useState<string[]>([]);

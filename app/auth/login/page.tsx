@@ -22,6 +22,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const searchParams = useSearchParams()
+  const reason = searchParams.get('reason')
   const rawRedirect = searchParams.get('redirect') ?? ''
   // Only allow same-origin relative paths; reject external URLs and protocol-relative //
   const redirectTo = rawRedirect.startsWith('/') && !rawRedirect.startsWith('//')
@@ -64,6 +65,11 @@ export default function LoginPage() {
               />
             </Link>
           </div>
+          {reason === 'idle' && (
+            <div className="rounded-md border border-amber-200/50 bg-amber-50/10 px-4 py-3 text-center text-sm text-amber-600 dark:text-amber-400">
+              You were signed out due to inactivity.
+            </div>
+          )}
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">Login</CardTitle>

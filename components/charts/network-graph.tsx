@@ -398,8 +398,10 @@ export function NetworkGraph({ data, className, preview = false }: NetworkGraphP
         }
       })
 
-    // In preview mode, only show labels for non-company nodes (categories/hubs)
-    node.filter(d => preview ? d.type !== "company" : true)
+    // Only show labels for hub/incumbent nodes — never render company names as
+    // static SVG text to prevent bulk scraping of the startup database.
+    // Company names are still visible one-at-a-time via the hover tooltip below.
+    node.filter(d => d.type !== "company")
       .append("text")
       .text(d => d.type === "incumbent" ? d.id.replace(/^☆\s*/, "") : d.id)
       .attr("x", d => getNodeRadius(d) + 5)
@@ -407,7 +409,6 @@ export function NetworkGraph({ data, className, preview = false }: NetworkGraphP
       .style("font-size", "10px")
       .style("fill", "var(--foreground)")
       .style("pointer-events", "none")
-      .style("opacity", d => d.type === "company" ? 0.8 : 1)
 
     if (!preview) {
       node.append("title").text(d => {

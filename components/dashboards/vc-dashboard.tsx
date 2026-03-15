@@ -94,13 +94,16 @@ export function VCDashboard({ data, isLoading, isAdmin = false }: { data: Compan
             {hasThesis && redFlags.length > 0 && (
                 <WidgetCard title="Burn Warnings" subtitle="Low funding efficiency matches">
                     <div className="space-y-3">
-                        {redFlags.map(r => (
+                        {redFlags.map(r => {
+                            const words = r.company.name.split(/\s+/).filter(Boolean);
+                            const initials = words.length >= 2 ? (words[0][0] + words[1][0]).toUpperCase() : r.company.name.substring(0, 2).toUpperCase();
+                            return (
                             <HoverCard key={r.company.id} openDelay={200} closeDelay={100}>
                                 <HoverCardTrigger asChild>
                                     <div className="flex items-start gap-3 p-2 bg-red-50/10 border border-red-200/20 rounded cursor-default">
                                         <AlertTriangle className="size-4 text-red-500 mt-0.5 shrink-0" />
                                         <div className="min-w-0">
-                                            <div className="text-sm font-semibold truncate">{r.company.name}</div>
+                                            <div className="text-sm font-semibold truncate">{initials}</div>
                                             <div className="text-xs text-muted-foreground">
                                                 Efficiency: {r.company.fundingEfficiency?.toFixed(1)}/10 · {formatCurrency(r.company.totalFunding || 0)}
                                             </div>
@@ -111,7 +114,8 @@ export function VCDashboard({ data, isLoading, isAdmin = false }: { data: Compan
                                     <CompanyDetail company={r.company} score={r.score} />
                                 </HoverCardContent>
                             </HoverCard>
-                        ))}
+                        );
+                        })}
                     </div>
                 </WidgetCard>
             )}
