@@ -13,16 +13,18 @@ interface KPICardProps {
     delta?: string;
     icon?: ReactNode;
     className?: string;
+    onClick?: () => void;
+    active?: boolean;
 }
 
 const TREND_ICONS = { up: TrendingUp, down: TrendingDown, stable: Minus };
 const TREND_COLORS = { up: "text-emerald-500", down: "text-red-500", stable: "text-muted-foreground" };
 
-export function KPICard({ title, value, subtitle, trend, delta, icon, className }: KPICardProps) {
+export function KPICard({ title, value, subtitle, trend, delta, icon, className, onClick, active }: KPICardProps) {
     const TrendIcon = trend ? TREND_ICONS[trend] : null;
 
     return (
-        <Card className={cn("relative overflow-hidden", className)}>
+        <Card className={cn("relative overflow-hidden", onClick && "cursor-pointer hover:border-primary/50 transition-colors", active && "border-primary ring-1 ring-primary/20", className)} onClick={onClick}>
             <CardContent className="p-4">
                 <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">

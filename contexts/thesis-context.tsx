@@ -286,11 +286,15 @@ function scoreISV(company: Company, thesis: ISVThesis): { score: number; label: 
     || thesis.coveredLifecycles.includes(phase)
 
   // ── Does the company match the ISV's acquisition criteria? ──
-  const matchesTargetIndustry = thesis.targetIndustries.length === 0
-    || (company.industriesServed || []).some(ind => thesis.targetIndustries.includes(ind))
+  // Empty arrays = no targeting criteria set → do NOT treat as "match all"
+  const hasTargetIndustries = thesis.targetIndustries.length > 0
+  const hasOperatingModel = (thesis.operatingModelTags || []).length > 0
 
-  const matchesOperatingModel = (thesis.operatingModelTags || []).length === 0
-    || (company.operatingModelTags || []).some(t =>
+  const matchesTargetIndustry = hasTargetIndustries
+    && (company.industriesServed || []).some(ind => thesis.targetIndustries.includes(ind))
+
+  const matchesOperatingModel = hasOperatingModel
+    && (company.operatingModelTags || []).some(t =>
       (thesis.operatingModelTags || []).some(tt => t.toLowerCase() === tt.toLowerCase())
     )
 
@@ -304,15 +308,24 @@ function scoreISV(company: Company, thesis: ISVThesis): { score: number; label: 
     return { score: 60, label: "Adjacent" }
   }
 
-  // Company is NOT in covered investment lists → potential acquisition
-  // Must match BOTH target industry AND operating model to be a prime target
-  if (matchesTargetIndustry && matchesOperatingModel) {
-    return { score: 100, label: "Whitespace" }
+  // No acquisition criteria set → can't classify non-covered companies
+  if (!hasTargetIndustries && !hasOperatingModel) {
+    return { score: 0, label: "Filtered Out" }
   }
 
-  // Matches one criterion → adjacent
-  if (matchesTargetIndustry || matchesOperatingModel) {
+  // Company is NOT in covered investment lists → potential acquisition
+  // Must match BOTH target industry AND operating model to be a prime target
+  // (or only the set criterion if only one is configured)
+  const bothSet = hasTargetIndustries && hasOperatingModel
+  if (bothSet && matchesTargetIndustry && matchesOperatingModel) {
+    return { score: 100, label: "Whitespace" }
+  }
+  if (bothSet && (matchesTargetIndustry || matchesOperatingModel)) {
     return { score: 60, label: "Adjacent" }
+  }
+  // Only one criterion configured — match it for Whitespace, no match = filtered
+  if (!bothSet && (matchesTargetIndustry || matchesOperatingModel)) {
+    return { score: 100, label: "Whitespace" }
   }
 
   // Matches nothing → not relevant to this ISV

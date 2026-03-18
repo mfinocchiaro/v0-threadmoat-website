@@ -14,7 +14,8 @@ import { PeriodicTable } from "@/components/charts/periodic-table";
 import { AdminAnalyticsSection } from "./admin-analytics";
 import { Badge } from "@/components/ui/badge";
 import { Radar, ShoppingCart, Handshake, AlertCircle } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { ScoredCompany } from "@/contexts/thesis-context";
 
 const SCENARIO = "oem_enterprise";
 
@@ -59,6 +60,26 @@ export function OEMDashboard({ data, isLoading, isAdmin = false }: { data: Compa
         return gaps
     }, [hasThesis, oemThesis, data]);
 
+    type OEMDrillCategory = "threats" | "acquisitions" | "replacements" | null;
+    const [drillDown, setDrillDown] = useState<OEMDrillCategory>(null);
+
+    const drillData = useMemo((): ScoredCompany[] => {
+        switch (drillDown) {
+            case "threats": return threats;
+            case "acquisitions": return acquisitionTargets;
+            case "replacements": return replacementCandidates;
+            default: return [];
+        }
+    }, [drillDown, threats, acquisitionTargets, replacementCandidates]);
+
+    const drillTitle: Record<string, string> = {
+        threats: "Active Threats",
+        acquisitions: "Acquisition Targets",
+        replacements: "Replacement Candidates",
+    };
+
+    const toggleDrill = (cat: OEMDrillCategory) => setDrillDown(prev => prev === cat ? null : cat);
+
     if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading White Space intelligence...</div>;
 
     const show = (id: string) => enabled.includes(id);
@@ -73,11 +94,28 @@ export function OEMDashboard({ data, isLoading, isAdmin = false }: { data: Compa
             {hasThesis && <VizFilterBar companies={displayData} />}
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <KPICard title="Active Threats" value={hasThesis ? threats.length.toString() : "\u2014"} subtitle={hasThesis ? "High-score replacement targets" : "Set focus to populate"} icon={<Radar className="size-5" />} />
-                <KPICard title="Acquisition Targets" value={hasThesis ? acquisitionTargets.length.toString() : "\u2014"} subtitle="Early-stage, high tech diff." icon={<ShoppingCart className="size-5" />} />
+                <KPICard title="Active Threats" value={hasThesis ? threats.length.toString() : "\u2014"} subtitle={hasThesis ? "High-score replacement targets" : "Set focus to populate"} icon={<Radar className="size-5" />} onClick={hasThesis && threats.length > 0 ? () => toggleDrill("threats") : undefined} active={drillDown === "threats"} />
+                <KPICard title="Acquisition Targets" value={hasThesis ? acquisitionTargets.length.toString() : "\u2014"} subtitle="Early-stage, high tech diff." icon={<ShoppingCart className="size-5" />} onClick={hasThesis && acquisitionTargets.length > 0 ? () => toggleDrill("acquisitions") : undefined} active={drillDown === "acquisitions"} />
                 <KPICard title="Capability Gaps" value={hasThesis ? gapCount.toString() : "\u2014"} subtitle="Uncovered subcategories" icon={<AlertCircle className="size-5" />} />
-                <KPICard title="Replacement Candidates" value={hasThesis ? replacementCandidates.length.toString() : "\u2014"} subtitle="Customized/homegrown software" icon={<Handshake className="size-5" />} />
+                <KPICard title="Replacement Candidates" value={hasThesis ? replacementCandidates.length.toString() : "\u2014"} subtitle="Customized/homegrown software" icon={<Handshake className="size-5" />} onClick={hasThesis && replacementCandidates.length > 0 ? () => toggleDrill("replacements") : undefined} active={drillDown === "replacements"} />
             </div>
+
+            {drillDown && drillData.length > 0 && (
+                <WidgetCard title={drillTitle[drillDown] ?? ""} subtitle={`${drillData.length} companies`}>
+                    <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                        {drillData.map(({ company: c, score }) => (
+                            <div key={c.id} className="flex items-center gap-3 p-2.5 rounded-lg border text-sm">
+                                <div className="flex-1 min-w-0">
+                                    <span className="font-medium">{c.name}</span>
+                                    <p className="text-xs text-muted-foreground truncate mt-0.5">{c.subsegment || c.investmentList}{c.country ? ` · ${c.country}` : ""}</p>
+                                </div>
+                                {c.latestFundingRound && <Badge variant="outline" className="shrink-0 text-xs">{c.latestFundingRound}</Badge>}
+                                <div className="text-right shrink-0 text-xs text-muted-foreground">Score {score}</div>
+                            </div>
+                        ))}
+                    </div>
+                </WidgetCard>
+            )}
 
             {hasThesis && threats.length > 0 && (
                 <WidgetCard title="Threat Radar" subtitle="Replacement candidates with highest scores">

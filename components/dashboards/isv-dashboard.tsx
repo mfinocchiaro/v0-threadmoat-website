@@ -12,8 +12,10 @@ import { PeriodicTable } from "@/components/charts/periodic-table";
 import { QuadrantChart } from "@/components/charts/quadrant-chart";
 import { SunburstChart } from "@/components/charts/sunburst-chart";
 import { AdminAnalyticsSection } from "./admin-analytics";
-import { Network, FileWarning, Swords, Link2 } from "lucide-react";
-import { useMemo } from "react";
+import { Network, FileWarning, Swords, Link2, X } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { ScoredCompany } from "@/contexts/thesis-context";
 
 const SCENARIO = "isv_platform";
 
@@ -39,6 +41,28 @@ export function ISVDashboard({ data, isLoading, isAdmin = false }: { data: Compa
         hasThesis ? whitespace.filter(r => (r.company.growthMetrics || 0) > 3.5).slice(0, 10) : []
     , [hasThesis, whitespace]);
 
+    type DrillCategory = "whitespace" | "adjacent" | "covered" | "integration" | null;
+    const [drillDown, setDrillDown] = useState<DrillCategory>(null);
+
+    const drillData = useMemo((): ScoredCompany[] => {
+        switch (drillDown) {
+            case "whitespace": return whitespace;
+            case "adjacent": return adjacent;
+            case "covered": return covered;
+            case "integration": return integrationCandidates;
+            default: return [];
+        }
+    }, [drillDown, whitespace, adjacent, covered, integrationCandidates]);
+
+    const drillTitle: Record<string, string> = {
+        whitespace: "Acquisition Targets",
+        adjacent: "Adjacent Opportunities",
+        covered: "Competitive Overlap",
+        integration: "Integration Candidates",
+    };
+
+    const toggleDrill = (cat: DrillCategory) => setDrillDown(prev => prev === cat ? null : cat);
+
     if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading acquisition radar...</div>;
 
     const show = (id: string) => enabled.includes(id);
@@ -53,11 +77,28 @@ export function ISVDashboard({ data, isLoading, isAdmin = false }: { data: Compa
             {hasThesis && <VizFilterBar companies={displayData} />}
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <KPICard title="Acquisition Targets" value={hasThesis ? whitespace.length.toString() : "\u2014"} subtitle={hasThesis ? "Uncovered market areas" : "Set focus to populate"} icon={<Network className="size-5" />} />
-                <KPICard title="Adjacent Opportunities" value={hasThesis ? adjacent.length.toString() : "\u2014"} subtitle="Partially covered areas" icon={<FileWarning className="size-5" />} />
-                <KPICard title="Competitive Overlap" value={hasThesis ? covered.length.toString() : "\u2014"} subtitle="Fully covered (rivals)" icon={<Swords className="size-5" />} />
-                <KPICard title="Integration Candidates" value={hasThesis ? integrationCandidates.length.toString() : "\u2014"} subtitle="High-growth target cos." icon={<Link2 className="size-5" />} />
+                <KPICard title="Acquisition Targets" value={hasThesis ? whitespace.length.toString() : "\u2014"} subtitle={hasThesis ? "Uncovered market areas" : "Set focus to populate"} icon={<Network className="size-5" />} onClick={hasThesis && whitespace.length > 0 ? () => toggleDrill("whitespace") : undefined} active={drillDown === "whitespace"} />
+                <KPICard title="Adjacent Opportunities" value={hasThesis ? adjacent.length.toString() : "\u2014"} subtitle="Partially covered areas" icon={<FileWarning className="size-5" />} onClick={hasThesis && adjacent.length > 0 ? () => toggleDrill("adjacent") : undefined} active={drillDown === "adjacent"} />
+                <KPICard title="Competitive Overlap" value={hasThesis ? covered.length.toString() : "\u2014"} subtitle="Fully covered (rivals)" icon={<Swords className="size-5" />} onClick={hasThesis && covered.length > 0 ? () => toggleDrill("covered") : undefined} active={drillDown === "covered"} />
+                <KPICard title="Integration Candidates" value={hasThesis ? integrationCandidates.length.toString() : "\u2014"} subtitle="High-growth target cos." icon={<Link2 className="size-5" />} onClick={hasThesis && integrationCandidates.length > 0 ? () => toggleDrill("integration") : undefined} active={drillDown === "integration"} />
             </div>
+
+            {drillDown && drillData.length > 0 && (
+                <WidgetCard title={drillTitle[drillDown] ?? ""} subtitle={`${drillData.length} companies`}>
+                    <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                        {drillData.map(({ company: c, score }) => (
+                            <div key={c.id} className="flex items-center gap-3 p-2.5 rounded-lg border text-sm">
+                                <div className="flex-1 min-w-0">
+                                    <span className="font-medium">{c.name}</span>
+                                    <p className="text-xs text-muted-foreground truncate mt-0.5">{c.subsegment || c.investmentList}{c.country ? ` · ${c.country}` : ""}</p>
+                                </div>
+                                {c.latestFundingRound && <Badge variant="outline" className="shrink-0 text-xs">{c.latestFundingRound}</Badge>}
+                                <div className="text-right shrink-0 text-xs text-muted-foreground">Score {score}</div>
+                            </div>
+                        ))}
+                    </div>
+                </WidgetCard>
+            )}
 
             {show("network") && (
                 <WidgetCard title="Ecosystem Network" subtitle={`${data.length} companies`}>
