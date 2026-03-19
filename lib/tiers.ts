@@ -53,6 +53,8 @@ export const RED_KEEP_ONLY_PATHS = new Set([
   '/dashboard/box-plot',
   '/dashboard/distribution',
   '/dashboard/wordcloud',
+  '/dashboard/slope',
+  '/dashboard/splom',
 ])
 
 /** Admin-only analytics — never shown to non-admin users */

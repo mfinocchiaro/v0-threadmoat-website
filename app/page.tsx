@@ -96,7 +96,7 @@ export default async function HomePage() {
           <span className="text-primary">Industrial AI &amp; Engineering Software</span>
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg text-muted-foreground">
-          Leverage 35+ years of market expertise, exclusive access to 550+ startups, and warm
+          Leverage 35+ years of market expertise, exclusive access to 600+ startups, and warm
           introductions to 200+ founders to build your portfolio with tomorrow&apos;s unicorns.
         </p>
         <div className="mt-10 flex items-center justify-center gap-4">
@@ -132,7 +132,7 @@ export default async function HomePage() {
               </div>
               <h3 className="font-semibold text-lg mb-2">Thread</h3>
               <p className="text-sm text-muted-foreground">
-                550+ startups weaving the digital thread — connecting CAD, simulation, manufacturing, and service data into a single, unbroken chain of product intelligence.
+                600+ startups weaving the digital thread — connecting CAD, simulation, manufacturing, and service data into a single, unbroken chain of product intelligence.
               </p>
             </div>
             <div className="text-center">

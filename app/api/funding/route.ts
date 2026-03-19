@@ -8,21 +8,6 @@ import { rateLimit } from '@/lib/rate-limit'
 // Cloud SaaS benchmark: $200K ARR/employee is the industry "good" threshold (Bessemer/BVP standard)
 const CLOUD_ARR_BENCHMARK = 200_000
 
-// Base cost per employee for burn rate estimation
-const COST_PER_EMPLOYEE = 200_000
-
-// Cloud infrastructure cost factor: SaaS/Cloud companies carry ~20% additional cloud infra costs
-// (AWS/GCP/Azure, CI/CD, monitoring, data storage) on top of headcount-based OpEx.
-// Traditional/Edge/HW companies carry ~5% (minimal hosting, build servers).
-const CLOUD_COST_FACTORS: Record<string, number> = {
-  'Cloud-Native': 0.25,   // 25% cloud premium (heavy compute, multi-region, HPC)
-  'SaaS':         0.20,   // 20% (standard cloud SaaS infrastructure)
-  'Hybrid':       0.15,   // 15% (partial cloud + on-prem)
-  'Edge/HW':      0.05,   // 5% (minimal cloud, mostly edge/hardware)
-  'Traditional':  0.03,   // 3% (build servers, minimal hosting)
-  'No Data':      0.10,   // 10% (conservative default)
-}
-
 function normalizeCompanyName(name: string): string {
   return name.trim().replace(/[\u00A0\u2013\u2014]/g, ' ').replace(/\s+/g, ' ').toLowerCase()
 }
@@ -43,32 +28,25 @@ function parseCurrency(value: string | undefined): number {
 
 function parseNum(value: string | undefined): number {
   if (!value) return 0
-  const num = parseFloat(value)
+  const num = parseFloat(value.replace(/[$,]/g, ''))
   return isNaN(num) ? 0 : num
 }
 
 /**
  * Classify cloud delivery model from Operating Model Tags.
- * Priority: Cloud-Native > SaaS > Hybrid > Edge/HW > Traditional > Minimal
- * Every company with tags gets a real classification — no "Unknown".
+ * Priority: Cloud-Native > SaaS > Hybrid > Edge/HW > Traditional > No Data
  */
 function classifyCloudModel(tags: string): string {
   if (!tags.trim()) return 'No Data'
   const set = new Set(tags.split(',').map(t => t.trim().toLowerCase()))
-  // Cloud-Native: consumption/usage billing or cloud HPC workloads
   if (set.has('cloud-native') || set.has('usage-based') || set.has('consumption-based') || set.has('cloud hpc')) return 'Cloud-Native'
-  // Hybrid: explicit hybrid tag, or has both cloud + on-prem/edge signals
   if (set.has('hybrid')) return 'Hybrid'
   const hasCloud = set.has('cloud') || set.has('saas') || set.has('paas') || set.has('b2b saas') || set.has('enterprise saas') || set.has('vertical saas')
   const hasOnPrem = set.has('on-premises') || set.has('on-premise') || set.has('on premise') || set.has('hw+sw') || set.has('edge')
   if (hasCloud && hasOnPrem) return 'Hybrid'
-  // SaaS: subscription cloud delivery
   if (hasCloud) return 'SaaS'
-  // Edge/HW: hardware-centric or edge-deployed without cloud
   if (set.has('edge') || set.has('hw+sw')) return 'Edge/HW'
-  // Traditional: on-prem, perpetual license
   if (set.has('on-premises') || set.has('on-premise') || set.has('on premise') || set.has('perpetual license') || set.has('perpetual') || set.has('plugin/add-on')) return 'Traditional'
-  // Fallback: has tags but nothing matched delivery model — classify by pricing
   if (set.has('subscription')) return 'SaaS'
   if (set.has('per-unit') || set.has('per-project')) return 'Traditional'
   return 'No Data'
@@ -111,68 +89,27 @@ export async function GET() {
         const tags = tagsByCompany.get(normalizeCompanyName(company)) ?? ''
         const cloudModel = classifyCloudModel(tags)
 
-        const headcount = parseInt(row['Estimated Headcount']) || 0
         const totalFunding = parseCurrency(row['Total Current Known Funding Level'])
         const estimatedRevenue = parseCurrency(row['Current Estimated Annual Revenue'])
 
-        // ARR per employee: revenue / headcount
-        const arrPerEmployee = headcount > 0 ? estimatedRevenue / headcount : 0
+        // ── Read directly from CSV (previously computed) ──
+        const arrPerEmployee = parseNum(row['ARR per Employee'])
+        const annualBurnProxy = parseNum(row['Annual Burn Proxy'])
+        const runwayProxyMonths = Math.min(parseNum(row['Runway Proxy (Months)']), 999)
 
-        // Cloud ARR efficiency: how many cents of ARR earned per dollar raised.
-        // 100 = broke even on capital (ARR = total funding). Higher = more capital-efficient.
+        // ── Derived metrics (simple ratios from CSV data) ──
         const cloudArrEfficiency = totalFunding > 0 ? (estimatedRevenue / totalFunding) * 100 : 0
-
-        // ARR/employee as % of $200K SaaS benchmark. 100 = at benchmark, 150 = 50% above, etc.
         const cloudArrVsBenchmark = arrPerEmployee > 0 ? (arrPerEmployee / CLOUD_ARR_BENCHMARK) * 100 : 0
 
-        // ── Burn Rate Calculation ──
-        // Base: Headcount × $200K/person/year (fully loaded cost: salary + benefits + office + tools)
-        const baseBurn = headcount * COST_PER_EMPLOYEE
-        // Cloud factor: additional % for cloud infrastructure (AWS/GCP/Azure, CI/CD, monitoring)
-        const cloudFactor = CLOUD_COST_FACTORS[cloudModel] ?? 0.10
-        const cloudCost = baseBurn * cloudFactor
-        // Total annual burn = base OpEx + cloud infrastructure
-        const annualBurnProxy = baseBurn + cloudCost
-
-        // ── Runway Calculation ──
-        // Net monthly burn = (annual burn - annual revenue) / 12
-        // If revenue >= burn, company is cash-flow positive → runway is effectively infinite
-        const netAnnualBurn = Math.max(0, annualBurnProxy - estimatedRevenue)
-        const monthlyNetBurn = netAnnualBurn / 12
-        // Runway = remaining funding / net monthly burn
-        const runwayProxyMonths = monthlyNetBurn > 0 ? totalFunding / monthlyNetBurn : (totalFunding > 0 ? 999 : 0)
-
-        // ── Runway Quality Classification ──
-        let runwayQuality: string
-        if (monthlyNetBurn <= 0 && estimatedRevenue > 0) runwayQuality = 'Cash-flow Positive'
-        else if (runwayProxyMonths >= 36) runwayQuality = 'Very Strong'
-        else if (runwayProxyMonths >= 24) runwayQuality = 'Healthy'
-        else if (runwayProxyMonths >= 18) runwayQuality = 'Comfortable'
-        else if (runwayProxyMonths >= 12) runwayQuality = 'Tight'
-        else if (runwayProxyMonths >= 6) runwayQuality = 'High Risk'
-        else if (runwayProxyMonths > 0) runwayQuality = 'Critical'
-        else runwayQuality = 'No Data'
-
-        // ── Net Burn Level Classification ──
-        let netBurnLevel: string
-        if (monthlyNetBurn <= 0 && estimatedRevenue > 0) netBurnLevel = 'Profitable'
-        else if (annualBurnProxy === 0) netBurnLevel = 'No Data'
-        else {
-          const burnRatio = netAnnualBurn / totalFunding  // annual net burn as % of total funding
-          if (burnRatio <= 0.05) netBurnLevel = 'Very Low'
-          else if (burnRatio <= 0.15) netBurnLevel = 'Low'
-          else if (burnRatio <= 0.25) netBurnLevel = 'Moderate'
-          else if (burnRatio <= 0.40) netBurnLevel = 'Comfortable'
-          else if (burnRatio <= 0.60) netBurnLevel = 'High'
-          else if (burnRatio <= 0.80) netBurnLevel = 'Very High'
-          else netBurnLevel = 'Critical'
-        }
+        // ── Cloud multiplier from Airtable ──
+        const cloudSaasMultiplier = parseNum(row['Core Cloud / SaaS Multiplier'])
+        const enhancedBurnPerEmployee = parseNum(row['Estimated HC+Cloud/AI Burn Rate'])
 
         return {
           id: String(index + 1),
           company,
           cloudModel,
-          cloudFactor: Math.round(cloudFactor * 100),
+          cloudSaasMultiplier,
           cloudArrEfficiency: Math.round(cloudArrEfficiency * 10) / 10,
           cloudArrVsBenchmark: Math.round(cloudArrVsBenchmark * 10) / 10,
           scoreFinancial: parseNum(row['Score Financial']),
@@ -185,12 +122,16 @@ export async function GET() {
           estimatedValueFinal: parseCurrency(row['Estimated Value Final']),
           arrPerEmployee,
           annualBurnProxy,
-          runwayProxyMonths: Math.min(runwayProxyMonths, 999),
+          enhancedBurnPerEmployee,
+          runwayProxyMonths,
           startupSizeCategory: row['Startup Size Category'] || '',
-          capitalEfficiency: (row['Capital Efficiency'] || '').replace(/^Unknown$/i, 'No Data'),
-          runwayQuality,
-          netBurnLevel,
+          capitalEfficiency: (row['Capital Efficiency'] || '').replace(/^Unknown$/i, ''),
+          runwayQuality: (row['Runway Quality'] || '').replace(/^Unknown$/i, ''),
+          netBurnLevel: (row['Net Burn Level Based on HC'] || '').replace(/^Unknown$/i, ''),
           financialConfidence: row['Financial Confidence'] || '',
+          aiIntensity: row['AI Intensity'] || '',
+          aiIntensityScore: parseNum(row['AI Intensity Score']),
+          enhancedBurnRate: row['Enhanced HR+Cloud+AI Burn Rate'] || '',
         }
       })
 

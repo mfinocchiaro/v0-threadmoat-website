@@ -56,8 +56,8 @@ export default function AboutPage() {
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
               {[
-                { stat: "500+", label: "Startups Tracked" },
-                { stat: ">$14B", label: "VC Funding Mapped" },
+                { stat: "600+", label: "Startups Tracked" },
+                { stat: ">$16B", label: "VC Funding Mapped" },
                 { stat: "43", label: "Countries" },
                 { stat: "10", label: "Market Subsegments" },
               ].map(s => (

@@ -88,7 +88,7 @@ function ExpiredTrialBanner() {
 /** Paywall block shown on gated pages — messaging adapts to the user's tier */
 function PaywallBlock({ accessTier, pathname, isExpiredTrial = false }: { accessTier: AccessTier; pathname: string; isExpiredTrial?: boolean }) {
   const requiredTier = getRequiredTier(pathname)
-  const requiredLabel = requiredTier ? getTierLabel(requiredTier) : 'a higher plan'
+  const requiredLabel = requiredTier ? getTierLabel(requiredTier) : 'Premium'
   const isRedKeepFeature = requiredTier === 'red_keep'
 
   return (

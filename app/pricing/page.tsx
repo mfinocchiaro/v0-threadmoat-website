@@ -8,7 +8,7 @@ const LAST_UPDATED = "March 11, 2026"
 
 const REPORT_FEATURES = [
   "150+ page deep-dive analysis",
-  "557 companies, $15.5B VC funding mapped",
+  "600+ companies, >$16B VC funding mapped",
   "Based on 200+ primary research interviews",
   "Incumbent landscape — $22–24B anchor vendors profiled",
   "Startup ecosystem — 10 investment categories ranked",
@@ -133,7 +133,7 @@ export default function PricingPage() {
           Market Intelligence for Industrial AI<br className="hidden md:block" /> &amp; Engineering Software
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-          500+ curated companies. Weekly updates. Technical taxonomy maintained by a domain expert
+          600+ curated companies. Weekly updates. Technical taxonomy maintained by a domain expert
           with 35+ years in engineering software markets.
         </p>
         <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground border border-border/40 rounded-lg px-4 py-2 bg-muted/30">

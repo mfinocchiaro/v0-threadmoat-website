@@ -107,32 +107,42 @@ export function VCStep({ thesis, onChange, companies, variant = "investor" }: VC
   const categoryTags = useMemo(() => {
     const counts: Record<string, number> = {}
     const selectedLists = thesis.investmentLists ?? []
+    const selectedSubs = thesis.subcategories ?? []
     for (const c of companies) {
       if (selectedLists.length > 0 && !selectedLists.includes(c.investmentList)) continue
+      if (selectedSubs.length > 0 && !selectedSubs.includes(c.subcategories)) continue
       for (const tag of c.categoryTags || []) {
         counts[tag] = (counts[tag] || 0) + 1
       }
     }
     return Object.entries(counts).sort((a, b) => b[1] - a[1]) as [string, number][]
-  }, [companies, thesis.investmentLists])
+  }, [companies, thesis.investmentLists, thesis.subcategories])
 
   const operatingModelTags = useMemo(() => {
     const counts: Record<string, number> = {}
+    const selectedLists = thesis.investmentLists ?? []
+    const selectedSubs = thesis.subcategories ?? []
     for (const c of companies) {
+      if (selectedLists.length > 0 && !selectedLists.includes(c.investmentList)) continue
+      if (selectedSubs.length > 0 && !selectedSubs.includes(c.subcategories)) continue
       for (const tag of c.operatingModelTags || []) {
         counts[tag] = (counts[tag] || 0) + 1
       }
     }
     return Object.entries(counts).sort((a, b) => b[1] - a[1]) as [string, number][]
-  }, [companies])
+  }, [companies, thesis.investmentLists, thesis.subcategories])
 
   const countries = useMemo(() => {
     const counts: Record<string, number> = {}
+    const selectedLists = thesis.investmentLists ?? []
+    const selectedSubs = thesis.subcategories ?? []
     for (const c of companies) {
+      if (selectedLists.length > 0 && !selectedLists.includes(c.investmentList)) continue
+      if (selectedSubs.length > 0 && !selectedSubs.includes(c.subcategories)) continue
       if (c.country) counts[c.country] = (counts[c.country] || 0) + 1
     }
     return Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 20) as [string, number][]
-  }, [companies])
+  }, [companies, thesis.investmentLists, thesis.subcategories])
 
   return (
     <div className="space-y-6">
