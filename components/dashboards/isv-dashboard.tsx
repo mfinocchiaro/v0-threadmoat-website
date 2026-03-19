@@ -12,7 +12,7 @@ import { PeriodicTable } from "@/components/charts/periodic-table";
 import { QuadrantChart } from "@/components/charts/quadrant-chart";
 import { SunburstChart } from "@/components/charts/sunburst-chart";
 import { AdminAnalyticsSection } from "./admin-analytics";
-import { Network, FileWarning, Swords, Link2, X } from "lucide-react";
+import { Network, FileWarning, Swords, Link2, X, Settings2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { ScoredCompany } from "@/contexts/thesis-context";
@@ -38,7 +38,7 @@ export function ISVDashboard({ data, isLoading, isAdmin = false }: { data: Compa
     const filtered = displayData.filter(filterCompany);
 
     const integrationCandidates = useMemo(() =>
-        hasThesis ? whitespace.filter(r => (r.company.growthMetrics || 0) > 3.5).slice(0, 10) : []
+        hasThesis ? whitespace.filter(r => (r.company.growthMetrics || 0) > 3.5) : []
     , [hasThesis, whitespace]);
 
     type DrillCategory = "whitespace" | "adjacent" | "covered" | "integration" | null;
@@ -83,9 +83,20 @@ export function ISVDashboard({ data, isLoading, isAdmin = false }: { data: Compa
                 <KPICard title="Integration Candidates" value={hasThesis ? integrationCandidates.length.toString() : "\u2014"} subtitle="High-growth target cos." icon={<Link2 className="size-5" />} onClick={hasThesis && integrationCandidates.length > 0 ? () => toggleDrill("integration") : undefined} active={drillDown === "integration"} />
             </div>
 
+            {/* Empty state guidance */}
+            {hasThesis && whitespace.length === 0 && adjacent.length === 0 && covered.length === 0 && (
+                <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-border bg-muted/20 p-8 text-center">
+                    <Settings2 className="size-6 text-muted-foreground" />
+                    <p className="text-sm font-medium">No acquisition targets found</p>
+                    <p className="text-xs text-muted-foreground max-w-md">
+                        Select the investment lists you already cover in the configuration panel. Companies outside your coverage will appear as acquisition targets. Add target industries or operating model filters to refine results.
+                    </p>
+                </div>
+            )}
+
             {drillDown && drillData.length > 0 && (
                 <WidgetCard title={drillTitle[drillDown] ?? ""} subtitle={`${drillData.length} companies`}>
-                    <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                    <div className="space-y-2 max-h-[500px] overflow-y-auto">
                         {drillData.map(({ company: c, score }) => (
                             <div key={c.id} className="flex items-center gap-3 p-2.5 rounded-lg border text-sm">
                                 <div className="flex-1 min-w-0">

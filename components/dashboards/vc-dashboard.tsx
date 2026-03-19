@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { Company, formatCurrency } from "@/lib/company-data";
 import { useFilter } from "@/contexts/filter-context";
-import { useThesis } from "@/contexts/thesis-context";
+import { useThesis, ScoredCompany } from "@/contexts/thesis-context";
 import { useLayout } from "@/contexts/layout-context";
 import { KPICard } from "@/components/widgets/kpi-card";
 import { WidgetCard } from "@/components/widgets/widget-card";
@@ -13,11 +13,11 @@ import { QuadrantChart } from "@/components/charts/quadrant-chart";
 import { PeriodicTable } from "@/components/charts/periodic-table";
 import { NetworkGraphToggle } from "@/components/charts/network-graph-toggle";
 import { AdminAnalyticsSection } from "./admin-analytics";
-import { AlertTriangle, BarChart3, Target, CheckCircle2, DollarSign, TrendingUp } from "lucide-react";
+import { AlertTriangle, BarChart3, Target, CheckCircle2, DollarSign, TrendingUp, X, Settings2 } from "lucide-react";
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 const MapChart = dynamic(() => import("@/components/charts/map-chart").then(m => m.MapChart), {
     ssr: false,
@@ -69,6 +69,10 @@ export function VCDashboard({ data, isLoading, isAdmin = false }: { data: Compan
     const totalFunding = useMemo(() => filtered.reduce((s, c) => s + (c.totalFunding || 0), 0), [filtered]);
     const totalEstimatedARR = useMemo(() => filtered.reduce((s, c) => s + (c.estimatedRevenue || 0), 0), [filtered]);
 
+    type DrillCategory = "matches" | null;
+    const [drillDown, setDrillDown] = useState<DrillCategory>(null);
+    const toggleDrill = (cat: DrillCategory) => setDrillDown(prev => prev === cat ? null : cat);
+
     if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading portfolio data...</div>;
 
     const matchAvgScore = matches.length > 0
@@ -87,11 +91,45 @@ export function VCDashboard({ data, isLoading, isAdmin = false }: { data: Compan
             {hasThesis && <VizFilterBar companies={displayData} />}
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <KPICard title="Thesis Matches" value={hasThesis ? matches.length.toString() : "\u2014"} subtitle={hasThesis ? `from ${data.length} total` : "Set focus to populate"} icon={<Target className="size-4" />} />
+                <KPICard title="Thesis Matches" value={hasThesis ? matches.length.toString() : "\u2014"} subtitle={hasThesis ? `from ${data.length} total` : "Set focus to populate"} icon={<Target className="size-4" />} onClick={hasThesis && matches.length > 0 ? () => toggleDrill("matches") : undefined} active={drillDown === "matches"} />
                 <KPICard title="Avg. Match Score" value={hasThesis ? `${matchAvgScore}%` : "\u2014"} subtitle="Across thesis matches" icon={<BarChart3 className="size-4" />} />
                 <KPICard title="Total Known Funding" value={hasThesis ? formatCurrency(totalFunding) : "\u2014"} subtitle={hasThesis ? `across ${filtered.length} matches` : "Set focus to populate"} icon={<DollarSign className="size-4" />} />
                 <KPICard title="Estimated ARR" value={hasThesis ? formatCurrency(totalEstimatedARR) : "\u2014"} subtitle={hasThesis ? `across ${filtered.length} matches` : "Set focus to populate"} icon={<TrendingUp className="size-4" />} />
             </div>
+
+            {/* Empty state guidance */}
+            {hasThesis && matches.length === 0 && (
+                <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-border bg-muted/20 p-8 text-center">
+                    <Settings2 className="size-6 text-muted-foreground" />
+                    <p className="text-sm font-medium">No companies match your thesis</p>
+                    <p className="text-xs text-muted-foreground max-w-md">
+                        Try broadening your criteria — select more investment lists, adjust funding stage filters, or lower your score weights in the configuration panel.
+                    </p>
+                </div>
+            )}
+
+            {/* Full drill-down list */}
+            {drillDown === "matches" && matches.length > 0 && (
+                <WidgetCard title="All Thesis Matches" subtitle={`${matches.length} companies ranked by match score`}>
+                    <div className="flex justify-end mb-2">
+                        <button onClick={() => setDrillDown(null)} className="text-xs text-muted-foreground hover:text-foreground"><X className="size-4" /></button>
+                    </div>
+                    <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                        {matches.map(({ company: c, score }) => (
+                            <div key={c.id} className="flex items-center gap-3 p-2.5 rounded-lg border text-sm">
+                                <div className="flex-1 min-w-0">
+                                    <span className="font-medium">{c.name}</span>
+                                    <p className="text-xs text-muted-foreground truncate mt-0.5">
+                                        {c.investmentList}{c.subcategories ? ` · ${c.subcategories}` : ""}{c.country ? ` · ${c.country}` : ""}
+                                    </p>
+                                </div>
+                                {c.latestFundingRound && <Badge variant="outline" className="shrink-0 text-xs">{c.latestFundingRound}</Badge>}
+                                <div className="text-right shrink-0 text-xs font-medium tabular-nums">{score}%</div>
+                            </div>
+                        ))}
+                    </div>
+                </WidgetCard>
+            )}
 
             {hasThesis && redFlags.length > 0 && (
                 <WidgetCard title="Burn Warnings" subtitle="Low funding efficiency matches">

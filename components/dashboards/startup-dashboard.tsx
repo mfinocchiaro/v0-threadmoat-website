@@ -2,7 +2,7 @@
 
 import { Company, formatCurrency } from "@/lib/company-data";
 import { useFilter } from "@/contexts/filter-context";
-import { useThesis } from "@/contexts/thesis-context";
+import { useThesis, ScoredCompany } from "@/contexts/thesis-context";
 import { useLayout } from "@/contexts/layout-context";
 import { KPICard } from "@/components/widgets/kpi-card";
 import { WidgetCard } from "@/components/widgets/widget-card";
@@ -15,8 +15,8 @@ import { NetworkGraphToggle } from "@/components/charts/network-graph-toggle";
 import { AdminAnalyticsSection } from "./admin-analytics";
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
 import { Badge } from "@/components/ui/badge";
-import { DollarSign, Globe, TrendingUp, Users } from "lucide-react";
-import { useMemo } from "react";
+import { DollarSign, Globe, TrendingUp, Users, X, Settings2 } from "lucide-react";
+import { useMemo, useState } from "react";
 
 const SCENARIO = "startup_founder";
 
@@ -32,6 +32,10 @@ export function StartupDashboard({ data, isLoading, isAdmin = false }: { data: C
     const displayData = useMemo(() => hasThesis ? matches.map(r => r.company) : [], [hasThesis, matches]);
     const filtered = displayData.filter(filterCompany);
 
+    type DrillCategory = "competitors" | null;
+    const [drillDown, setDrillDown] = useState<DrillCategory>(null);
+    const toggleDrill = (cat: DrillCategory) => setDrillDown(prev => prev === cat ? null : cat);
+
     if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading ecosystem data...</div>;
 
     const totalFunding = filtered.reduce((s, c) => s + (c.totalFunding || 0), 0);
@@ -40,7 +44,6 @@ export function StartupDashboard({ data, isLoading, isAdmin = false }: { data: C
         : "\u2014";
     const totalHeadcount = filtered.reduce((s, c) => s + (c.headcount || 0), 0);
     const countries = new Set(filtered.map(c => c.country).filter(Boolean)).size;
-    const topCompetitors = matches.slice(0, 5);
 
     const show = (id: string) => enabled.includes(id);
 
@@ -54,50 +57,42 @@ export function StartupDashboard({ data, isLoading, isAdmin = false }: { data: C
             {hasThesis && <VizFilterBar companies={displayData} />}
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <KPICard title="Competitors Found" value={hasThesis ? matches.length.toString() : "\u2014"} subtitle={hasThesis ? `from ${data.length} companies` : "Set focus to populate"} icon={<DollarSign className="size-4" />} />
+                <KPICard title="Competitors Found" value={hasThesis ? matches.length.toString() : "\u2014"} subtitle={hasThesis ? `from ${data.length} companies` : "Set focus to populate"} icon={<DollarSign className="size-4" />} onClick={hasThesis && matches.length > 0 ? () => toggleDrill("competitors") : undefined} active={drillDown === "competitors"} />
                 <KPICard title="Avg. Competitor Score" value={hasThesis ? avgScore : "\u2014"} subtitle="Weighted moat score" icon={<TrendingUp className="size-4" />} />
                 <KPICard title="Total Headcount" value={hasThesis ? totalHeadcount.toLocaleString() : "\u2014"} subtitle="Competitor talent pool" icon={<Users className="size-4" />} />
                 <KPICard title="Market Reach" value={hasThesis ? String(countries) : "\u2014"} subtitle="Countries active" icon={<Globe className="size-4" />} />
             </div>
 
-            {hasThesis && topCompetitors.length > 0 && (
-                <WidgetCard title="Top Competitors" subtitle="Highest-scoring companies matching your competitive moat">
-                    <div className="space-y-3">
-                        {topCompetitors.map(({ company: c, score }) => {
-                            const words = c.name.split(/\s+/).filter(Boolean);
-                            const initials = words.length >= 2 ? (words[0][0] + words[1][0]).toUpperCase() : c.name.substring(0, 2).toUpperCase();
-                            return (
-                            <HoverCard key={c.id} openDelay={200} closeDelay={100}>
-                                <HoverCardTrigger asChild>
-                                    <div className="bg-muted p-3 rounded-lg border-l-4 border-amber-500 cursor-default">
-                                        <div className="flex items-center justify-between mb-1">
-                                            <h4 className="font-semibold text-sm">{initials}</h4>
-                                            <span className="text-sm font-medium">{score}% match</span>
-                                        </div>
-                                        <p className="text-xs text-muted-foreground">
-                                            {c.investmentList} · {c.country} · Score: {c.weightedScore} · {formatCurrency(c.totalFunding || 0)} raised
-                                        </p>
-                                    </div>
-                                </HoverCardTrigger>
-                                <HoverCardContent side="left" className="w-80">
-                                    <div className="space-y-2">
-                                        <div className="font-semibold text-sm">{c.name}</div>
-                                        <div className="text-xs text-muted-foreground">{c.hqLocation}</div>
-                                        <div className="flex flex-wrap gap-1">
-                                            {c.subcategories && <Badge variant="secondary" className="text-[10px]">{c.subcategories}</Badge>}
-                                            {c.latestFundingRound && <Badge variant="outline" className="text-[10px]">{c.latestFundingRound}</Badge>}
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
-                                            <div><span className="text-muted-foreground">Headcount:</span> {c.headcount || "\u2014"}</div>
-                                            <div><span className="text-muted-foreground">Funding:</span> {formatCurrency(c.totalFunding || 0)}</div>
-                                            <div><span className="text-muted-foreground">Revenue:</span> {formatCurrency(c.estimatedRevenue || 0)}</div>
-                                            <div><span className="text-muted-foreground">Moat:</span> {c.weightedScore?.toFixed(0) || "\u2014"}</div>
-                                        </div>
-                                    </div>
-                                </HoverCardContent>
-                            </HoverCard>
-                        );
-                        })}
+            {/* Empty state guidance */}
+            {hasThesis && matches.length === 0 && (
+                <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-border bg-muted/20 p-8 text-center">
+                    <Settings2 className="size-6 text-muted-foreground" />
+                    <p className="text-sm font-medium">No competitors match your current filters</p>
+                    <p className="text-xs text-muted-foreground max-w-md">
+                        Try broadening your criteria — select more investment lists, remove subcategory filters, or adjust your score weights in the configuration panel.
+                    </p>
+                </div>
+            )}
+
+            {/* Full drill-down list */}
+            {drillDown === "competitors" && matches.length > 0 && (
+                <WidgetCard title="All Competitors" subtitle={`${matches.length} companies ranked by match score`}>
+                    <div className="flex justify-end mb-2">
+                        <button onClick={() => setDrillDown(null)} className="text-xs text-muted-foreground hover:text-foreground"><X className="size-4" /></button>
+                    </div>
+                    <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                        {matches.map(({ company: c, score }) => (
+                            <div key={c.id} className="flex items-center gap-3 p-2.5 rounded-lg border text-sm">
+                                <div className="flex-1 min-w-0">
+                                    <span className="font-medium">{c.name}</span>
+                                    <p className="text-xs text-muted-foreground truncate mt-0.5">
+                                        {c.investmentList}{c.subcategories ? ` · ${c.subcategories}` : ""}{c.country ? ` · ${c.country}` : ""}
+                                    </p>
+                                </div>
+                                {c.latestFundingRound && <Badge variant="outline" className="shrink-0 text-xs">{c.latestFundingRound}</Badge>}
+                                <div className="text-right shrink-0 text-xs font-medium tabular-nums">{score}%</div>
+                            </div>
+                        ))}
                     </div>
                 </WidgetCard>
             )}
