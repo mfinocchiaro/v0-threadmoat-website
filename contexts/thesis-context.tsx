@@ -47,6 +47,10 @@ export interface ISVThesis {
   coveredLifecycles: string[]
   targetIndustries: string[]
   operatingModelTags: string[]
+  targetSubcategories: string[]
+  targetManufacturingTypes: string[]
+  targetSectorFocus: string[]
+  targetCategoryTags: string[]
 }
 
 export type OEMCoverage = "commercial" | "customized" | "homegrown" | "none"
@@ -169,6 +173,10 @@ const DEFAULT_ISV: ISVThesis = {
   coveredLifecycles: [],
   targetIndustries: [],
   operatingModelTags: [],
+  targetSubcategories: [],
+  targetManufacturingTypes: [],
+  targetSectorFocus: [],
+  targetCategoryTags: [],
 }
 
 const DEFAULT_OEM: OEMThesis = {
@@ -288,8 +296,49 @@ function scoreISV(company: Company, thesis: ISVThesis): { score: number; label: 
   const inCoveredLifecycle = thesis.coveredLifecycles.length === 0
     || thesis.coveredLifecycles.includes(phase)
 
-  // ── Does the company match the ISV's acquisition criteria? ──
-  // Empty arrays = no targeting criteria set → do NOT treat as "match all"
+  // Company is in ISV's existing investment list coverage
+  if (inCoveredList) {
+    if (inCoveredLifecycle) return { score: 20, label: "Covered" }
+    return { score: 60, label: "Adjacent" }
+  }
+
+  // ── Company is NOT in covered lists → evaluate as acquisition target ──
+  // Apply hard filters first — each narrows the pool
+
+  // Subcategory filter (hard gate)
+  const targetSubs = thesis.targetSubcategories ?? []
+  if (targetSubs.length > 0 && !targetSubs.includes(company.subcategories)) {
+    return { score: 0, label: "Filtered Out" }
+  }
+
+  // Manufacturing type filter (hard gate)
+  const targetMfg = thesis.targetManufacturingTypes ?? []
+  if (targetMfg.length > 0) {
+    const companyMfg = company.manufacturingType || ""
+    if (!targetMfg.some(t => companyMfg.toLowerCase().includes(t.toLowerCase()))) {
+      return { score: 0, label: "Filtered Out" }
+    }
+  }
+
+  // Sector focus filter (hard gate)
+  const targetSectors = thesis.targetSectorFocus ?? []
+  if (targetSectors.length > 0) {
+    const companySector = company.sectorFocus || ""
+    if (!targetSectors.includes(companySector)) {
+      return { score: 0, label: "Filtered Out" }
+    }
+  }
+
+  // Category/function tags filter (hard gate — must match at least one)
+  const targetCatTags = thesis.targetCategoryTags ?? []
+  if (targetCatTags.length > 0) {
+    const companyCats = company.categoryTags || []
+    if (!targetCatTags.some(t => companyCats.some(ct => ct.toLowerCase() === t.toLowerCase()))) {
+      return { score: 0, label: "Filtered Out" }
+    }
+  }
+
+  // ── Soft scoring within the filtered pool ──
   const hasTargetIndustries = thesis.targetIndustries.length > 0
   const hasOperatingModel = (thesis.operatingModelTags || []).length > 0
 
@@ -301,23 +350,12 @@ function scoreISV(company: Company, thesis: ISVThesis): { score: number; label: 
       (thesis.operatingModelTags || []).some(tt => t.toLowerCase() === tt.toLowerCase())
     )
 
-  // ── Classification ──
-
-  // Company is in ISV's existing investment list coverage
-  if (inCoveredList) {
-    // Same list + same lifecycle = direct competitor
-    if (inCoveredLifecycle) return { score: 20, label: "Covered" }
-    // Same list but different lifecycle = adjacent opportunity
-    return { score: 60, label: "Adjacent" }
-  }
-
-  // Company is NOT in covered investment lists → potential acquisition target
-  // If no targeting criteria set, ALL non-covered companies are whitespace
+  // No soft targeting criteria set → company passed all hard filters, it's whitespace
   if (!hasTargetIndustries && !hasOperatingModel) {
     return { score: 80, label: "Whitespace" }
   }
 
-  // With targeting criteria, prioritize matches
+  // With soft targeting, score based on matches
   const bothSet = hasTargetIndustries && hasOperatingModel
   if (bothSet && matchesTargetIndustry && matchesOperatingModel) {
     return { score: 100, label: "Whitespace" }
@@ -325,12 +363,11 @@ function scoreISV(company: Company, thesis: ISVThesis): { score: number; label: 
   if (bothSet && (matchesTargetIndustry || matchesOperatingModel)) {
     return { score: 60, label: "Adjacent" }
   }
-  // Only one criterion configured
   if (!bothSet && (matchesTargetIndustry || matchesOperatingModel)) {
     return { score: 100, label: "Whitespace" }
   }
 
-  // Has targeting criteria set but company doesn't match any → filtered out
+  // Has soft targeting but no match → filtered out
   return { score: 0, label: "Filtered Out" }
 }
 

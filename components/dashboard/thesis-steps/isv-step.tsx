@@ -17,8 +17,44 @@ function toggleItem(arr: string[], item: string): string[] {
   return arr.includes(item) ? arr.filter(x => x !== item) : [...arr, item]
 }
 
+function PillGrid({ items, selected, onToggle, limit = 20 }: {
+  items: [string, number][]
+  selected: string[]
+  onToggle: (item: string) => void
+  limit?: number
+}) {
+  const visible = items.slice(0, limit)
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {visible.map(([item, count]) => {
+        const active = selected.includes(item)
+        return (
+          <button
+            key={item}
+            onClick={() => onToggle(item)}
+            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors border ${
+              active
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-transparent text-muted-foreground border-border hover:bg-muted/50"
+            }`}
+          >
+            {item}
+            <span className="opacity-60">{count}</span>
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
 export function ISVStep({ thesis, onChange, companies }: ISVStepProps) {
   const [industrySearch, setIndustrySearch] = useState("")
+
+  // ── Pool: companies NOT in covered lists (potential targets) ──
+  const targetPool = useMemo(() => {
+    if (thesis.coveredInvestmentLists.length === 0) return companies
+    return companies.filter(c => !thesis.coveredInvestmentLists.includes(c.investmentList))
+  }, [companies, thesis.coveredInvestmentLists])
 
   const investmentLists = useMemo(() => {
     const counts: Record<string, number> = {}
@@ -38,9 +74,61 @@ export function ISVStep({ thesis, onChange, companies }: ISVStepProps) {
     return [...set].sort()
   }, [companies])
 
+  // ── Target pool filters (only count from non-covered companies) ──
+
+  const subcategories = useMemo(() => {
+    const counts: Record<string, number> = {}
+    for (const c of targetPool) {
+      if (c.subcategories) counts[c.subcategories] = (counts[c.subcategories] || 0) + 1
+    }
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]) as [string, number][]
+  }, [targetPool])
+
+  const manufacturingTypes = useMemo(() => {
+    const counts: Record<string, number> = {}
+    for (const c of targetPool) {
+      if (c.manufacturingType) counts[c.manufacturingType] = (counts[c.manufacturingType] || 0) + 1
+    }
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]) as [string, number][]
+  }, [targetPool])
+
+  const sectorFocusOptions = useMemo(() => {
+    const counts: Record<string, number> = {}
+    for (const c of targetPool) {
+      if (c.sectorFocus) counts[c.sectorFocus] = (counts[c.sectorFocus] || 0) + 1
+    }
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]) as [string, number][]
+  }, [targetPool])
+
+  const categoryTags = useMemo(() => {
+    const counts: Record<string, number> = {}
+    const selectedSubs = thesis.targetSubcategories ?? []
+    for (const c of targetPool) {
+      if (selectedSubs.length > 0 && !selectedSubs.includes(c.subcategories)) continue
+      for (const tag of c.categoryTags || []) {
+        counts[tag] = (counts[tag] || 0) + 1
+      }
+    }
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]) as [string, number][]
+  }, [targetPool, thesis.targetSubcategories])
+
+  const operatingModelTags = useMemo(() => {
+    const counts: Record<string, number> = {}
+    const selectedSubs = thesis.targetSubcategories ?? []
+    for (const c of targetPool) {
+      if (selectedSubs.length > 0 && !selectedSubs.includes(c.subcategories)) continue
+      for (const tag of c.operatingModelTags || []) {
+        counts[tag] = (counts[tag] || 0) + 1
+      }
+    }
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]) as [string, number][]
+  }, [targetPool, thesis.targetSubcategories])
+
   const industries = useMemo(() => {
     const counts: Record<string, number> = {}
-    for (const c of companies) {
+    const selectedSubs = thesis.targetSubcategories ?? []
+    for (const c of targetPool) {
+      if (selectedSubs.length > 0 && !selectedSubs.includes(c.subcategories)) continue
       if (c.industriesServed) {
         for (const ind of c.industriesServed) {
           counts[ind] = (counts[ind] || 0) + 1
@@ -48,17 +136,7 @@ export function ISVStep({ thesis, onChange, companies }: ISVStepProps) {
       }
     }
     return Object.entries(counts).sort((a, b) => b[1] - a[1])
-  }, [companies])
-
-  const operatingModelTags = useMemo(() => {
-    const counts: Record<string, number> = {}
-    for (const c of companies) {
-      for (const tag of c.operatingModelTags || []) {
-        counts[tag] = (counts[tag] || 0) + 1
-      }
-    }
-    return Object.entries(counts).sort((a, b) => b[1] - a[1])
-  }, [companies])
+  }, [targetPool, thesis.targetSubcategories])
 
   const filteredIndustries = useMemo(() => {
     if (!industrySearch) return industries.slice(0, 30)
@@ -102,31 +180,76 @@ export function ISVStep({ thesis, onChange, companies }: ISVStepProps) {
         </div>
       </section>
 
+      {/* Subcategory drill-down */}
+      {subcategories.length > 0 && (
+        <section>
+          <h4 className="text-sm font-medium mb-1">Target Subcategories</h4>
+          <p className="text-xs text-muted-foreground mb-2">Narrow to specific technology areas you want to acquire into.</p>
+          <div className="grid grid-cols-2 gap-1.5">
+            {subcategories.map(([sub, count]) => (
+              <label key={sub} className="flex items-center gap-2 text-sm cursor-pointer py-0.5">
+                <Checkbox
+                  checked={(thesis.targetSubcategories ?? []).includes(sub)}
+                  onCheckedChange={() => onChange({ ...thesis, targetSubcategories: toggleItem(thesis.targetSubcategories ?? [], sub) })}
+                />
+                <span className="truncate flex-1 min-w-0">{sub}</span>
+                <span className="text-muted-foreground text-xs tabular-nums shrink-0">{count}</span>
+              </label>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Manufacturing Type */}
+      {manufacturingTypes.length > 0 && (
+        <section>
+          <h4 className="text-sm font-medium mb-1">Manufacturing Type</h4>
+          <p className="text-xs text-muted-foreground mb-2">Filter by manufacturing process focus.</p>
+          <PillGrid
+            items={manufacturingTypes}
+            selected={thesis.targetManufacturingTypes ?? []}
+            onToggle={item => onChange({ ...thesis, targetManufacturingTypes: toggleItem(thesis.targetManufacturingTypes ?? [], item) })}
+          />
+        </section>
+      )}
+
+      {/* Sector Focus */}
+      {sectorFocusOptions.length > 0 && (
+        <section>
+          <h4 className="text-sm font-medium mb-1">Sector Focus</h4>
+          <p className="text-xs text-muted-foreground mb-2">Target specific industry verticals.</p>
+          <PillGrid
+            items={sectorFocusOptions}
+            selected={thesis.targetSectorFocus ?? []}
+            onToggle={item => onChange({ ...thesis, targetSectorFocus: toggleItem(thesis.targetSectorFocus ?? [], item) })}
+          />
+        </section>
+      )}
+
+      {/* Category/Function Tags */}
+      <section>
+        <h4 className="text-sm font-medium mb-1">Technology Capabilities</h4>
+        <p className="text-xs text-muted-foreground mb-2">What technologies or functions are you looking to acquire?</p>
+        <PillGrid
+          items={categoryTags}
+          selected={thesis.targetCategoryTags ?? []}
+          onToggle={item => onChange({ ...thesis, targetCategoryTags: toggleItem(thesis.targetCategoryTags ?? [], item) })}
+          limit={24}
+        />
+      </section>
+
       {/* Operating Model Tags */}
       <section>
         <h4 className="text-sm font-medium mb-1">Operating Model Filter</h4>
         <p className="text-xs text-muted-foreground mb-3">
           SaaS, platform, marketplace, hardware — what models interest you?
         </p>
-        <div className="flex flex-wrap gap-1.5">
-          {operatingModelTags.slice(0, 20).map(([tag, count]) => {
-            const active = (thesis.operatingModelTags || []).includes(tag)
-            return (
-              <button
-                key={tag}
-                onClick={() => onChange({ ...thesis, operatingModelTags: toggleItem(thesis.operatingModelTags || [], tag) })}
-                className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors border ${
-                  active
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-transparent text-muted-foreground border-border hover:bg-muted/50"
-                }`}
-              >
-                {tag}
-                <span className="opacity-60">{count}</span>
-              </button>
-            )
-          })}
-        </div>
+        <PillGrid
+          items={operatingModelTags}
+          selected={thesis.operatingModelTags ?? []}
+          onToggle={tag => onChange({ ...thesis, operatingModelTags: toggleItem(thesis.operatingModelTags ?? [], tag) })}
+          limit={20}
+        />
       </section>
 
       {/* Lifecycle Phases */}

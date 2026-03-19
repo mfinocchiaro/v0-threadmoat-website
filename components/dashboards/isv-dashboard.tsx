@@ -12,7 +12,7 @@ import { PeriodicTable } from "@/components/charts/periodic-table";
 import { QuadrantChart } from "@/components/charts/quadrant-chart";
 import { SunburstChart } from "@/components/charts/sunburst-chart";
 import { AdminAnalyticsSection } from "./admin-analytics";
-import { Network, FileWarning, Swords, Link2, X, Settings2 } from "lucide-react";
+import { Network, FileWarning, Swords, Link2, X, Settings2, AlertTriangle } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { ScoredCompany } from "@/contexts/thesis-context";
@@ -21,7 +21,7 @@ const SCENARIO = "isv_platform";
 
 export function ISVDashboard({ data, isLoading, isAdmin = false }: { data: Company[]; isLoading: boolean; isAdmin?: boolean }) {
     const { filterCompany } = useFilter();
-    const { activeThesis, scoreCompanies } = useThesis();
+    const { activeThesis, scoreCompanies, isvThesis } = useThesis();
     const { getEnabledWidgets } = useLayout();
     const enabled = getEnabledWidgets(SCENARIO);
 
@@ -83,13 +83,32 @@ export function ISVDashboard({ data, isLoading, isAdmin = false }: { data: Compa
                 <KPICard title="Integration Candidates" value={hasThesis ? integrationCandidates.length.toString() : "\u2014"} subtitle="High-growth target cos." icon={<Link2 className="size-5" />} onClick={hasThesis && integrationCandidates.length > 0 ? () => toggleDrill("integration") : undefined} active={drillDown === "integration"} />
             </div>
 
+            {/* Too-broad warning */}
+            {hasThesis && whitespace.length > 0 && (() => {
+                // Pool = all non-covered companies
+                const poolSize = data.filter(c => !isvThesis.coveredInvestmentLists.includes(c.investmentList)).length
+                const ratio = poolSize > 0 ? whitespace.length / poolSize : 0
+                if (ratio <= 0.5) return null
+                return (
+                    <div className="flex items-start gap-3 rounded-lg border border-amber-500/30 bg-amber-950/20 p-4">
+                        <AlertTriangle className="size-5 text-amber-500 mt-0.5 shrink-0" />
+                        <div>
+                            <p className="text-sm font-medium text-amber-300">Thesis too broad — {whitespace.length} of {poolSize} companies match ({Math.round(ratio * 100)}%)</p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                                Narrow your filters using Target Subcategories, Manufacturing Type, Sector Focus, or Technology Capabilities in the configuration panel to get a focused acquisition shortlist.
+                            </p>
+                        </div>
+                    </div>
+                )
+            })()}
+
             {/* Empty state guidance */}
             {hasThesis && whitespace.length === 0 && adjacent.length === 0 && covered.length === 0 && (
                 <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-border bg-muted/20 p-8 text-center">
                     <Settings2 className="size-6 text-muted-foreground" />
                     <p className="text-sm font-medium">No acquisition targets found</p>
                     <p className="text-xs text-muted-foreground max-w-md">
-                        Select the investment lists you already cover in the configuration panel. Companies outside your coverage will appear as acquisition targets. Add target industries or operating model filters to refine results.
+                        Select the investment lists you already cover in the configuration panel. Companies outside your coverage will appear as acquisition targets. Add subcategories, manufacturing types, or sector focus to refine.
                     </p>
                 </div>
             )}
