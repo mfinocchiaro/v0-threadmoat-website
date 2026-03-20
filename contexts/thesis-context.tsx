@@ -236,7 +236,8 @@ function scoreVC(company: Company, thesis: VCThesis): number {
 
   // ── Last funding year (5pts) ──
   const [yearMin, yearMax] = thesis.fundingYearRange ?? [0, 0]
-  if (yearMin === 0 && yearMax === 0) {
+  const hasYearFilter = yearMin !== 0 || yearMax !== 0
+  if (!hasYearFilter) {
     score += 5
   } else {
     const fy = company.fundingYear || 0
@@ -250,11 +251,18 @@ function scoreVC(company: Company, thesis: VCThesis): number {
     if (tf < tfMin || tf > tfMax) return 0
   }
 
-  // ── Last funding amount range — HARD FILTER when set ──
+  // ── Last funding amount — HARD FILTER, intersects with year range ──
+  // e.g. "$12M–$24M raised in 2023–2025" means the company's latest
+  // round must be in that dollar range AND in that year window.
   const [lfMin, lfMax] = thesis.lastFundingRange ?? [0, 0]
   if (lfMin !== 0 || lfMax !== 0) {
     const lf = company.lastFundingAmount || 0
     if (lf < lfMin || lf > lfMax) return 0
+    // If year filter is also set, the round must be in that year window
+    if (hasYearFilter) {
+      const fy = company.fundingYear || 0
+      if (fy < yearMin || fy > yearMax) return 0
+    }
   }
 
   // ── Operating model match (10pts) ──

@@ -265,18 +265,22 @@ export function VCStep({ thesis, onChange, companies, variant = "investor" }: VC
             <h4 className="text-sm font-medium mb-2">Total Funding Raised</h4>
             <p className="text-xs text-muted-foreground mb-3">Filter by cumulative VC capital raised.</p>
             <FundingAmountRange
-              thesis={thesis} onChange={onChange} companies={companies}
-              field="totalFunding" thesisKey="totalFundingRange"
+              thesis={thesis} onChange={onChange}
+              thesisKey="totalFundingRange"
+              fixedMin={0} fixedMax={500_000_000} step={1_000_000}
+              label="funding amounts"
             />
           </section>
 
           {/* Latest Funding Amount */}
           <section>
             <h4 className="text-sm font-medium mb-2">Latest Round Size</h4>
-            <p className="text-xs text-muted-foreground mb-3">Filter by the most recent funding event amount.</p>
+            <p className="text-xs text-muted-foreground mb-3">Filter by individual round size. Combined with year filter to find e.g. "$12M–$24M raises in 2023–2025."</p>
             <FundingAmountRange
-              thesis={thesis} onChange={onChange} companies={companies}
-              field="lastFundingAmount" thesisKey="lastFundingRange"
+              thesis={thesis} onChange={onChange}
+              thesisKey="lastFundingRange"
+              fixedMin={0} fixedMax={100_000_000} step={500_000}
+              label="round sizes"
             />
           </section>
 
@@ -416,27 +420,19 @@ function formatFundingShort(v: number): string {
   return `$${v}`
 }
 
-function FundingAmountRange({ thesis, onChange, companies, field, thesisKey }: {
+function FundingAmountRange({ thesis, onChange, thesisKey, fixedMin, fixedMax, step, label }: {
   thesis: VCThesis
   onChange: (t: VCThesis) => void
-  companies: Company[]
-  field: "totalFunding" | "lastFundingAmount"
   thesisKey: "totalFundingRange" | "lastFundingRange"
+  fixedMin: number
+  fixedMax: number
+  step: number
+  label: string
 }) {
-  const { minVal, maxVal } = useMemo(() => {
-    const vals = companies.map(c => (c[field] as number) || 0).filter(v => v > 0)
-    if (vals.length === 0) return { minVal: 0, maxVal: 0 }
-    return { minVal: Math.min(...vals), maxVal: Math.max(...vals) }
-  }, [companies, field])
-
   const [lo, hi] = thesis[thesisKey] ?? [0, 0]
   const isActive = lo !== 0 || hi !== 0
-  const effectiveLo = isActive ? lo : minVal
-  const effectiveHi = isActive ? hi : maxVal
-
-  if (maxVal === 0) return <p className="text-[10px] text-muted-foreground italic">No funding data available</p>
-
-  const step = Math.max(100000, Math.round((maxVal - minVal) / 100))
+  const effectiveLo = isActive ? lo : fixedMin
+  const effectiveHi = isActive ? hi : fixedMax
 
   return (
     <div className="space-y-2">
@@ -445,14 +441,14 @@ function FundingAmountRange({ thesis, onChange, companies, field, thesisKey }: {
         <span>{formatFundingShort(effectiveHi)}</span>
       </div>
       <Slider
-        min={minVal}
-        max={maxVal}
+        min={fixedMin}
+        max={fixedMax}
         step={step}
         value={[effectiveLo, effectiveHi]}
         onValueChange={([newLo, newHi]) => onChange({ ...thesis, [thesisKey]: [newLo, newHi] })}
       />
       {!isActive && (
-        <p className="text-[10px] text-muted-foreground italic">All amounts (no filter applied)</p>
+        <p className="text-[10px] text-muted-foreground italic">All {label} (no filter applied)</p>
       )}
       {isActive && (
         <button
