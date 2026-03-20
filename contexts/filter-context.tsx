@@ -19,6 +19,7 @@ interface FilterState {
   oceanStrategy: "all" | "red" | "blue"
   sizeCategory: string[]
   ecosystemFlags: string[]
+  fundingRange: [number, number] // [min, max] in dollars, [0,0] = no filter
 }
 
 interface FilterContextType {
@@ -46,6 +47,7 @@ export const DEFAULT_FILTERS: FilterState = {
   oceanStrategy: "all",
   sizeCategory: [],
   ecosystemFlags: [],
+  fundingRange: [0, 0],
 }
 
 /** Binary flag definitions for ecosystem compatibility filtering */
@@ -170,6 +172,11 @@ export function FilterProvider({ children }: { children: ReactNode }) {
         return def && company[def.field] === true
       })
       if (!hasFlag) return false
+    }
+
+    if (filters.fundingRange[0] !== 0 || filters.fundingRange[1] !== 0) {
+      const funding = company.totalFunding || 0
+      if (funding < filters.fundingRange[0] || funding > filters.fundingRange[1]) return false
     }
 
     return true

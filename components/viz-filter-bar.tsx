@@ -5,6 +5,8 @@ import { Search, X, ChevronDown, ChevronUp, SlidersHorizontal } from "lucide-rea
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
+import { Slider } from "@/components/ui/slider"
+import { formatCurrency } from "@/lib/company-data"
 import { useFilter, getOceanType, ECOSYSTEM_FLAGS } from "@/contexts/filter-context"
 import { Company } from "@/lib/company-data"
 import { getInvestmentColor } from "@/lib/investment-colors"
@@ -149,6 +151,56 @@ const PRIMARY_OP_GROUPS = ["Deployment", "Segment", "Focus"]
 // Secondary slicers: shown in collapsible section
 const SECONDARY_OP_GROUPS = ["Delivery", "Sales Motion", "Geo Reach", "Pricing"]
 
+/* ─── Funding Range Slider ─── */
+
+function formatFundingShort(v: number): string {
+  if (v >= 1e9) return `$${(v / 1e9).toFixed(1)}B`
+  if (v >= 1e6) return `$${(v / 1e6).toFixed(0)}M`
+  if (v >= 1e3) return `$${(v / 1e3).toFixed(0)}K`
+  return `$${v}`
+}
+
+function FundingRangeSlider({ min, max, value, onChange }: {
+  min: number
+  max: number
+  value: [number, number]
+  onChange: (range: [number, number]) => void
+}) {
+  const isActive = value[0] !== 0 || value[1] !== 0
+  const effectiveLo = isActive ? value[0] : min
+  const effectiveHi = isActive ? value[1] : max
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+          VC Funding Range
+        </span>
+        {isActive && (
+          <button
+            onClick={() => onChange([0, 0])}
+            className="text-xs text-muted-foreground hover:text-foreground"
+          >
+            Clear
+          </button>
+        )}
+      </div>
+      <div className="flex items-center gap-3">
+        <span className="text-xs text-muted-foreground tabular-nums w-14 text-right shrink-0">{formatFundingShort(effectiveLo)}</span>
+        <Slider
+          min={min}
+          max={max}
+          step={Math.max(100000, Math.round((max - min) / 100))}
+          value={[effectiveLo, effectiveHi]}
+          onValueChange={([lo, hi]) => onChange([lo, hi])}
+          className="flex-1"
+        />
+        <span className="text-xs text-muted-foreground tabular-nums w-14 shrink-0">{formatFundingShort(effectiveHi)}</span>
+      </div>
+    </div>
+  )
+}
+
 /* ─── Main Component ─── */
 
 interface VizFilterBarProps {
@@ -204,7 +256,12 @@ export function VizFilterBar({ companies, className }: VizFilterBarProps) {
     }))
     const investmentTheses = Array.from(thesisCount.entries()).sort((a, b) => b[1] - a[1]).map(([t]) => t)
 
-    return { investmentLists, subsegments, industries, countries, lifecycles, fundingRounds, opModelGroups, categoryTags, sizeCategories, ecosystemGroups, investmentTheses }
+    // Funding range
+    const fundings = companies.map(c => c.totalFunding || 0).filter(f => f > 0)
+    const fundingMin = fundings.length > 0 ? Math.min(...fundings) : 0
+    const fundingMax = fundings.length > 0 ? Math.max(...fundings) : 0
+
+    return { investmentLists, subsegments, industries, countries, lifecycles, fundingRounds, opModelGroups, categoryTags, sizeCategories, ecosystemGroups, investmentTheses, fundingMin, fundingMax }
   }, [companies])
 
   const toggle = React.useCallback((type: string, value: string) => {
@@ -232,6 +289,7 @@ export function VizFilterBar({ companies, className }: VizFilterBarProps) {
       categoryTags: [],
       differentiationTags: [],
       investmentTheses: [],
+      fundingRange: [0, 0] as [number, number],
       search: "",
       oceanStrategy: "all",
       sizeCategory: [],
@@ -250,6 +308,7 @@ export function VizFilterBar({ companies, className }: VizFilterBarProps) {
     filters.categoryTags.length +
     filters.differentiationTags.length +
     filters.investmentTheses.length +
+    (filters.fundingRange[0] !== 0 || filters.fundingRange[1] !== 0 ? 1 : 0) +
     filters.sizeCategory.length +
     filters.ecosystemFlags.length +
     (filters.oceanStrategy !== "all" ? 1 : 0)
@@ -313,6 +372,16 @@ export function VizFilterBar({ companies, className }: VizFilterBarProps) {
               </div>
             )}
           </div>
+
+          {/* VC Funding Range slider */}
+          {options.fundingMax > 0 && (
+            <FundingRangeSlider
+              min={options.fundingMin}
+              max={options.fundingMax}
+              value={filters.fundingRange}
+              onChange={(range) => setFilters(prev => ({ ...prev, fundingRange: range }))}
+            />
+          )}
           <div className="flex flex-col sm:flex-row gap-3">
             {/* Ocean Strategy toggle */}
             <div className="shrink-0 space-y-1.5">
