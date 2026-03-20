@@ -33,6 +33,8 @@ export type ScoreDimensionKey = (typeof SCORE_DIMENSIONS)[number]["key"]
 export interface VCThesis {
   fundingStages: string[]
   fundingYearRange: [number, number]
+  totalFundingRange: [number, number]   // [min, max] in dollars, [0,0] = no filter
+  lastFundingRange: [number, number]    // [min, max] in dollars, [0,0] = no filter
   dealSizeBrackets: string[]
   investmentLists: string[]
   subcategories: string[]
@@ -159,6 +161,8 @@ const DEFAULT_SCORE_WEIGHTS: Record<ScoreDimensionKey, number> = {
 const DEFAULT_VC: VCThesis = {
   fundingStages: [],
   fundingYearRange: [0, 0],
+  totalFundingRange: [0, 0],
+  lastFundingRange: [0, 0],
   dealSizeBrackets: [],
   investmentLists: [],
   subcategories: [],
@@ -237,6 +241,20 @@ function scoreVC(company: Company, thesis: VCThesis): number {
   } else {
     const fy = company.fundingYear || 0
     if (fy >= yearMin && fy <= yearMax) score += 5
+  }
+
+  // ── Total funding range — HARD FILTER when set ──
+  const [tfMin, tfMax] = thesis.totalFundingRange ?? [0, 0]
+  if (tfMin !== 0 || tfMax !== 0) {
+    const tf = company.totalFunding || 0
+    if (tf < tfMin || tf > tfMax) return 0
+  }
+
+  // ── Last funding amount range — HARD FILTER when set ──
+  const [lfMin, lfMax] = thesis.lastFundingRange ?? [0, 0]
+  if (lfMin !== 0 || lfMax !== 0) {
+    const lf = company.lastFundingAmount || 0
+    if (lf < lfMin || lf > lfMax) return 0
   }
 
   // ── Operating model match (10pts) ──

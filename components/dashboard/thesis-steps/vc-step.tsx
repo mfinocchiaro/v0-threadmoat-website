@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
-import { Company } from "@/lib/company-data"
+import { Company, formatCurrency } from "@/lib/company-data"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
@@ -260,6 +260,26 @@ export function VCStep({ thesis, onChange, companies, variant = "investor" }: VC
             <FundingYearRange thesis={thesis} onChange={onChange} companies={companies} />
           </section>
 
+          {/* Total Funding Range */}
+          <section>
+            <h4 className="text-sm font-medium mb-2">Total Funding Raised</h4>
+            <p className="text-xs text-muted-foreground mb-3">Filter by cumulative VC capital raised.</p>
+            <FundingAmountRange
+              thesis={thesis} onChange={onChange} companies={companies}
+              field="totalFunding" thesisKey="totalFundingRange"
+            />
+          </section>
+
+          {/* Latest Funding Amount */}
+          <section>
+            <h4 className="text-sm font-medium mb-2">Latest Round Size</h4>
+            <p className="text-xs text-muted-foreground mb-3">Filter by the most recent funding event amount.</p>
+            <FundingAmountRange
+              thesis={thesis} onChange={onChange} companies={companies}
+              field="lastFundingAmount" thesisKey="lastFundingRange"
+            />
+          </section>
+
           {/* Sectors */}
           <section>
             <h4 className="text-sm font-medium mb-2">Investment Lists <span className="text-muted-foreground font-normal">(max {MAX_INVESTMENT_LISTS})</span></h4>
@@ -385,6 +405,63 @@ function ScoreWeightSliders({ thesis, onChange }: { thesis: VCThesis; onChange: 
           </div>
         )
       })}
+    </div>
+  )
+}
+
+function formatFundingShort(v: number): string {
+  if (v >= 1e9) return `$${(v / 1e9).toFixed(1)}B`
+  if (v >= 1e6) return `$${(v / 1e6).toFixed(0)}M`
+  if (v >= 1e3) return `$${(v / 1e3).toFixed(0)}K`
+  return `$${v}`
+}
+
+function FundingAmountRange({ thesis, onChange, companies, field, thesisKey }: {
+  thesis: VCThesis
+  onChange: (t: VCThesis) => void
+  companies: Company[]
+  field: "totalFunding" | "lastFundingAmount"
+  thesisKey: "totalFundingRange" | "lastFundingRange"
+}) {
+  const { minVal, maxVal } = useMemo(() => {
+    const vals = companies.map(c => (c[field] as number) || 0).filter(v => v > 0)
+    if (vals.length === 0) return { minVal: 0, maxVal: 0 }
+    return { minVal: Math.min(...vals), maxVal: Math.max(...vals) }
+  }, [companies, field])
+
+  const [lo, hi] = thesis[thesisKey] ?? [0, 0]
+  const isActive = lo !== 0 || hi !== 0
+  const effectiveLo = isActive ? lo : minVal
+  const effectiveHi = isActive ? hi : maxVal
+
+  if (maxVal === 0) return <p className="text-[10px] text-muted-foreground italic">No funding data available</p>
+
+  const step = Math.max(100000, Math.round((maxVal - minVal) / 100))
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between text-xs text-muted-foreground tabular-nums">
+        <span>{formatFundingShort(effectiveLo)}</span>
+        <span>{formatFundingShort(effectiveHi)}</span>
+      </div>
+      <Slider
+        min={minVal}
+        max={maxVal}
+        step={step}
+        value={[effectiveLo, effectiveHi]}
+        onValueChange={([newLo, newHi]) => onChange({ ...thesis, [thesisKey]: [newLo, newHi] })}
+      />
+      {!isActive && (
+        <p className="text-[10px] text-muted-foreground italic">All amounts (no filter applied)</p>
+      )}
+      {isActive && (
+        <button
+          onClick={() => onChange({ ...thesis, [thesisKey]: [0, 0] })}
+          className="text-[10px] text-muted-foreground hover:text-foreground"
+        >
+          Clear range
+        </button>
+      )}
     </div>
   )
 }
