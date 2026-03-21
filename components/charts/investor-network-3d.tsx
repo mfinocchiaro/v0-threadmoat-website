@@ -206,7 +206,7 @@ export function InvestorNetwork3D({ className, filteredCompanyNames }: { classNa
           <Select value={minCount} onValueChange={setMinCount}>
             <SelectTrigger className="w-[72px] h-8"><SelectValue /></SelectTrigger>
             <SelectContent>
-              {["2","3","4","5","8","10"].map(v => <SelectItem key={v} value={v}>{v}+</SelectItem>)}
+              {["1","2","3","5","10"].map(v => <SelectItem key={v} value={v}>{v}+</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
