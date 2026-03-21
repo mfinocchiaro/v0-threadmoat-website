@@ -12,8 +12,8 @@ function NetworkInner() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold">Network Graph</h1>
-        <p className="text-muted-foreground text-sm mt-1">Force-directed graph showing relationships between companies, manufacturing types, industries, and countries. Drag nodes to explore.</p>
+        <h1 className="text-2xl font-bold">Startup Ecosystem</h1>
+        <p className="text-muted-foreground text-sm mt-1">Force-directed graph showing relationships between startups, manufacturing types, industries, and countries. Drag nodes to explore.</p>
       </div>
       {isLoading ? (
         <Skeleton className="h-[calc(100vh-12rem)] rounded-xl" />

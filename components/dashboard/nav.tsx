@@ -23,7 +23,7 @@ const VIZ_LINKS = [
   { href: '/dashboard/landscape-intro', icon: Compass,   label: 'Investment Landscape' },
   { href: '/dashboard/quadrant',       icon: GitBranch,  label: 'Magic Quadrant' },
   { href: '/dashboard/bubbles',        icon: Circle,     label: 'Bubble Chart' },
-  { href: '/dashboard/network',        icon: Network,    label: 'Network Graph' },
+  { href: '/dashboard/network',        icon: Network,    label: 'Startup Ecosystem' },
   { href: '/dashboard/sunburst',       icon: Sun,        label: 'Sunburst' },
   { href: '/dashboard/bar-chart',      icon: BarChart2,  label: 'Bar Chart' },
   { href: '/dashboard/landscape',      icon: LayoutGrid, label: 'Landscape' },

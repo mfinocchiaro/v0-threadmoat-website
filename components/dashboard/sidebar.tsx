@@ -96,7 +96,8 @@ export const TAB_GROUPS: TabGroup[] = [
       { href: "/dashboard/marimekko", icon: BarChart3,    label: "Marimekko" },
       { href: "/dashboard/timeline",  icon: Clock,        label: "Timeline" },
       { href: "/dashboard/spiral",    icon: TrendingUp,   label: "Spiral Timeline" },
-      { href: "/dashboard/patterns",  icon: GridIcon,     label: "Patterns" },
+      { href: "/dashboard/sankey",   icon: Wind,          label: "Sankey Flow" },
+      { href: "/dashboard/patterns", icon: GridIcon,      label: "Patterns" },
     ],
   },
   {
@@ -111,15 +112,13 @@ export const TAB_GROUPS: TabGroup[] = [
   },
   {
     key: "network",
-    label: "Network",
+    label: "Networks",
     icon: Network,
     href: "/dashboard/tab/network",
     items: [
-      { href: "/dashboard/network",          icon: Network,  label: "Network Graph" },
-      { href: "/dashboard/customers",        icon: Users,    label: "Customer Network" },
+      { href: "/dashboard/network",          icon: Network,   label: "Startup Ecosystem" },
+      { href: "/dashboard/customers",        icon: Users,     label: "Customer Network" },
       { href: "/dashboard/investor-network", icon: GitBranch, label: "Investor Network" },
-      { href: "/dashboard/sankey",           icon: Wind,     label: "Sankey Flow" },
-      { href: "/dashboard/chord",            icon: Link2,    label: "Chord Diagram" },
     ],
   },
   {
@@ -135,7 +134,8 @@ export const TAB_GROUPS: TabGroup[] = [
       { href: "/dashboard/distribution", icon: Activity,         label: "Distribution" },
       { href: "/dashboard/slope",        icon: TrendingUp,       label: "Slope Chart" },
       { href: "/dashboard/splom",        icon: ScatterChart,     label: "Scatter Matrix" },
-      { href: "/dashboard/wordcloud",    icon: Type,             label: "Word Cloud" },
+      { href: "/dashboard/chord",       icon: Link2,            label: "Chord Diagram" },
+      { href: "/dashboard/wordcloud",   icon: Type,             label: "Word Cloud" },
     ],
   },
 ];

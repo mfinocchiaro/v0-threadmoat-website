@@ -20,7 +20,7 @@ const REPORT_FEATURES = [
 ]
 
 const RECON_FEATURES = [
-  "Network Graph — interactive relationship mapping",
+  "Startup Ecosystem Graph — interactive relationship mapping",
   "Investment Landscape — 10 domains, category breakdown",
   "Geography Map — global startup distribution",
   "Updated weekly with the full dataset",

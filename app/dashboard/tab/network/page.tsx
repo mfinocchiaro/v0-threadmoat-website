@@ -50,7 +50,7 @@ function NetworkInner() {
 
       <div className="grid gap-4 md:grid-cols-2">
         <ChartCard
-          title="Network Graph"
+          title="Startup Ecosystem"
           subtitle="Force-directed ecosystem map"
           href="/dashboard/network"
           icon={Network}

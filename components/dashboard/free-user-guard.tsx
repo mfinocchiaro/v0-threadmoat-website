@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { isPathAllowed, getRequiredTier, getTierLabel, type AccessTier } from "@/lib/tiers"
 
 const FREE_HIGHLIGHTS = [
-  { icon: Network, label: "Network Graph", href: "/dashboard/network" },
+  { icon: Network, label: "Startup Ecosystem", href: "/dashboard/network" },
   { icon: Compass, label: "Investment Landscape", href: "/dashboard/landscape-intro" },
   { icon: Map, label: "Geography Map", href: "/dashboard/map" },
 ]
