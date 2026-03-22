@@ -1,8 +1,8 @@
 ---
 status: active
 last_activity: 2026-03-22
-current_phase: 1
-current_plan: null
+current_phase: 3
+current_plan: 2
 milestone: v1.0
 ---
 
@@ -10,12 +10,12 @@ milestone: v1.0
 
 ## Status
 
-Active — Phase 14 (i18n) complete, starting v1.0 milestone phases.
+Active — Phase 3 plan 1 (SEO metadata & sitemap) complete, plan 2 (OG images) next.
 
 ## Current Position
 
-Phase 1 of 5: Portuguese Language & Flag Emoji
-Plan: Not yet planned
+Phase 3 of 5: Content & SEO Polish
+Plan: 2 of 2
 
 ## Project Reference
 
@@ -31,8 +31,11 @@ See: .planning/PROJECT.md (updated 2026-03-22)
 - next-intl chosen for i18n (App Router native, cookie-based locale detection)
 - localePrefix: as-needed (English at /, other languages at /fr, /es, etc.)
 - Portuguese added as 6th language (Brazil industrial market)
-- Both 🇺🇸🇬🇧 flags for English in language switcher
+- Both US+UK flags for English in language switcher
 - Asian languages deferred (separate infrastructure requirements)
+- Shared metadata helpers in lib/metadata.ts to avoid URL-building duplication across pages
+- Static public/robots.txt deleted in favor of dynamic app/robots.ts for sitemap reference
+- English canonical URLs omit /en/ prefix consistent with localePrefix: as-needed
 
 ### Blockers
 

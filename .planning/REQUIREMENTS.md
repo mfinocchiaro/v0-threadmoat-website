@@ -25,9 +25,9 @@ Requirements for production launch. Each maps to roadmap phases.
 
 ### Content & SEO
 
-- [ ] **SEO-01**: Production-quality page titles and meta descriptions on all public pages
+- [x] **SEO-01**: Production-quality page titles and meta descriptions on all public pages
 - [ ] **SEO-02**: Open Graph images for social sharing on all public pages
-- [ ] **SEO-03**: Sitemap.xml with all locale variants
+- [x] **SEO-03**: Sitemap.xml with all locale variants
 - [ ] **SEO-04**: Marketing copy polished and consistent across all pages
 
 ### Email
@@ -86,9 +86,9 @@ Deferred to post-launch. Tracked but not in current roadmap.
 | PAY-03 | Phase 2 | Pending |
 | PAY-04 | Phase 2 | Pending |
 | PAY-05 | Phase 2 | Pending |
-| SEO-01 | Phase 3 | Pending |
+| SEO-01 | Phase 3 | Complete |
 | SEO-02 | Phase 3 | Pending |
-| SEO-03 | Phase 3 | Pending |
+| SEO-03 | Phase 3 | Complete |
 | SEO-04 | Phase 3 | Pending |
 | EMAIL-01 | Phase 4 | Pending |
 | EMAIL-02 | Phase 4 | Pending |
