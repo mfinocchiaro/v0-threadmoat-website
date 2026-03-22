@@ -13,11 +13,12 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 const LANGUAGE_NAMES: Record<Locale, string> = {
-  en: "English",
-  fr: "Français",
-  es: "Español",
-  it: "Italiano",
-  de: "Deutsch",
+  en: "🇺🇸🇬🇧 English",
+  fr: "🇫🇷 Français",
+  es: "🇪🇸 Español",
+  it: "🇮🇹 Italiano",
+  de: "🇩🇪 Deutsch",
+  pt: "🇧🇷🇵🇹 Português",
 }
 
 export function LanguageSwitcher() {
@@ -41,7 +42,7 @@ export function LanguageSwitcher() {
           <Globe className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-36">
+      <DropdownMenuContent align="end" className="w-44">
         {routing.locales.map((l) => (
           <DropdownMenuItem
             key={l}
