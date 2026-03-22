@@ -1,0 +1,34 @@
+{
+  "about": {
+    "title": "About ThreadMoat",
+    "description": "ThreadMoat is an independent research and market intelligence platform focused on the engineering software and Industrial AI startup ecosystem. We map 600+ startups across 10 investment domains, tracking $16B+ in VC funding across 43 countries.",
+    "stats": {
+      "startups": "600+ Startups",
+      "funding": ">$16B VC Funding",
+      "countries": "43 Countries",
+      "domains": "10 Market Subsegments"
+    }
+  },
+  "founder": {
+    "title": "About Michael Finocchiaro",
+    "bio": "With 30+ years of experience at Dassault Systèmes, PTC, IBM, and HP, Michael brings deep domain expertise in PLM, CAD/CAE, manufacturing, and enterprise software markets.",
+    "podcasts": "Host of two podcasts:",
+    "podcast1": "AI Across the Product Lifecycle",
+    "podcast2": "The Future of PLM",
+    "linkedin": "26K+ followers on LinkedIn",
+    "workedAt": "Worked At",
+    "workedWith": "Worked With"
+  },
+  "conference": {
+    "title": "Threaded! Conference Series",
+    "description": "Threaded! brings together startup founders, investors, and enterprise buyers for focused workshops and networking events across Europe and the US."
+  },
+  "podcasts": {
+    "title": "Podcasts & Content"
+  },
+  "contact": {
+    "title": "Where to connect with me",
+    "location": "Based in Paris · Bilingual French/English · Working across US and EU time zones",
+    "viewPricing": "View Pricing & Access Plans"
+  }
+}

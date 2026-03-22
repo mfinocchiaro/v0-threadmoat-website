@@ -1,0 +1,62 @@
+{
+  "hero": {
+    "badge": "Updated weekly (Mondays CET) — Last updated: {lastUpdated}",
+    "title": "Market Intelligence for Industrial AI & Engineering Software",
+    "subtitle": "600+ curated companies. Weekly updates. Technical taxonomy maintained by a domain expert with 35+ years in engineering software markets.",
+    "accessNote": "Analytics access only. Raw directory available exclusively via Red Keep engagement."
+  },
+  "tiers": {
+    "sectionTitle": "Access to ThreadMoat",
+    "sectionSubtitle": "Choose your level of intelligence. Every tier includes weekly data updates and the full 600+ company dataset.",
+    "reconTitle": "Recon",
+    "reconSubtitle": "Scout the landscape — no credit card",
+    "reconPrice": "$0",
+    "reconPriceNote": "Free — 3 interactive graphs",
+    "reconCta": "Sign up free",
+    "reportTitle": "Latest Quarterly Report",
+    "reportSubtitle": "One legal entity, internal use only",
+    "reportPrice": "$4,999",
+    "reportPriceNote": "One-time purchase",
+    "reportCta": "Purchase Report",
+    "reportSample": "Download free sample (30 pages)",
+    "mostPopular": "Most Popular",
+    "forgeTitle": "The Forge",
+    "forgeSubtitle": "Strategic analytics + quarterly reports",
+    "forgePrice": "$18,999",
+    "forgePriceNote": "Annual subscription — 13 graphs",
+    "forgeCta": "Contact for Subscription",
+    "redKeepTitle": "The Red Keep",
+    "redKeepSubtitle": "Full command — nothing hidden",
+    "redKeepPrice": "Call For Quote",
+    "redKeepPriceNote": "Annual contract — 28+ graphs",
+    "redKeepCta": "Email Us"
+  },
+  "sample": {
+    "title": "Not sure yet? Download the free sample.",
+    "subtitle": "30-page preview with executive summary, methodology, sample vendor analysis, and structural trends. No sign-up required.",
+    "cta": "Download Sample Report (PDF)"
+  },
+  "outputs": {
+    "title": "See what you get",
+    "subtitle": "Sample dashboard views and analyst briefing outputs."
+  },
+  "methodology": {
+    "title": "What we track",
+    "subtitle": "Every company is profiled across six dimensions — updated weekly by a single domain expert, not scraped or AI-hallucinated."
+  },
+  "features": {
+    "reconF1": "Startup Ecosystem Graph — interactive relationship mapping",
+    "reconF2": "Investment Landscape — 10 domains, category breakdown",
+    "reconF3": "Geography Map — global startup distribution",
+    "reconF4": "Updated weekly with the full dataset",
+    "reportF1": "150+ page deep-dive analysis",
+    "reportF2": "600+ companies, >$16B VC funding mapped",
+    "reportF3": "Based on 200+ primary research interviews",
+    "reportF4": "Incumbent landscape — $22–24B anchor vendors profiled",
+    "reportF5": "Startup ecosystem — 10 investment categories ranked",
+    "reportF6": "$50B+ M&A consolidation analysis (2022–2025)",
+    "reportF7": "5-year market forecast ($120–140B by 2028)",
+    "reportF8": "ThreadMoat Top 25 rankings with 7-dimension scoring",
+    "reportF9": "Personalized, watermarked copy with unique Copy ID"
+  }
+}

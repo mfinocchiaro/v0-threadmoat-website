@@ -1,0 +1,90 @@
+{
+  "hero": {
+    "badge": "1Q2026 Market State Report",
+    "title": "Engineering Software & Industrial AI",
+    "subtitle": "Market State Report — 1Q2026",
+    "description": "The most comprehensive analysis of the engineering software startup ecosystem. 150+ pages of original research covering 632 startups, 31 incumbent vendors, and $16.2B in VC funding — based on 200+ founder interviews and proprietary data.",
+    "author": "ThreadMoat Research — Michael Finocchiaro — March 2026",
+    "purchaseCta": "Purchase Report — $4,999",
+    "sampleCta": "Free Sample (30 pages)"
+  },
+  "stats": {
+    "startupsTracked": "Startups Tracked",
+    "vcFunding": "VC Funding Mapped",
+    "investorsMapped": "Investors Mapped",
+    "countriesCovered": "Countries Covered",
+    "founderInterviews": "Founder Interviews",
+    "incumbentVendors": "Incumbent Vendors"
+  },
+  "toc": {
+    "title": "What's Inside",
+    "subtitle": "150+ pages across 14 chapters, two appendices, and an executive summary."
+  },
+  "audience": {
+    "title": "Who Is This For",
+    "subtitle": "Strategic intelligence for anyone navigating the $120B+ engineering software market.",
+    "vcTitle": "VC & PE Firms",
+    "vcDesc": "Identify deal flow, validate theses, map co-investors, and benchmark portfolio companies against 632 peers.",
+    "corpTitle": "Corporate Strategy / M&A",
+    "corpDesc": "Find acquisition targets, evaluate build vs. buy, and understand the competitive dynamics in each segment.",
+    "startupTitle": "Startup Founders",
+    "startupDesc": "Understand your competitive landscape, identify positioning gaps, and prepare for investor conversations.",
+    "buyerTitle": "Technology Buyers",
+    "buyerDesc": "Map the vendor landscape, compare incumbents vs. challengers, and make informed platform decisions."
+  },
+  "methodology": {
+    "title": "Methodology",
+    "subtitle": "Every data point curated by a single domain expert — not scraped, not AI-hallucinated.",
+    "m1": "200+ primary research founder interviews",
+    "m2": "Weekly Airtable database updates (Mondays CET)",
+    "m3": "7-dimension competitive scoring (1-5 scale)",
+    "m4": "Financial health modeling with burn & runway",
+    "m5": "Customer signal analysis (1,644 mentions)",
+    "m6": "Cross-referenced with Crunchbase, PitchBook, LinkedIn"
+  },
+  "cta": {
+    "title": "Ready to access the full report?",
+    "subtitle": "150+ pages of proprietary research. Personalized, watermarked copy with unique Copy ID. One legal entity, internal use only.",
+    "purchaseCta": "Purchase Report — $4,999",
+    "sampleCta": "Download Free Sample",
+    "seePlans": "See All Plans"
+  },
+  "chapters": {
+    "ch1": "Executive Summary",
+    "ch1d": "Market state overview and key findings",
+    "ch2": "Part 0: Key Signals",
+    "ch2d": "Five developments indicating market disruption and evolution",
+    "ch3": "Part 1: Incumbents vs. Challengers",
+    "ch3d": "The structural tension reshaping engineering software",
+    "ch4": "Part 2: The Incumbent Landscape",
+    "ch4d": "How Siemens, Dassault, PTC, and Autodesk are responding",
+    "ch5": "Part 3: Structural Trends",
+    "ch5d": "Cloud migration, AI integration, and pricing disruption",
+    "ch6": "Part 4: The Startup Ecosystem",
+    "ch6d": "632 startups across 10 investment categories",
+    "ch7": "Part 5: Customer Adoption",
+    "ch7d": "Enterprise buying patterns and deployment signals",
+    "ch8": "Part 6: The Investor Landscape",
+    "ch8d": "2,788 investors mapped across funding stages",
+    "ch9": "Part 7: Revised Market Sizing",
+    "ch9d": "$120-140B market forecast through 2028",
+    "ch10": "Part 8: The Consolidation Signal",
+    "ch10d": "$50B+ M&A activity analysis (2022-2025)",
+    "ch11": "Part 9: Red Ocean / Blue Ocean",
+    "ch11d": "Strategic positioning and whitespace opportunities",
+    "ch12": "Part 10: Vertical Deep Dives",
+    "ch12d": "Sector-specific analysis: Aero, Auto, Pharma, MedDev",
+    "ch13": "Part 11: Pricing Disruption",
+    "ch13d": "How challengers are unbundling incumbent pricing",
+    "ch14": "Part 12: M&A Prediction Framework",
+    "ch14d": "Who gets acquired next and why",
+    "ch15": "Part 13: Emerging Signals",
+    "ch15d": "Contrarian calls and early-stage bets",
+    "ch16": "Part 14: Technology Buyers",
+    "ch16d": "What this means for OEMs, ISVs, and platform companies",
+    "ch17": "Appendix A",
+    "ch17d": "Company profiles — all 632 startups profiled",
+    "ch18": "Appendix B",
+    "ch18d": "Investor directory — 2,788 investors and VCs"
+  }
+}
