@@ -5,6 +5,7 @@ import { Check, Calendar, MapPin, CalendarDays, BookOpen, Download, Castle, Flam
 import { ThemeToggle } from "@/components/theme-toggle"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { getTranslations, setRequestLocale } from 'next-intl/server'
+import { buildAlternates, buildOpenGraph } from '@/lib/metadata'
 
 // Update this date each week after the Monday refresh
 const LAST_UPDATED = "March 11, 2026"
@@ -17,6 +18,13 @@ export async function generateMetadata({ params }: Props) {
   return {
     title: t('meta.title'),
     description: t('meta.description'),
+    alternates: buildAlternates(locale, '/pricing'),
+    openGraph: buildOpenGraph(t('meta.title'), t('meta.description'), locale, '/pricing'),
+    twitter: {
+      card: 'summary_large_image',
+      title: t('meta.title'),
+      description: t('meta.description'),
+    },
   }
 }
 

@@ -10,6 +10,7 @@ import {
   TrendingUp, Building2, Briefcase, ShieldCheck, Zap,
 } from "lucide-react"
 import { getTranslations, setRequestLocale } from 'next-intl/server'
+import { buildAlternates, buildOpenGraph } from '@/lib/metadata'
 
 type Props = { params: Promise<{ locale: string }> }
 
@@ -19,6 +20,13 @@ export async function generateMetadata({ params }: Props) {
   return {
     title: t('meta.title'),
     description: t('meta.description'),
+    alternates: buildAlternates(locale, '/report'),
+    openGraph: buildOpenGraph(t('meta.title'), t('meta.description'), locale, '/report'),
+    twitter: {
+      card: 'summary_large_image',
+      title: t('meta.title'),
+      description: t('meta.description'),
+    },
   }
 }
 

@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { FaYoutube, FaSpotify, FaApple, FaAmazon, FaDeezer, FaLinkedin } from "react-icons/fa6"
 import { getTranslations, setRequestLocale } from 'next-intl/server'
+import { buildAlternates, buildOpenGraph } from '@/lib/metadata'
 
 type Props = { params: Promise<{ locale: string }> }
 
@@ -16,6 +17,13 @@ export async function generateMetadata({ params }: Props) {
   return {
     title: t('meta.title'),
     description: t('meta.description'),
+    alternates: buildAlternates(locale, '/about'),
+    openGraph: buildOpenGraph(t('meta.title'), t('meta.description'), locale, '/about'),
+    twitter: {
+      card: 'summary_large_image',
+      title: t('meta.title'),
+      description: t('meta.description'),
+    },
   }
 }
 
