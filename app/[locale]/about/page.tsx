@@ -1,12 +1,29 @@
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Mic, BookOpen, Mail } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { FaYoutube, FaSpotify, FaApple, FaAmazon, FaDeezer, FaLinkedin } from "react-icons/fa6"
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 
-export default function AboutPage() {
+type Props = { params: Promise<{ locale: string }> }
+
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'About' })
+  return {
+    title: t('meta.title'),
+    description: t('meta.description'),
+  }
+}
+
+export default async function AboutPage({ params }: Props) {
+  const { locale } = await params
+  setRequestLocale(locale)
+  const t = await getTranslations('About')
+  const tCommon = await getTranslations('Common')
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -23,19 +40,19 @@ export default function AboutPage() {
             />
           </Link>
           <nav className="flex items-center gap-8">
-            <Link href="/#services" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Services</Link>
-            <Link href="/#expertise" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Expertise</Link>
-            <Link href="/report" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Market Report</Link>
-            <Link href="/about" className="text-sm font-medium text-foreground transition-colors">About</Link>
-            <Link href="/about#contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Contact Us</Link>
+            <Link href="/#services" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{tCommon('nav.services')}</Link>
+            <Link href="/#expertise" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{tCommon('nav.expertise')}</Link>
+            <Link href="/report" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{tCommon('nav.marketReport')}</Link>
+            <Link href="/about" className="text-sm font-medium text-foreground transition-colors">{tCommon('nav.about')}</Link>
+            <Link href="/about#contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{tCommon('nav.contactUs')}</Link>
           </nav>
           <div className="flex items-center gap-3">
             <ThemeToggle />
             <Link href="/auth/login">
-              <Button variant="ghost" size="sm">Sign In</Button>
+              <Button variant="ghost" size="sm">{tCommon('nav.signIn')}</Button>
             </Link>
             <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-              <a href="https://calendly.com/mfinocchiaro/15min" target="_blank" rel="noopener noreferrer">Schedule Call</a>
+              <a href="https://calendly.com/mfinocchiaro/15min" target="_blank" rel="noopener noreferrer">{tCommon('nav.scheduleCall')}</a>
             </Button>
           </div>
         </div>
@@ -46,23 +63,20 @@ export default function AboutPage() {
         <div className="mx-auto max-w-5xl flex flex-col md:flex-row gap-12 items-center">
           <div className="flex-1 space-y-5">
             <h1 className="text-3xl font-bold tracking-tight">
-              About <span className="text-primary">ThreadMoat</span>
+              {t('about.title')} <span className="text-primary">{t('about.titleHighlight')}</span>
             </h1>
             <p className="text-muted-foreground leading-relaxed">
-              ThreadMoat is the market intelligence platform for Industrial AI and engineering software,
-              built and maintained by Michael Finocchiaro &mdash; an independent analyst with 30+ years
-              at Dassault Syst&egrave;mes, PTC, IBM, and HP, now advising the companies disrupting them.
+              {t('about.description1')}
             </p>
             <p className="text-muted-foreground leading-relaxed">
-              Every profile is hand-curated &mdash; not scraped or AI-hallucinated &mdash;
-              and updated weekly with funding events, product launches, and competitive scoring.
+              {t('about.description2')}
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
               {[
-                { stat: "600+", label: "Startups Tracked" },
-                { stat: ">$16B", label: "VC Funding Mapped" },
-                { stat: "43", label: "Countries" },
-                { stat: "10", label: "Market Subsegments" },
+                { stat: "600+", label: t('about.startupsTracked') },
+                { stat: ">$16B", label: t('about.vcFunding') },
+                { stat: "43", label: t('about.countries') },
+                { stat: "10", label: t('about.marketSubsegments') },
               ].map(s => (
                 <div key={s.label} className="text-center">
                   <p className="text-2xl font-bold text-primary">{s.stat}</p>
@@ -117,31 +131,26 @@ export default function AboutPage() {
               />
               <h2 className="mt-4 text-xl font-semibold text-center md:text-left">Michael Finocchiaro</h2>
               <p className="text-sm text-muted-foreground text-center md:text-left">
-                Industry Analyst &middot; Consultant &middot; Advisor
+                {t('founder.role')}
               </p>
-              <p className="text-xs text-muted-foreground mt-1">Paris, France</p>
+              <p className="text-xs text-muted-foreground mt-1">{t('founder.location')}</p>
             </div>
             <div className="flex-1 space-y-5">
               <h2 className="text-2xl font-bold tracking-tight">
-                About <span className="text-primary">Michael Finocchiaro</span>
+                {t('founder.title')} <span className="text-primary">{t('founder.titleHighlight')}</span>
               </h2>
               <p className="text-muted-foreground leading-relaxed">
-                Michael is an independent senior PLM and manufacturing industry analyst and the host of
-                <em> AI Across the Product Lifecycle</em> and <em>The Future of PLM</em> podcasts, focused
-                on digital thread and industrial AI adoption across engineering and manufacturing.
+                {t('founder.bio1')}
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                With 30+ years at Dassault Syst&egrave;mes (Sr. Director, 3DEXPERIENCE), PTC, IBM, and HP,
-                Michael now advises startups and industrial companies on positioning, go-to-market strategy,
-                and enterprise deployment. He is also the author of <em>Kernel Wars</em> &mdash; a history
-                of CAD, PLM, and the geometric kernel battles that shaped the industry.
+                {t('founder.bio2')}
               </p>
               <div className="flex items-center gap-2 pt-1">
                 <FaLinkedin className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium text-primary">26K+ Followers on LinkedIn</span>
+                <span className="text-sm font-medium text-primary">{t('founder.linkedin')}</span>
               </div>
               <div className="pt-3">
-                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Worked At</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">{t('founder.workedAt')}</p>
                 <div className="flex items-center gap-4">
                   {[
                     { name: "IBM", logo: "/logos/companies/ibm.png", href: "https://www.ibm.com" },
@@ -171,7 +180,7 @@ export default function AboutPage() {
                 </div>
               </div>
               <div className="pt-4">
-                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Worked With</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">{t('founder.workedWith')}</p>
                 <div className="flex flex-wrap gap-3">
                   {[
                     { name: "Airbus", logo: "/logos/companies/airbus.png", href: "https://www.airbus.com" },
@@ -241,20 +250,13 @@ export default function AboutPage() {
         <div className="mx-auto max-w-5xl flex flex-col md:flex-row gap-12 items-center">
           <div className="flex-1 space-y-4">
             <h2 className="text-2xl font-bold">
-              Threaded! <span className="text-primary">Conference Series</span>
+              {t('conference.title')} <span className="text-primary">{t('conference.titleHighlight')}</span>
             </h2>
             <p className="text-muted-foreground leading-relaxed">
-              Threaded! brings together startups and industry leaders for fast-paced working sessions
-              on how AI is transforming engineering and manufacturing. Presenters must explicitly show
-              how their products connect to the digital thread &mdash; what systems they integrate with,
-              what decisions they improve, and what measurable outcomes they enable.
+              {t('conference.description1')}
             </p>
             <p className="text-muted-foreground leading-relaxed">
-              Co-sponsored by Aras Corporation and the <em>AI Across the Product Lifecycle</em> podcast,
-              Threaded! connects next-generation solution providers with enterprise leaders across PLM
-              and the digital thread. Guided solution sharing and structured feedback help founders
-              refine product direction, sharpen ICPs, and build credible proof points that resonate
-              with enterprise buyers.
+              {t('conference.description2')}
             </p>
             <div className="flex flex-wrap gap-3 pt-2">
               <div className="rounded-lg border border-border/40 bg-card px-4 py-3 text-center">
@@ -273,7 +275,7 @@ export default function AboutPage() {
             <div className="pt-2">
               <Button asChild>
                 <a href="https://threaded.live" target="_blank" rel="noopener noreferrer">
-                  Visit threaded.live
+                  {t('conference.visitSite')}
                 </a>
               </Button>
             </div>
@@ -295,7 +297,7 @@ export default function AboutPage() {
       <section className="border-t border-border/40 bg-muted/30">
         <div className="container mx-auto px-4 py-20">
           <div className="mx-auto max-w-5xl">
-            <h2 className="text-2xl font-bold text-center mb-12">Podcasts &amp; Content</h2>
+            <h2 className="text-2xl font-bold text-center mb-12">{t('podcasts.title')}</h2>
             <div className="grid gap-8 md:grid-cols-2">
               {/* AI Across the Product Lifecycle */}
               <Card>
@@ -303,10 +305,9 @@ export default function AboutPage() {
                   <div className="rounded-md bg-primary/10 p-2 w-fit text-primary">
                     <Mic className="h-6 w-6" />
                   </div>
-                  <h3 className="font-semibold text-lg">AI Across the Product Lifecycle</h3>
+                  <h3 className="font-semibold text-lg">{t('podcasts.aiPodcastTitle')}</h3>
                   <p className="text-sm text-muted-foreground">
-                    Candid conversations with founders, CTOs, and enterprise leaders building and deploying
-                    AI in engineering and manufacturing. Deep-tech startups, real adoption stories.
+                    {t('podcasts.aiPodcastDesc')}
                   </p>
                   <div className="flex flex-wrap gap-2 pt-2">
                     <a href="https://www.youtube.com/@TheFutureOfPLM" target="_blank" rel="noopener noreferrer"
@@ -339,10 +340,9 @@ export default function AboutPage() {
                   <div className="rounded-md bg-primary/10 p-2 w-fit text-primary">
                     <BookOpen className="h-6 w-6" />
                   </div>
-                  <h3 className="font-semibold text-lg">The Future of PLM</h3>
+                  <h3 className="font-semibold text-lg">{t('podcasts.plmPodcastTitle')}</h3>
                   <p className="text-sm text-muted-foreground">
-                    Video podcast featuring industry thought leaders discussing the evolution of product
-                    lifecycle management, digital thread strategy, and market dynamics.
+                    {t('podcasts.plmPodcastDesc')}
                   </p>
                   <div className="flex flex-wrap gap-2 pt-2">
                     <a href="https://www.youtube.com/@TheFutureOfPLM" target="_blank" rel="noopener noreferrer"
@@ -360,7 +360,7 @@ export default function AboutPage() {
       {/* Section 5: Where to connect with me */}
       <section id="contact" className="container mx-auto px-4 py-16">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-2xl font-bold mb-8">Where to connect with me</h2>
+          <h2 className="text-2xl font-bold mb-8">{t('contact.title')}</h2>
           <div className="flex flex-wrap justify-center gap-4">
             <a href="https://www.linkedin.com/in/mfinocchiaro" target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-2 rounded-lg border border-border/40 bg-card px-5 py-3 text-sm font-medium hover:border-primary/50 transition-colors">
@@ -376,11 +376,11 @@ export default function AboutPage() {
             </a>
           </div>
           <p className="mt-6 text-xs text-muted-foreground">
-            Based in Paris &middot; Bilingual French/English &middot; Working across US and EU time zones
+            {t('contact.location')}
           </p>
           <div className="mt-8">
             <Link href="/pricing">
-              <Button size="lg" className="gap-2">View Pricing &amp; Access Plans</Button>
+              <Button size="lg" className="gap-2">{t('contact.viewPricing')}</Button>
             </Link>
           </div>
         </div>
@@ -389,11 +389,11 @@ export default function AboutPage() {
       {/* Footer */}
       <footer className="border-t border-border/40">
         <div className="container mx-auto flex h-16 items-center justify-between px-4 text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Finocchiaro Consulting / ThreadMoat. All rights reserved.</p>
+          <p>{tCommon('footer.copyrightFino', { year: new Date().getFullYear() })}</p>
           <div className="flex gap-4">
-            <Link href="/" className="hover:text-foreground">Home</Link>
-            <Link href="/pricing" className="hover:text-foreground">Pricing</Link>
-            <Link href="/auth/login" className="hover:text-foreground">Sign In</Link>
+            <Link href="/" className="hover:text-foreground">{tCommon('footer.home')}</Link>
+            <Link href="/pricing" className="hover:text-foreground">{tCommon('footer.pricing')}</Link>
+            <Link href="/auth/login" className="hover:text-foreground">{tCommon('footer.signIn')}</Link>
           </div>
         </div>
       </footer>

@@ -1,4 +1,8 @@
 {
+  "meta": {
+    "title": "Pricing - ThreadMoat Market Intelligence",
+    "description": "Access ThreadMoat market intelligence for Industrial AI & Engineering Software. Free tier, quarterly reports, strategic analytics, and enterprise plans."
+  },
   "hero": {
     "badge": "Updated weekly (Mondays CET) — Last updated: {lastUpdated}",
     "title": "Market Intelligence for Industrial AI & Engineering Software",
@@ -57,6 +61,57 @@
     "reportF6": "$50B+ M&A consolidation analysis (2022–2025)",
     "reportF7": "5-year market forecast ($120–140B by 2028)",
     "reportF8": "ThreadMoat Top 25 rankings with 7-dimension scoring",
-    "reportF9": "Personalized, watermarked copy with unique Copy ID"
+    "reportF9": "Personalized, watermarked copy with unique Copy ID",
+    "forgeF1": "All Recon graphs plus 10 interactive analytics charts",
+    "forgeF2": "Magic Quadrant — competitive positioning",
+    "forgeF3": "Bubble Chart — multi-dimensional scatter analysis",
+    "forgeF4": "Full Landscape — grouped company tiles by category",
+    "forgeF5": "Top Rankings — companies ranked by any metric",
+    "forgeF6": "Category Treemap — hierarchical market view",
+    "forgeF7": "Founding Timeline — ecosystem evolution",
+    "forgeF8": "Industry Sunburst — radial market hierarchy",
+    "forgeF9": "Metro Areas — geographic concentration analysis",
+    "forgeF10": "Radar Chart — multi-axis company comparison",
+    "forgeF11": "Periodic Table — company tiles at a glance",
+    "forgeF12": "All four quarterly reports included",
+    "forgeF13": "60-min analyst briefing with Michael Finocchiaro",
+    "redKeepF1": "Dedicated analyst support & quarterly strategy sessions",
+    "redKeepF2": "All Forge dashboards plus 15 advanced analytics",
+    "redKeepF3": "Company Compare — side-by-side deep dives",
+    "redKeepF4": "Customer & Investor Networks — full relationship mapping",
+    "redKeepF5": "Sankey, Chord, Marimekko — advanced flow analysis",
+    "redKeepF6": "Parallel Coordinates, Box Plots, SPLOM — statistical views",
+    "redKeepF7": "Annual Market State Reports (all quarters)",
+    "redKeepF8": "Watchlists + alerts on portfolio companies",
+    "redKeepF9": "Exports: charts + aggregated tables",
+    "redKeepF10": "Custom reports + briefings + consulting"
+  },
+  "outputs": {
+    "title": "See what you get",
+    "subtitle": "Sample dashboard views and analyst briefing outputs.",
+    "investorNetwork": "Investor Network",
+    "investorNetworkDesc": "Interactive network graph mapping investors, portfolio companies, and co-investment relationships",
+    "fundingDistribution": "Funding Distribution",
+    "fundingDistributionDesc": "Bar chart of companies by funding stage (Seed to Series D+) with total capital deployed",
+    "disciplineBreakdown": "Discipline Breakdown",
+    "disciplineBreakdownDesc": "CAD / CAM / PLM / ERP / Industrial AI by headcount and funding — full ecosystem view",
+    "analystBriefing": "Analyst Briefing",
+    "analystBriefingDesc": "Investment Committee Memo with scoring breakdown, financials, and competitive analysis"
+  },
+  "methodology": {
+    "title": "What we track",
+    "subtitle": "Every company is profiled across six dimensions — updated weekly by a single domain expert, not scraped or AI-hallucinated.",
+    "companyProfile": "Company Profile",
+    "companyProfileItems": "Name, URL, HQ location, country, founded|Estimated headcount|Known customers",
+    "marketPosition": "Market Position",
+    "marketPositionItems": "Discipline (CAD, CAM, PLM, ERP...)|Lifecycle phase & workflow segment|Sector focus & industries served",
+    "technicalStack": "Technical Stack",
+    "technicalStackItems": "Differentiation tags|Deployment model (Cloud, On-Prem, Edge, Hybrid...)|Operating model (SaaS, B2B, Direct Sales...)|Manufacturing type & integration points",
+    "financials": "Financials",
+    "financialsItems": "Latest funding round & year|Total known funding level|Estimated revenue & market value",
+    "investmentContext": "Investment Context",
+    "investmentContextItems": "Investors & VCs|Investment list membership|Stripe customer & buyer maturity signals",
+    "competitiveScoring": "Competitive Scoring",
+    "competitiveScoringItems": "Market Opportunity|Team & Execution|Funding Efficiency|Growth Metrics|Technical Differentiation|Industry Impact|Competitive Moat|Weighted score (0-10)"
   }
 }

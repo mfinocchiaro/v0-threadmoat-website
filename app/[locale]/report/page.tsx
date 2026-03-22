@@ -1,68 +1,58 @@
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ThemeToggle } from "@/components/theme-toggle"
 import {
-  Download, BookOpen, BarChart2, Users, Globe, Layers,
+  Download, BookOpen, Users, Globe, Layers,
   MapPin, CalendarDays, ArrowRight, FileText, Target,
   TrendingUp, Building2, Briefcase, ShieldCheck, Zap,
 } from "lucide-react"
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 
-const REPORT_TOC = [
-  { part: "Executive Summary", desc: "Market state overview and key findings" },
-  { part: "Part 0: Key Signals", desc: "Five developments indicating market disruption and evolution" },
-  { part: "Part 1: Incumbents vs. Challengers", desc: "The structural tension reshaping engineering software" },
-  { part: "Part 2: The Incumbent Landscape", desc: "How Siemens, Dassault, PTC, and Autodesk are responding" },
-  { part: "Part 3: Structural Trends", desc: "Cloud migration, AI integration, and pricing disruption" },
-  { part: "Part 4: The Startup Ecosystem", desc: "632 startups across 10 investment categories" },
-  { part: "Part 5: Customer Adoption", desc: "Enterprise buying patterns and deployment signals" },
-  { part: "Part 6: The Investor Landscape", desc: "2,788 investors mapped across funding stages" },
-  { part: "Part 7: Revised Market Sizing", desc: "$120-140B market forecast through 2028" },
-  { part: "Part 8: The Consolidation Signal", desc: "$50B+ M&A activity analysis (2022-2025)" },
-  { part: "Part 9: Red Ocean / Blue Ocean", desc: "Strategic positioning and whitespace opportunities" },
-  { part: "Part 10: Vertical Deep Dives", desc: "Sector-specific analysis: Aero, Auto, Pharma, MedDev" },
-  { part: "Part 11: Pricing Disruption", desc: "How challengers are unbundling incumbent pricing" },
-  { part: "Part 12: M&A Prediction Framework", desc: "Who gets acquired next and why" },
-  { part: "Part 13: Emerging Signals", desc: "Contrarian calls and early-stage bets" },
-  { part: "Part 14: Technology Buyers", desc: "What this means for OEMs, ISVs, and platform companies" },
-  { part: "Appendix A", desc: "Company profiles — all 632 startups profiled" },
-  { part: "Appendix B", desc: "Investor directory — 2,788 investors and VCs" },
-]
+type Props = { params: Promise<{ locale: string }> }
 
-const HERO_STATS = [
-  { value: "632", label: "Startups Tracked", icon: Building2 },
-  { value: "$16.2B", label: "VC Funding Mapped", icon: TrendingUp },
-  { value: "2,788", label: "Investors Mapped", icon: Users },
-  { value: "43", label: "Countries Covered", icon: Globe },
-  { value: "200+", label: "Founder Interviews", icon: Briefcase },
-  { value: "31", label: "Incumbent Vendors", icon: Layers },
-]
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'Report' })
+  return {
+    title: t('meta.title'),
+    description: t('meta.description'),
+  }
+}
 
-const WHO_IS_THIS_FOR = [
-  {
-    title: "VC & PE Firms",
-    desc: "Identify deal flow, validate theses, map co-investors, and benchmark portfolio companies against 632 peers.",
-    icon: Target,
-  },
-  {
-    title: "Corporate Strategy / M&A",
-    desc: "Find acquisition targets, evaluate build vs. buy, and understand the competitive dynamics in each segment.",
-    icon: Briefcase,
-  },
-  {
-    title: "Startup Founders",
-    desc: "Understand your competitive landscape, identify positioning gaps, and prepare for investor conversations.",
-    icon: Zap,
-  },
-  {
-    title: "Technology Buyers",
-    desc: "Map the vendor landscape, compare incumbents vs. challengers, and make informed platform decisions.",
-    icon: ShieldCheck,
-  },
-]
+export default async function ReportPage({ params }: Props) {
+  const { locale } = await params
+  setRequestLocale(locale)
+  const t = await getTranslations('Report')
+  const tCommon = await getTranslations('Common')
 
-export default function ReportPage() {
+  const REPORT_TOC = Array.from({ length: 18 }, (_, i) => ({
+    part: t(`chapters.ch${i + 1}`),
+    desc: t(`chapters.ch${i + 1}d`),
+  }))
+
+  const HERO_STATS = [
+    { value: "632", label: t('stats.startupsTracked'), icon: Building2 },
+    { value: "$16.2B", label: t('stats.vcFunding'), icon: TrendingUp },
+    { value: "2,788", label: t('stats.investorsMapped'), icon: Users },
+    { value: "43", label: t('stats.countriesCovered'), icon: Globe },
+    { value: "200+", label: t('stats.founderInterviews'), icon: Briefcase },
+    { value: "31", label: t('stats.incumbentVendors'), icon: Layers },
+  ]
+
+  const WHO_IS_THIS_FOR = [
+    { title: t('audience.vcTitle'), desc: t('audience.vcDesc'), icon: Target },
+    { title: t('audience.corpTitle'), desc: t('audience.corpDesc'), icon: Briefcase },
+    { title: t('audience.startupTitle'), desc: t('audience.startupDesc'), icon: Zap },
+    { title: t('audience.buyerTitle'), desc: t('audience.buyerDesc'), icon: ShieldCheck },
+  ]
+
+  const METHODOLOGY_ITEMS = [
+    t('methodology.m1'), t('methodology.m2'), t('methodology.m3'),
+    t('methodology.m4'), t('methodology.m5'), t('methodology.m6'),
+  ]
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -79,25 +69,25 @@ export default function ReportPage() {
             />
           </Link>
           <nav className="flex items-center gap-8">
-            <Link href="/#services" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Services</Link>
-            <Link href="/#expertise" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Expertise</Link>
-            <Link href="/report" className="text-sm text-foreground font-medium transition-colors">Market Report</Link>
-            <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">About</Link>
-            <Link href="/about#contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Contact Us</Link>
+            <Link href="/#services" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{tCommon('nav.services')}</Link>
+            <Link href="/#expertise" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{tCommon('nav.expertise')}</Link>
+            <Link href="/report" className="text-sm text-foreground font-medium transition-colors">{tCommon('nav.marketReport')}</Link>
+            <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{tCommon('nav.about')}</Link>
+            <Link href="/about#contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{tCommon('nav.contactUs')}</Link>
           </nav>
           <div className="flex items-center gap-3">
             <ThemeToggle />
             <Link href="/auth/login">
-              <Button variant="ghost" size="sm">Sign In</Button>
+              <Button variant="ghost" size="sm">{tCommon('nav.signIn')}</Button>
             </Link>
             <Link href="/pricing">
-              <Button size="sm">View Pricing</Button>
+              <Button size="sm">{tCommon('nav.viewPricing')}</Button>
             </Link>
           </div>
         </div>
       </header>
 
-      {/* Threaded! Conference Banner */}
+      {/* Conference banner: intentionally English-only, time-sensitive */}
       <div className="bg-[#2a2344] border-b border-purple-800/40">
         <div className="container mx-auto px-4 py-3 flex flex-wrap items-center justify-center gap-4 sm:gap-6">
           <Image
@@ -142,27 +132,25 @@ export default function ReportPage() {
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-1.5 text-sm text-primary mb-6">
               <BookOpen className="h-3.5 w-3.5" />
-              1Q2026 Market State Report
+              {t('hero.badge')}
             </div>
             <h1 className="text-4xl font-bold tracking-tight leading-tight">
-              Engineering Software &amp; Industrial AI
+              {t('hero.title')}
             </h1>
             <p className="text-xl text-muted-foreground mt-2 font-medium">
-              Market State Report — 1Q2026
+              {t('hero.subtitle')}
             </p>
             <p className="mt-4 text-muted-foreground leading-relaxed">
-              The most comprehensive analysis of the engineering software startup ecosystem.
-              150+ pages of original research covering 632 startups, 31 incumbent vendors,
-              and $16.2B in VC funding — based on 200+ founder interviews and proprietary data.
+              {t('hero.description')}
             </p>
             <p className="mt-3 text-sm text-muted-foreground">
-              <strong>ThreadMoat Research</strong> — Michael Finocchiaro — March 2026
+              <strong>{t('hero.author')}</strong>
             </p>
             <div className="flex flex-wrap gap-3 mt-6">
               <Link href="/pricing">
                 <Button size="lg" className="gap-2">
                   <FileText className="h-4 w-4" />
-                  Purchase Report — $4,999
+                  {t('hero.purchaseCta')}
                 </Button>
               </Link>
               <a
@@ -172,7 +160,7 @@ export default function ReportPage() {
               >
                 <Button variant="outline" size="lg" className="gap-2">
                   <Download className="h-4 w-4" />
-                  Free Sample (30 pages)
+                  {t('hero.sampleCta')}
                 </Button>
               </a>
             </div>
@@ -181,7 +169,6 @@ export default function ReportPage() {
           {/* Right: Cover image placeholder */}
           <div className="relative">
             <div className="rounded-lg border border-border/60 bg-gradient-to-br from-[#1a1433] to-[#0d0a1a] p-8 shadow-xl">
-              {/* Report cover styling inspired by the Threaded branding */}
               <div className="bg-gradient-to-r from-purple-900/80 to-indigo-900/80 rounded-lg p-6 mb-6">
                 <Image
                   src="/threaded-logo.jpg"
@@ -237,9 +224,9 @@ export default function ReportPage() {
       {/* Table of Contents */}
       <section className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-2">What&apos;s Inside</h2>
+          <h2 className="text-2xl font-bold text-center mb-2">{t('toc.title')}</h2>
           <p className="text-center text-muted-foreground mb-10">
-            150+ pages across 14 chapters, two appendices, and an executive summary.
+            {t('toc.subtitle')}
           </p>
           <div className="grid md:grid-cols-2 gap-x-8 gap-y-3">
             {REPORT_TOC.map((item, i) => (
@@ -263,9 +250,9 @@ export default function ReportPage() {
       {/* Who is this for */}
       <section className="border-t border-border/40 bg-muted/20">
         <div className="container mx-auto px-4 py-16">
-          <h2 className="text-2xl font-bold text-center mb-2">Who Is This For</h2>
+          <h2 className="text-2xl font-bold text-center mb-2">{t('audience.title')}</h2>
           <p className="text-center text-muted-foreground mb-10 max-w-xl mx-auto">
-            Strategic intelligence for anyone navigating the $120B+ engineering software market.
+            {t('audience.subtitle')}
           </p>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
             {WHO_IS_THIS_FOR.map(item => (
@@ -284,19 +271,12 @@ export default function ReportPage() {
       {/* Methodology preview */}
       <section className="container mx-auto px-4 py-16">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-2xl font-bold mb-2">Methodology</h2>
+          <h2 className="text-2xl font-bold mb-2">{t('methodology.title')}</h2>
           <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-            Every data point curated by a single domain expert — not scraped, not AI-hallucinated.
+            {t('methodology.subtitle')}
           </p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-left">
-            {[
-              "200+ primary research founder interviews",
-              "Weekly Airtable database updates (Mondays CET)",
-              "7-dimension competitive scoring (1-5 scale)",
-              "Financial health modeling with burn & runway",
-              "Customer signal analysis (1,644 mentions)",
-              "Cross-referenced with Crunchbase, PitchBook, LinkedIn",
-            ].map(item => (
+            {METHODOLOGY_ITEMS.map(item => (
               <div key={item} className="flex items-start gap-2 text-sm">
                 <ShieldCheck className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                 <span className="text-muted-foreground text-xs">{item}</span>
@@ -309,16 +289,15 @@ export default function ReportPage() {
       {/* CTA */}
       <section className="border-t border-border/40 bg-primary/5">
         <div className="container mx-auto px-4 py-16 text-center">
-          <h2 className="text-2xl font-bold mb-3">Ready to access the full report?</h2>
+          <h2 className="text-2xl font-bold mb-3">{t('cta.title')}</h2>
           <p className="text-muted-foreground mb-6 max-w-lg mx-auto">
-            150+ pages of proprietary research. Personalized, watermarked copy with unique Copy ID.
-            One legal entity, internal use only.
+            {t('cta.subtitle')}
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link href="/pricing">
               <Button size="lg" className="gap-2">
                 <FileText className="h-4 w-4" />
-                Purchase Report — $4,999
+                {t('cta.purchaseCta')}
               </Button>
             </Link>
             <a
@@ -328,12 +307,12 @@ export default function ReportPage() {
             >
               <Button variant="outline" size="lg" className="gap-2">
                 <Download className="h-4 w-4" />
-                Download Free Sample
+                {t('cta.sampleCta')}
               </Button>
             </a>
             <Link href="/pricing">
               <Button variant="ghost" size="lg" className="gap-2">
-                See All Plans <ArrowRight className="h-4 w-4" />
+                {t('cta.seePlans')} <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
           </div>
@@ -343,12 +322,12 @@ export default function ReportPage() {
       {/* Footer */}
       <footer className="border-t border-border/40">
         <div className="container mx-auto flex h-16 items-center justify-between px-4 text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} ThreadMoat Research / Michael Finocchiaro. All rights reserved.</p>
+          <p>{tCommon('footer.copyrightResearch', { year: new Date().getFullYear() })}</p>
           <div className="flex gap-4">
-            <Link href="/" className="hover:text-foreground">Home</Link>
-            <Link href="/pricing" className="hover:text-foreground">Pricing</Link>
-            <Link href="/about" className="hover:text-foreground">About</Link>
-            <a href="mailto:michael@threadmoat.com" className="hover:text-foreground">Contact</a>
+            <Link href="/" className="hover:text-foreground">{tCommon('footer.home')}</Link>
+            <Link href="/pricing" className="hover:text-foreground">{tCommon('footer.pricing')}</Link>
+            <Link href="/about" className="hover:text-foreground">{tCommon('footer.about')}</Link>
+            <a href="mailto:michael@threadmoat.com" className="hover:text-foreground">{tCommon('footer.contact')}</a>
           </div>
         </div>
       </footer>

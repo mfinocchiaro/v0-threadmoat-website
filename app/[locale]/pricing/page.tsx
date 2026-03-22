@@ -1,70 +1,64 @@
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Check, Calendar, MapPin, CalendarDays, BarChart2, Network, FileText, BookOpen, Download, Briefcase, Castle, Flame, Crosshair } from "lucide-react"
+import { Check, Calendar, MapPin, CalendarDays, BookOpen, Download, Castle, Flame, Crosshair } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 
 // Update this date each week after the Monday refresh
 const LAST_UPDATED = "March 11, 2026"
 
-const REPORT_FEATURES = [
-  "150+ page deep-dive analysis",
-  "600+ companies, >$16B VC funding mapped",
-  "Based on 200+ primary research interviews",
-  "Incumbent landscape — $22–24B anchor vendors profiled",
-  "Startup ecosystem — 10 investment categories ranked",
-  "$50B+ M&A consolidation analysis (2022–2025)",
-  "5-year market forecast ($120–140B by 2028)",
-  "ThreadMoat Top 25 rankings with 7-dimension scoring",
-  "Personalized, watermarked copy with unique Copy ID",
-]
+type Props = { params: Promise<{ locale: string }> }
 
-const RECON_FEATURES = [
-  "Startup Ecosystem Graph — interactive relationship mapping",
-  "Investment Landscape — 10 domains, category breakdown",
-  "Geography Map — global startup distribution",
-  "Updated weekly with the full dataset",
-]
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'Pricing' })
+  return {
+    title: t('meta.title'),
+    description: t('meta.description'),
+  }
+}
 
-const FORGE_FEATURES = [
-  "All Recon graphs plus 10 interactive analytics charts",
-  "Magic Quadrant — competitive positioning",
-  "Bubble Chart — multi-dimensional scatter analysis",
-  "Full Landscape — grouped company tiles by category",
-  "Top Rankings — companies ranked by any metric",
-  "Category Treemap — hierarchical market view",
-  "Founding Timeline — ecosystem evolution",
-  "Industry Sunburst — radial market hierarchy",
-  "Metro Areas — geographic concentration analysis",
-  "Radar Chart — multi-axis company comparison",
-  "Periodic Table — company tiles at a glance",
-  "All four quarterly reports included",
-  "60-min analyst briefing with Michael Finocchiaro",
-]
+export default async function PricingPage({ params }: Props) {
+  const { locale } = await params
+  setRequestLocale(locale)
+  const t = await getTranslations('Pricing')
+  const tCommon = await getTranslations('Common')
 
-const RED_KEEP_FEATURES = [
-  "Dedicated analyst support & quarterly strategy sessions",
-  "All Forge dashboards plus 15 advanced analytics",
-  "Company Compare — side-by-side deep dives",
-  "Customer & Investor Networks — full relationship mapping",
-  "Sankey, Chord, Marimekko — advanced flow analysis",
-  "Parallel Coordinates, Box Plots, SPLOM — statistical views",
-  "Annual Market State Reports (all quarters)",
-  "Watchlists + alerts on portfolio companies",
-  "Exports: charts + aggregated tables",
-  "Custom reports + briefings + consulting",
-]
+  const RECON_FEATURES = [
+    t('features.reconF1'), t('features.reconF2'), t('features.reconF3'), t('features.reconF4'),
+  ]
 
-const METHODOLOGY_FIELDS = [
-  { label: "Company Profile", items: ["Name, URL, HQ location, country, founded", "Estimated headcount", "Known customers"] },
-  { label: "Market Position", items: ["Discipline (CAD, CAM, PLM, ERP…)", "Lifecycle phase & workflow segment", "Sector focus & industries served"] },
-  { label: "Technical Stack", items: ["Differentiation tags", "Deployment model (Cloud, On-Prem, Edge, Hybrid…)", "Operating model (SaaS, B2B, Direct Sales…)", "Manufacturing type & integration points"] },
-  { label: "Financials", items: ["Latest funding round & year", "Total known funding level", "Estimated revenue & market value"] },
-  { label: "Investment Context", items: ["Investors & VCs", "Investment list membership", "Stripe customer & buyer maturity signals"] },
-  { label: "Competitive Scoring", items: ["Market Opportunity", "Team & Execution", "Funding Efficiency", "Growth Metrics", "Technical Differentiation", "Industry Impact", "Competitive Moat", "Weighted score (0–10)"] },
-]
+  const REPORT_FEATURES = [
+    t('features.reportF1'), t('features.reportF2'), t('features.reportF3'),
+    t('features.reportF4'), t('features.reportF5'), t('features.reportF6'),
+    t('features.reportF7'), t('features.reportF8'), t('features.reportF9'),
+  ]
 
-export default function PricingPage() {
+  const FORGE_FEATURES = [
+    t('features.forgeF1'), t('features.forgeF2'), t('features.forgeF3'),
+    t('features.forgeF4'), t('features.forgeF5'), t('features.forgeF6'),
+    t('features.forgeF7'), t('features.forgeF8'), t('features.forgeF9'),
+    t('features.forgeF10'), t('features.forgeF11'), t('features.forgeF12'),
+    t('features.forgeF13'),
+  ]
+
+  const RED_KEEP_FEATURES = [
+    t('features.redKeepF1'), t('features.redKeepF2'), t('features.redKeepF3'),
+    t('features.redKeepF4'), t('features.redKeepF5'), t('features.redKeepF6'),
+    t('features.redKeepF7'), t('features.redKeepF8'), t('features.redKeepF9'),
+    t('features.redKeepF10'),
+  ]
+
+  const METHODOLOGY_FIELDS = [
+    { label: t('methodology.companyProfile'), items: t('methodology.companyProfileItems').split('|') },
+    { label: t('methodology.marketPosition'), items: t('methodology.marketPositionItems').split('|') },
+    { label: t('methodology.technicalStack'), items: t('methodology.technicalStackItems').split('|') },
+    { label: t('methodology.financials'), items: t('methodology.financialsItems').split('|') },
+    { label: t('methodology.investmentContext'), items: t('methodology.investmentContextItems').split('|') },
+    { label: t('methodology.competitiveScoring'), items: t('methodology.competitiveScoringItems').split('|') },
+  ]
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -81,25 +75,25 @@ export default function PricingPage() {
             />
           </Link>
           <nav className="flex items-center gap-8">
-            <Link href="/#services" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Services</Link>
-            <Link href="/#expertise" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Expertise</Link>
-            <Link href="/report" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Market Report</Link>
-            <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">About</Link>
-            <Link href="/about#contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Contact Us</Link>
+            <Link href="/#services" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{tCommon('nav.services')}</Link>
+            <Link href="/#expertise" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{tCommon('nav.expertise')}</Link>
+            <Link href="/report" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{tCommon('nav.marketReport')}</Link>
+            <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{tCommon('nav.about')}</Link>
+            <Link href="/about#contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{tCommon('nav.contactUs')}</Link>
           </nav>
           <div className="flex items-center gap-3">
             <ThemeToggle />
             <Link href="/auth/login">
-              <Button variant="ghost" size="sm">Sign In</Button>
+              <Button variant="ghost" size="sm">{tCommon('nav.signIn')}</Button>
             </Link>
             <Link href="/auth/sign-up">
-              <Button size="sm">Get Started</Button>
+              <Button size="sm">{tCommon('nav.getStarted')}</Button>
             </Link>
           </div>
         </div>
       </header>
 
-      {/* Threaded! Conference Banner */}
+      {/* Conference banner: intentionally English-only, time-sensitive */}
       <div className="bg-[#2a2344] border-b border-purple-800/40">
         <div className="container mx-auto px-4 py-3 flex flex-wrap items-center justify-center gap-4 sm:gap-6">
           <Image
@@ -141,25 +135,24 @@ export default function PricingPage() {
       <section className="container mx-auto px-4 py-20 text-center">
         <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-muted/50 px-4 py-1.5 text-sm text-muted-foreground mb-6">
           <Calendar className="h-3.5 w-3.5" />
-          Updated weekly (Mondays CET) &mdash; Last updated: {LAST_UPDATED}
+          {t('hero.badge', { lastUpdated: LAST_UPDATED })}
         </div>
         <h1 className="text-4xl font-bold tracking-tight">
-          Market Intelligence for Industrial AI<br className="hidden md:block" /> &amp; Engineering Software
+          {t('hero.title')}
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-          600+ curated companies. Weekly updates. Technical taxonomy maintained by a domain expert
-          with 35+ years in engineering software markets.
+          {t('hero.subtitle')}
         </p>
         <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground border border-border/40 rounded-lg px-4 py-2 bg-muted/30">
-          <strong>Analytics access only.</strong> Raw directory available exclusively via Red Keep engagement.
+          {t('hero.accessNote')}
         </p>
       </section>
 
       {/* Pricing Tiers */}
       <section className="container mx-auto px-4 pb-16">
-        <h2 className="text-center text-2xl font-bold mb-2">Access to ThreadMoat</h2>
+        <h2 className="text-center text-2xl font-bold mb-2">{t('tiers.sectionTitle')}</h2>
         <p className="text-center text-muted-foreground mb-10 max-w-2xl mx-auto">
-          Choose your level of intelligence. Every tier includes weekly data updates and the full 600+ company dataset.
+          {t('tiers.sectionSubtitle')}
         </p>
         <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-4">
 
@@ -167,14 +160,14 @@ export default function PricingPage() {
           <div className="flex flex-col rounded-lg border border-border/40 bg-card p-6">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-lg font-semibold">Recon</h3>
-                <p className="mt-1 text-xs text-muted-foreground">Scout the landscape &mdash; no credit card</p>
+                <h3 className="text-lg font-semibold">{t('tiers.reconTitle')}</h3>
+                <p className="mt-1 text-xs text-muted-foreground">{t('tiers.reconSubtitle')}</p>
               </div>
               <Crosshair className="h-5 w-5 text-primary mt-1" />
             </div>
             <div className="mt-5">
-              <span className="text-3xl font-bold">$0</span>
-              <p className="text-xs text-muted-foreground mt-1">Free &mdash; 3 interactive graphs</p>
+              <span className="text-3xl font-bold">{t('tiers.reconPrice')}</span>
+              <p className="text-xs text-muted-foreground mt-1">{t('tiers.reconPriceNote')}</p>
             </div>
             <ul className="mt-6 flex-1 space-y-2.5">
               {RECON_FEATURES.map(f => (
@@ -186,7 +179,7 @@ export default function PricingPage() {
             </ul>
             <div className="mt-6">
               <Link href="/auth/sign-up">
-                <Button variant="outline" className="w-full" size="sm">Sign up free</Button>
+                <Button variant="outline" className="w-full" size="sm">{t('tiers.reconCta')}</Button>
               </Link>
             </div>
           </div>
@@ -194,18 +187,18 @@ export default function PricingPage() {
           {/* Latest Quarterly Report */}
           <div className="flex flex-col rounded-lg border-2 border-primary/60 bg-card p-6 shadow-md relative">
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 text-xs font-semibold text-primary-foreground">
-              Most Popular
+              {t('tiers.mostPopular')}
             </div>
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-lg font-semibold">Latest Quarterly Report</h3>
-                <p className="mt-1 text-xs text-muted-foreground">One legal entity, internal use only</p>
+                <h3 className="text-lg font-semibold">{t('tiers.reportTitle')}</h3>
+                <p className="mt-1 text-xs text-muted-foreground">{t('tiers.reportSubtitle')}</p>
               </div>
               <BookOpen className="h-5 w-5 text-primary mt-1" />
             </div>
             <div className="mt-5">
-              <span className="text-3xl font-bold">$4,999</span>
-              <p className="text-xs text-muted-foreground mt-1">One-time purchase</p>
+              <span className="text-3xl font-bold">{t('tiers.reportPrice')}</span>
+              <p className="text-xs text-muted-foreground mt-1">{t('tiers.reportPriceNote')}</p>
             </div>
             <ul className="mt-6 flex-1 space-y-2.5">
               {REPORT_FEATURES.map(f => (
@@ -217,7 +210,7 @@ export default function PricingPage() {
             </ul>
             <div className="mt-6 space-y-2.5">
               <Link href="/auth/sign-up?product=market-report-2026-q1">
-                <Button className="w-full" size="sm">Purchase Report</Button>
+                <Button className="w-full" size="sm">{t('tiers.reportCta')}</Button>
               </Link>
               <a
                 href="/reports/2026-q1-market-report-sample.pdf"
@@ -226,7 +219,7 @@ export default function PricingPage() {
                 className="flex items-center justify-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
                 <Download className="h-3 w-3" />
-                Download free sample (30 pages)
+                {t('tiers.reportSample')}
               </a>
             </div>
           </div>
@@ -235,15 +228,15 @@ export default function PricingPage() {
           <div className="flex flex-col rounded-lg border border-amber-600/40 bg-gradient-to-b from-card to-amber-950/10 p-6 shadow-sm">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-lg font-semibold">The Forge</h3>
-                <p className="mt-1 text-xs text-muted-foreground">Strategic analytics + quarterly reports</p>
+                <h3 className="text-lg font-semibold">{t('tiers.forgeTitle')}</h3>
+                <p className="mt-1 text-xs text-muted-foreground">{t('tiers.forgeSubtitle')}</p>
               </div>
               <Flame className="h-5 w-5 text-amber-500 mt-1" />
             </div>
             <div className="mt-5">
-              <span className="text-3xl font-bold">$18,999</span>
+              <span className="text-3xl font-bold">{t('tiers.forgePrice')}</span>
               <span className="text-lg text-muted-foreground font-normal">/year</span>
-              <p className="text-xs text-muted-foreground mt-1">Annual subscription &mdash; 13 graphs</p>
+              <p className="text-xs text-muted-foreground mt-1">{t('tiers.forgePriceNote')}</p>
             </div>
             <ul className="mt-6 flex-1 space-y-2.5">
               {FORGE_FEATURES.map(f => (
@@ -255,7 +248,7 @@ export default function PricingPage() {
             </ul>
             <div className="mt-6">
               <a href="/about#contact">
-                <Button className="w-full border-amber-600/40 hover:bg-amber-950/20" variant="outline" size="sm">Contact for Subscription</Button>
+                <Button className="w-full border-amber-600/40 hover:bg-amber-950/20" variant="outline" size="sm">{t('tiers.forgeCta')}</Button>
               </a>
             </div>
           </div>
@@ -267,14 +260,14 @@ export default function PricingPage() {
             </div>
             <div className="flex items-start justify-between relative">
               <div>
-                <h3 className="text-lg font-semibold">The Red Keep</h3>
-                <p className="mt-1 text-xs text-muted-foreground">Full command &mdash; nothing hidden</p>
+                <h3 className="text-lg font-semibold">{t('tiers.redKeepTitle')}</h3>
+                <p className="mt-1 text-xs text-muted-foreground">{t('tiers.redKeepSubtitle')}</p>
               </div>
               <Castle className="h-5 w-5 text-red-400 mt-1" />
             </div>
             <div className="mt-5">
-              <span className="text-3xl font-bold">Call For Quote</span>
-              <p className="text-xs text-muted-foreground mt-1">Annual contract &mdash; 28+ graphs</p>
+              <span className="text-3xl font-bold">{t('tiers.redKeepPrice')}</span>
+              <p className="text-xs text-muted-foreground mt-1">{t('tiers.redKeepPriceNote')}</p>
             </div>
             <ul className="mt-6 flex-1 space-y-2.5">
               {RED_KEEP_FEATURES.map(f => (
@@ -286,7 +279,7 @@ export default function PricingPage() {
             </ul>
             <div className="mt-6">
               <a href="mailto:michael.finocchiaro@gmail.com?subject=ThreadMoat%20Red%20Keep%20Inquiry">
-                <Button variant="outline" className="w-full border-red-800/40 hover:bg-red-950/20 hover:text-red-300" size="sm">Email Us</Button>
+                <Button variant="outline" className="w-full border-red-800/40 hover:bg-red-950/20 hover:text-red-300" size="sm">{t('tiers.redKeepCta')}</Button>
               </a>
             </div>
           </div>
@@ -295,10 +288,9 @@ export default function PricingPage() {
         {/* Sample download callout */}
         <div className="mx-auto max-w-2xl mt-10 rounded-lg border border-border/60 bg-muted/30 p-6 text-center">
           <Download className="h-6 w-6 text-primary mx-auto mb-3" />
-          <h3 className="font-semibold text-sm mb-1">Not sure yet? Download the free sample.</h3>
+          <h3 className="font-semibold text-sm mb-1">{t('sample.title')}</h3>
           <p className="text-xs text-muted-foreground mb-4">
-            30-page preview with executive summary, methodology, sample vendor analysis, and structural trends.
-            No sign-up required.
+            {t('sample.subtitle')}
           </p>
           <a
             href="/reports/2026-q1-market-report-sample.pdf"
@@ -307,7 +299,7 @@ export default function PricingPage() {
           >
             <Button variant="outline" size="sm" className="gap-2">
               <Download className="h-3.5 w-3.5" />
-              Download Sample Report (PDF)
+              {t('sample.cta')}
             </Button>
           </a>
         </div>
@@ -316,16 +308,16 @@ export default function PricingPage() {
       {/* Sample Outputs */}
       <section className="border-t border-border/40 bg-muted/30">
         <div className="container mx-auto px-4 py-20">
-          <h2 className="text-center text-2xl font-bold mb-2">See what you get</h2>
+          <h2 className="text-center text-2xl font-bold mb-2">{t('outputs.title')}</h2>
           <p className="text-center text-muted-foreground mb-12 max-w-xl mx-auto">
-            Sample dashboard views and analyst briefing outputs.
+            {t('outputs.subtitle')}
           </p>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto">
             {[
-              { img: "/sample-investor-network.jpg", label: "Investor Network", desc: "Interactive network graph mapping investors, portfolio companies, and co-investment relationships" },
-              { img: "/sample-funding-distribution.jpg", label: "Funding Distribution", desc: "Bar chart of companies by funding stage (Seed → Series D+) with total capital deployed" },
-              { img: "/sample-discipline-breakdown.jpg", label: "Discipline Breakdown", desc: "CAD / CAM / PLM / ERP / Industrial AI by headcount and funding — full ecosystem view" },
-              { img: "/sample-ic-memo.jpg", label: "Analyst Briefing", desc: "Investment Committee Memo with scoring breakdown, financials, and competitive analysis" },
+              { img: "/sample-investor-network.jpg", label: t('outputs.investorNetwork'), desc: t('outputs.investorNetworkDesc') },
+              { img: "/sample-funding-distribution.jpg", label: t('outputs.fundingDistribution'), desc: t('outputs.fundingDistributionDesc') },
+              { img: "/sample-discipline-breakdown.jpg", label: t('outputs.disciplineBreakdown'), desc: t('outputs.disciplineBreakdownDesc') },
+              { img: "/sample-ic-memo.jpg", label: t('outputs.analystBriefing'), desc: t('outputs.analystBriefingDesc') },
             ].map(sample => (
               <div
                 key={sample.label}
@@ -353,10 +345,9 @@ export default function PricingPage() {
 
       {/* Methodology */}
       <section className="container mx-auto px-4 py-20">
-        <h2 className="text-center text-2xl font-bold mb-2">What we track</h2>
+        <h2 className="text-center text-2xl font-bold mb-2">{t('methodology.title')}</h2>
         <p className="text-center text-muted-foreground mb-12 max-w-xl mx-auto">
-          Every company is profiled across six dimensions — updated weekly by a single domain expert,
-          not scraped or AI-hallucinated.
+          {t('methodology.subtitle')}
         </p>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
           {METHODOLOGY_FIELDS.map(section => (
@@ -378,10 +369,10 @@ export default function PricingPage() {
       {/* Footer */}
       <footer className="border-t border-border/40">
         <div className="container mx-auto flex h-16 items-center justify-between px-4 text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} ThreadMoat. All rights reserved.</p>
+          <p>{tCommon('footer.copyright', { year: new Date().getFullYear() })}</p>
           <div className="flex gap-4">
-            <Link href="/" className="hover:text-foreground">Home</Link>
-            <Link href="/auth/login" className="hover:text-foreground">Sign In</Link>
+            <Link href="/" className="hover:text-foreground">{tCommon('footer.home')}</Link>
+            <Link href="/auth/login" className="hover:text-foreground">{tCommon('footer.signIn')}</Link>
           </div>
         </div>
       </footer>

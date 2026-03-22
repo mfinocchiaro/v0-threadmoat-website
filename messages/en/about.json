@@ -1,30 +1,42 @@
 {
+  "meta": {
+    "title": "About - ThreadMoat & Michael Finocchiaro",
+    "description": "Learn about ThreadMoat, the market intelligence platform for Industrial AI and engineering software, and founder Michael Finocchiaro."
+  },
   "about": {
-    "title": "About ThreadMoat",
-    "description": "ThreadMoat is an independent research and market intelligence platform focused on the engineering software and Industrial AI startup ecosystem. We map 600+ startups across 10 investment domains, tracking $16B+ in VC funding across 43 countries.",
-    "stats": {
-      "startups": "600+ Startups",
-      "funding": ">$16B VC Funding",
-      "countries": "43 Countries",
-      "domains": "10 Market Subsegments"
-    }
+    "title": "About",
+    "titleHighlight": "ThreadMoat",
+    "description1": "ThreadMoat is the market intelligence platform for Industrial AI and engineering software, built and maintained by Michael Finocchiaro — an independent analyst with 30+ years at Dassault Systemes, PTC, IBM, and HP, now advising the companies disrupting them.",
+    "description2": "Every profile is hand-curated — not scraped or AI-hallucinated — and updated weekly with funding events, product launches, and competitive scoring.",
+    "startupsTracked": "Startups Tracked",
+    "vcFunding": "VC Funding Mapped",
+    "countries": "Countries",
+    "marketSubsegments": "Market Subsegments"
   },
   "founder": {
-    "title": "About Michael Finocchiaro",
-    "bio": "With 30+ years of experience at Dassault Systèmes, PTC, IBM, and HP, Michael brings deep domain expertise in PLM, CAD/CAE, manufacturing, and enterprise software markets.",
-    "podcasts": "Host of two podcasts:",
-    "podcast1": "AI Across the Product Lifecycle",
-    "podcast2": "The Future of PLM",
-    "linkedin": "26K+ followers on LinkedIn",
+    "title": "About",
+    "titleHighlight": "Michael Finocchiaro",
+    "role": "Industry Analyst · Consultant · Advisor",
+    "location": "Paris, France",
+    "bio1": "Michael is an independent senior PLM and manufacturing industry analyst and the host of AI Across the Product Lifecycle and The Future of PLM podcasts, focused on digital thread and industrial AI adoption across engineering and manufacturing.",
+    "bio2": "With 30+ years at Dassault Systemes (Sr. Director, 3DEXPERIENCE), PTC, IBM, and HP, Michael now advises startups and industrial companies on positioning, go-to-market strategy, and enterprise deployment. He is also the author of Kernel Wars — a history of CAD, PLM, and the geometric kernel battles that shaped the industry.",
+    "linkedin": "26K+ Followers on LinkedIn",
     "workedAt": "Worked At",
     "workedWith": "Worked With"
   },
   "conference": {
-    "title": "Threaded! Conference Series",
-    "description": "Threaded! brings together startup founders, investors, and enterprise buyers for focused workshops and networking events across Europe and the US."
+    "title": "Threaded!",
+    "titleHighlight": "Conference Series",
+    "description1": "Threaded! brings together startups and industry leaders for fast-paced working sessions on how AI is transforming engineering and manufacturing. Presenters must explicitly show how their products connect to the digital thread — what systems they integrate with, what decisions they improve, and what measurable outcomes they enable.",
+    "description2": "Co-sponsored by Aras Corporation and the AI Across the Product Lifecycle podcast, Threaded! connects next-generation solution providers with enterprise leaders across PLM and the digital thread. Guided solution sharing and structured feedback help founders refine product direction, sharpen ICPs, and build credible proof points that resonate with enterprise buyers.",
+    "visitSite": "Visit threaded.live"
   },
   "podcasts": {
-    "title": "Podcasts & Content"
+    "title": "Podcasts & Content",
+    "aiPodcastTitle": "AI Across the Product Lifecycle",
+    "aiPodcastDesc": "Candid conversations with founders, CTOs, and enterprise leaders building and deploying AI in engineering and manufacturing. Deep-tech startups, real adoption stories.",
+    "plmPodcastTitle": "The Future of PLM",
+    "plmPodcastDesc": "Video podcast featuring industry thought leaders discussing the evolution of product lifecycle management, digital thread strategy, and market dynamics."
   },
   "contact": {
     "title": "Where to connect with me",

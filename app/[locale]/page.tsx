@@ -1,5 +1,5 @@
 import React from "react"
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -7,8 +7,25 @@ import { ArrowRight, Database, Users, TrendingUp, Mail, CheckCircle2, MapPin, Ca
 import { loadCompaniesFromCSV, stripSensitiveFields } from "@/lib/load-companies-server"
 import { HomepageDashboard } from "@/components/homepage/homepage-dashboard"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 
-export default async function HomePage() {
+type Props = { params: Promise<{ locale: string }> }
+
+export async function generateMetadata({ params }: Props) {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'Home' })
+  return {
+    title: t('meta.title'),
+    description: t('meta.description'),
+  }
+}
+
+export default async function HomePage({ params }: Props) {
+  const { locale } = await params
+  setRequestLocale(locale)
+  const t = await getTranslations('Home')
+  const tCommon = await getTranslations('Common')
+
   let companies: Awaited<ReturnType<typeof loadCompaniesFromCSV>> = []
   try {
     const raw = await loadCompaniesFromCSV()
@@ -32,25 +49,25 @@ export default async function HomePage() {
             />
           </div>
           <nav className="flex items-center gap-8">
-            <a href="#services" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Services</a>
-            <a href="#expertise" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Expertise</a>
-            <Link href="/report" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Market Report</Link>
-            <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">About</Link>
-            <Link href="/about#contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Contact Us</Link>
+            <a href="#services" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{tCommon('nav.services')}</a>
+            <a href="#expertise" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{tCommon('nav.expertise')}</a>
+            <Link href="/report" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{tCommon('nav.marketReport')}</Link>
+            <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{tCommon('nav.about')}</Link>
+            <Link href="/about#contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{tCommon('nav.contactUs')}</Link>
           </nav>
           <div className="flex items-center gap-3">
             <ThemeToggle />
             <Link href="/auth/login">
-              <Button variant="ghost" size="sm">Sign In</Button>
+              <Button variant="ghost" size="sm">{tCommon('nav.signIn')}</Button>
             </Link>
             <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-              <a href="https://calendly.com/mfinocchiaro/15min" target="_blank" rel="noopener noreferrer">Schedule Call</a>
+              <a href="https://calendly.com/mfinocchiaro/15min" target="_blank" rel="noopener noreferrer">{tCommon('nav.scheduleCall')}</a>
             </Button>
           </div>
         </div>
       </header>
 
-      {/* Threaded! Conference Banner */}
+      {/* Conference banner: intentionally English-only, time-sensitive */}
       <div className="bg-[#2a2344] border-b border-purple-800/40">
         <div className="container mx-auto px-4 py-3 flex flex-wrap items-center justify-center gap-4 sm:gap-6">
           <Image
@@ -92,25 +109,24 @@ export default async function HomePage() {
       <section className="container mx-auto px-4 py-24 text-center">
         <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-sm text-primary mb-8">
           <span className="h-2 w-2 rounded-full bg-primary" />
-          Trusted by Leading Investment Firms
+          {t('hero.badge')}
         </div>
         <h1 className="text-balance text-5xl font-bold tracking-tight sm:text-6xl mb-6">
-          Navigate the Future of{" "}
-          <span className="text-primary">Industrial AI &amp; Engineering Software</span>
+          {t('hero.title')}{" "}
+          <span className="text-primary">{t('hero.titleHighlight')}</span>
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg text-muted-foreground">
-          Leverage 35+ years of market expertise, exclusive access to 600+ startups, and warm
-          introductions to 200+ founders to build your portfolio with tomorrow&apos;s unicorns.
+          {t('hero.subtitle')}
         </p>
         <div className="mt-10 flex items-center justify-center gap-4">
           <Link href="/auth/login">
             <Button size="lg" className="gap-2">
               <Database className="h-5 w-5" />
-              See Analytics
+              {t('hero.seeAnalytics')}
             </Button>
           </Link>
           <Link href="/pricing">
-            <Button size="lg" variant="outline">View Pricing</Button>
+            <Button size="lg" variant="outline">{t('hero.viewPricing')}</Button>
           </Link>
         </div>
       </section>
@@ -119,12 +135,12 @@ export default async function HomePage() {
       <section className="border-t border-border/40 bg-gradient-to-b from-muted/50 to-background">
         <div className="container mx-auto px-4 py-20">
           <div className="max-w-4xl mx-auto text-center mb-12">
-            <p className="text-sm font-semibold uppercase tracking-widest text-primary mb-4">Our Thesis</p>
+            <p className="text-sm font-semibold uppercase tracking-widest text-primary mb-4">{t('thesis.label')}</p>
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-6">
-              The Digital Thread Is the New Competitive Moat
+              {t('thesis.title')}
             </h2>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              The <strong className="text-foreground">Digital Thread</strong> — the continuous, connected flow of data from design through manufacturing, operations, and service — is transforming how products are conceived, built, and maintained. Companies that master this thread don&apos;t just optimize workflows; they build an <strong className="text-foreground">unassailable moat</strong> around their competitive position.
+              {t('thesis.description')}
             </p>
           </div>
 
@@ -133,27 +149,27 @@ export default async function HomePage() {
               <div className="rounded-full bg-primary/10 p-3 w-fit mx-auto mb-4">
                 <Link2 className="h-6 w-6 text-primary" />
               </div>
-              <h3 className="font-semibold text-lg mb-2">Thread</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('thesis.threadTitle')}</h3>
               <p className="text-sm text-muted-foreground">
-                600+ startups weaving the digital thread — connecting CAD, simulation, manufacturing, and service data into a single, unbroken chain of product intelligence.
+                {t('thesis.threadDesc')}
               </p>
             </div>
             <div className="text-center">
               <div className="rounded-full bg-primary/10 p-3 w-fit mx-auto mb-4">
                 <Shield className="h-6 w-6 text-primary" />
               </div>
-              <h3 className="font-semibold text-lg mb-2">Moat</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('thesis.moatTitle')}</h3>
               <p className="text-sm text-muted-foreground">
-                The investors and incumbents who identify which threads will hold — and which will snap — gain a durable edge that compounds with every product generation.
+                {t('thesis.moatDesc')}
               </p>
             </div>
             <div className="text-center">
               <div className="rounded-full bg-primary/10 p-3 w-fit mx-auto mb-4">
                 <Layers className="h-6 w-6 text-primary" />
               </div>
-              <h3 className="font-semibold text-lg mb-2">Intelligence</h3>
+              <h3 className="font-semibold text-lg mb-2">{t('thesis.intelligenceTitle')}</h3>
               <p className="text-sm text-muted-foreground">
-                We map the entire landscape — from bootstrap to Series C+ — so you can see where the thread is strongest, where it&apos;s fraying, and where the next $1B opportunity hides.
+                {t('thesis.intelligenceDesc')}
               </p>
             </div>
           </div>
@@ -161,10 +177,10 @@ export default async function HomePage() {
           <div className="max-w-3xl mx-auto">
             <blockquote className="border-l-4 border-primary pl-6 py-2">
               <p className="text-muted-foreground italic">
-                &ldquo;In a world where every product generates a lifetime of data, the companies that own the thread own the future. ThreadMoat exists to map who&apos;s building that future — and who&apos;s investing in it.&rdquo;
+                &ldquo;{t('thesis.quote')}&rdquo;
               </p>
               <footer className="mt-3 text-sm font-medium text-foreground">
-                — Michael Finocchiaro, Founder
+                {t('thesis.quoteAuthor')}
               </footer>
             </blockquote>
           </div>
@@ -177,14 +193,14 @@ export default async function HomePage() {
       {/* Organization Selector */}
       <section className="border-t border-border/40 bg-muted/30" id="services">
         <div className="container mx-auto px-4 py-16">
-          <h2 className="text-center text-3xl font-bold mb-4">Tailored results for all profiles</h2>
-          <p className="text-center text-muted-foreground mb-12">Select the option that best describes you</p>
+          <h2 className="text-center text-3xl font-bold mb-4">{t('profiles.title')}</h2>
+          <p className="text-center text-muted-foreground mb-12">{t('profiles.subtitle')}</p>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 max-w-5xl mx-auto">
             {[
-              { title: "ISVs", desc: "Engineering software, PLM, or Industrial AI company" },
-              { title: "Startup", desc: "Engineering software, PLM, or Industrial AI startup" },
-              { title: "VC or PE Firm", desc: "Investment firm seeking opportunities" },
-              { title: "OEM / Manufacturer", desc: "Find the right startup to fill workflow gaps and give your engineers a competitive edge" },
+              { title: t('profiles.isvTitle'), desc: t('profiles.isvDesc') },
+              { title: t('profiles.startupTitle'), desc: t('profiles.startupDesc') },
+              { title: t('profiles.vcTitle'), desc: t('profiles.vcDesc') },
+              { title: t('profiles.oemTitle'), desc: t('profiles.oemDesc') },
             ].map((org) => (
               <Card key={org.title} className="cursor-pointer hover:border-primary/50 transition-colors">
                 <CardContent className="pt-6">
@@ -195,10 +211,10 @@ export default async function HomePage() {
             ))}
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto mt-16 text-center">
-            <div><p className="text-4xl font-bold text-primary">35+</p><p className="text-sm text-muted-foreground mt-1">Years of Market Experience</p></div>
-            <div><p className="text-4xl font-bold text-primary">550+</p><p className="text-sm text-muted-foreground mt-1">Startups in Database</p></div>
-            <div><p className="text-4xl font-bold text-primary">200+</p><p className="text-sm text-muted-foreground mt-1">Founder Interviews</p></div>
-            <Link href="/landscape" className="hover:opacity-80 transition-opacity"><p className="text-4xl font-bold text-primary">10</p><p className="text-sm text-muted-foreground mt-1 underline underline-offset-2">Investment Domains</p></Link>
+            <div><p className="text-4xl font-bold text-primary">35+</p><p className="text-sm text-muted-foreground mt-1">{t('profiles.yearsExperience')}</p></div>
+            <div><p className="text-4xl font-bold text-primary">550+</p><p className="text-sm text-muted-foreground mt-1">{t('profiles.startupsInDb')}</p></div>
+            <div><p className="text-4xl font-bold text-primary">200+</p><p className="text-sm text-muted-foreground mt-1">{t('profiles.founderInterviews')}</p></div>
+            <Link href="/landscape" className="hover:opacity-80 transition-opacity"><p className="text-4xl font-bold text-primary">10</p><p className="text-sm text-muted-foreground mt-1 underline underline-offset-2">{t('profiles.investmentDomains')}</p></Link>
           </div>
         </div>
       </section>
@@ -206,36 +222,36 @@ export default async function HomePage() {
       {/* Services Section */}
       <section className="container mx-auto px-4 py-24">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold">Personalized Services for Strategic Investors</h2>
+          <h2 className="text-3xl font-bold">{t('services.title')}</h2>
           <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
-            We provide comprehensive support to help VCs and PEs identify, evaluate, and connect with the most promising startups in engineering software and Industrial AI.
+            {t('services.subtitle')}
           </p>
         </div>
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           {[
             {
               icon: <Database className="h-6 w-6" />,
-              title: "Market Intelligence",
-              desc: "Access our curated database of 550+ engineering software and Industrial AI startups.",
-              features: ["Comprehensive startup profiles", "Market trend analysis", "Investment readiness assessments"],
+              title: t('services.miTitle'),
+              desc: t('services.miDesc'),
+              features: [t('services.miF1'), t('services.miF2'), t('services.miF3')],
             },
             {
               icon: <Users className="h-6 w-6" />,
-              title: "Founder Introductions",
-              desc: "Leverage our extensive network built on 200+ founder interviews and direct relationships.",
-              features: ["Pre-vetted founder relationships", "Facilitated meetings", "Ongoing relationship management"],
+              title: t('services.fiTitle'),
+              desc: t('services.fiDesc'),
+              features: [t('services.fiF1'), t('services.fiF2'), t('services.fiF3')],
             },
             {
               icon: <TrendingUp className="h-6 w-6" />,
-              title: "Portfolio Strategy",
-              desc: "Develop a winning investment thesis with our deep domain expertise in engineering software.",
-              features: ["Sector-specific strategy", "Technical due diligence", "Market sizing and assessment"],
+              title: t('services.psTitle'),
+              desc: t('services.psDesc'),
+              features: [t('services.psF1'), t('services.psF2'), t('services.psF3')],
             },
             {
               icon: <ArrowRight className="h-6 w-6" />,
-              title: "Custom Research",
-              desc: "Commission tailored research reports on specific market segments or competitive dynamics.",
-              features: ["Deep-dive market reports", "Competitive intelligence", "Emerging trend identification"],
+              title: t('services.crTitle'),
+              desc: t('services.crDesc'),
+              features: [t('services.crF1'), t('services.crF2'), t('services.crF3')],
             },
           ].map((service) => (
             <Card key={service.title} className="flex flex-col">
@@ -261,16 +277,16 @@ export default async function HomePage() {
       <section className="border-t border-border/40 bg-muted/30" id="expertise">
         <div className="container mx-auto px-4 py-24">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold">Decades of Deep Domain Expertise</h2>
+            <h2 className="text-3xl font-bold">{t('expertise.title')}</h2>
             <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
-              With over 35 years immersed in the engineering software and Industrial AI markets, we bring unparalleled insight into technology trends, market dynamics, and the founders shaping the future of industrial innovation.
+              {t('expertise.subtitle')}
             </p>
           </div>
           <div className="grid gap-6 md:grid-cols-3 max-w-4xl mx-auto">
             {[
-              { title: "Engineering Software", desc: "PLM, CAD, CAE, simulation, digital twin, generative design, and next-generation design tools transforming product development." },
-              { title: "Industrial AI", desc: "Machine learning for manufacturing, predictive maintenance, computer vision for quality control, and AI-powered optimization." },
-              { title: "Market Intelligence", desc: "Comprehensive understanding of buyer personas, sales cycles, competitive dynamics, and go-to-market strategies in B2B industrial tech." },
+              { title: t('expertise.esTitle'), desc: t('expertise.esDesc') },
+              { title: t('expertise.aiTitle'), desc: t('expertise.aiDesc') },
+              { title: t('expertise.miTitle'), desc: t('expertise.miDesc') },
             ].map((area) => (
               <Card key={area.title}>
                 <CardContent className="pt-6">
@@ -281,32 +297,32 @@ export default async function HomePage() {
             ))}
           </div>
           <div className="grid grid-cols-3 md:grid-cols-6 gap-6 max-w-5xl mx-auto mt-16 text-center">
-            <div><p className="text-3xl font-bold text-primary">Bootstrap</p><p className="text-xs text-muted-foreground mt-1">Self-Funded Niche</p></div>
-            <div><p className="text-3xl font-bold text-primary">Pre-Seed</p><p className="text-xs text-muted-foreground mt-1">Emerging</p></div>
-            <div><p className="text-3xl font-bold text-primary">Seed</p><p className="text-xs text-muted-foreground mt-1">Seed Stage</p></div>
-            <div><p className="text-3xl font-bold text-primary">Series A</p><p className="text-xs text-muted-foreground mt-1">Early Stage</p></div>
-            <div><p className="text-3xl font-bold text-primary">Series B</p><p className="text-xs text-muted-foreground mt-1">Growth Stage</p></div>
-            <div><p className="text-3xl font-bold text-primary">Series C+</p><p className="text-xs text-muted-foreground mt-1">Expansion Stage</p></div>
+            <div><p className="text-3xl font-bold text-primary">{t('expertise.bootstrap')}</p><p className="text-xs text-muted-foreground mt-1">{t('expertise.bootstrapSub')}</p></div>
+            <div><p className="text-3xl font-bold text-primary">{t('expertise.preSeed')}</p><p className="text-xs text-muted-foreground mt-1">{t('expertise.preSeedSub')}</p></div>
+            <div><p className="text-3xl font-bold text-primary">{t('expertise.seed')}</p><p className="text-xs text-muted-foreground mt-1">{t('expertise.seedSub')}</p></div>
+            <div><p className="text-3xl font-bold text-primary">{t('expertise.seriesA')}</p><p className="text-xs text-muted-foreground mt-1">{t('expertise.seriesASub')}</p></div>
+            <div><p className="text-3xl font-bold text-primary">{t('expertise.seriesB')}</p><p className="text-xs text-muted-foreground mt-1">{t('expertise.seriesBSub')}</p></div>
+            <div><p className="text-3xl font-bold text-primary">{t('expertise.seriesC')}</p><p className="text-xs text-muted-foreground mt-1">{t('expertise.seriesCSub')}</p></div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
       <section className="container mx-auto px-4 py-24 text-center" id="contact">
-        <h2 className="text-3xl font-bold mb-4">Ready to Build Your Portfolio?</h2>
+        <h2 className="text-3xl font-bold mb-4">{t('cta.title')}</h2>
         <p className="text-muted-foreground max-w-xl mx-auto mb-8">
-          Let&apos;s discuss how our expertise and network can help you identify and invest in the next generation of engineering software and Industrial AI unicorns.
+          {t('cta.subtitle')}
         </p>
         <div className="flex items-center justify-center gap-4">
           <Button asChild size="lg" className="gap-2">
             <a href="https://calendly.com/mfinocchiaro/15min" target="_blank" rel="noopener noreferrer">
               <Mail className="h-5 w-5" />
-              Schedule a Call
+              {t('cta.scheduleCall')}
             </a>
           </Button>
           <Button asChild size="lg" variant="outline">
             <a href="https://l6ttgr1jhsxnwfgh.public.blob.vercel-storage.com/VC%20Diligence%20Brief.pdf" target="_blank" rel="noopener noreferrer">
-              View Sample Report
+              {t('cta.viewSampleReport')}
             </a>
           </Button>
         </div>
@@ -316,7 +332,7 @@ export default async function HomePage() {
       <section className="container mx-auto px-4 py-12 text-center">
         <Link href="/pricing">
           <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-base px-8 py-6 gap-2 shadow-lg">
-            For full access, click here for Pricing
+            {t('cta.fullAccess')}
           </Button>
         </Link>
       </section>
@@ -324,11 +340,11 @@ export default async function HomePage() {
       {/* Footer */}
       <footer className="border-t border-border/40">
         <div className="container mx-auto flex h-16 items-center justify-between px-4 text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} Finocchiaro Consulting / ThreadMoat. All rights reserved.</p>
+          <p>{tCommon('footer.copyrightFino', { year: new Date().getFullYear() })}</p>
           <div className="flex gap-4">
-            <Link href="/pricing" className="hover:text-foreground">Pricing</Link>
-            <Link href="/about" className="hover:text-foreground">About</Link>
-            <Link href="/auth/login" className="hover:text-foreground">Sign In</Link>
+            <Link href="/pricing" className="hover:text-foreground">{tCommon('footer.pricing')}</Link>
+            <Link href="/about" className="hover:text-foreground">{tCommon('footer.about')}</Link>
+            <Link href="/auth/login" className="hover:text-foreground">{tCommon('footer.signIn')}</Link>
           </div>
         </div>
       </footer>
