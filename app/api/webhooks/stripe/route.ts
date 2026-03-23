@@ -2,6 +2,8 @@ import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { sql } from '@/lib/db'
+import { sendWelcomeEmail, sendReceiptEmail } from '@/lib/email'
+import { getProduct } from '@/lib/products'
 
 function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!)
@@ -45,6 +47,34 @@ export async function POST(request: Request) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
         await handleCheckoutCompleted(session, stripe)
+
+        // Send welcome email for subscriptions (non-blocking)
+        if (session.mode === 'subscription' && session.customer_details?.email) {
+          sendWelcomeEmail(
+            session.customer_details.email,
+            session.customer_details.name || undefined,
+            'your subscription'
+          ).catch(err => console.error('[Webhook] Welcome email failed:', err))
+        }
+
+        // Send receipt email for one-time payments (non-blocking)
+        if (session.mode === 'payment' && session.customer_details?.email) {
+          const product = getProduct(session.metadata?.product_id || '')
+          const amountFormatted = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: session.currency || 'usd',
+          }).format((session.amount_total ?? 0) / 100)
+          sendReceiptEmail(
+            session.customer_details.email,
+            session.customer_details.name || undefined,
+            amountFormatted,
+            product?.name || 'ThreadMoat Purchase',
+            new Date(),
+            new Date(),
+            '' // no hosted invoice URL for one-time payments
+          ).catch(err => console.error('[Webhook] One-time receipt email failed:', err))
+        }
+
         break
       }
       case 'customer.subscription.updated': {
@@ -71,6 +101,26 @@ export async function POST(request: Request) {
             `
           }
         }
+        break
+      }
+      case 'invoice.payment_succeeded': {
+        const invoice = event.data.object as Stripe.Invoice
+        if (!invoice.customer_email) break
+
+        const amountFormatted = new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: invoice.currency,
+        }).format((invoice.amount_paid ?? 0) / 100)
+
+        sendReceiptEmail(
+          invoice.customer_email,
+          invoice.customer_name || undefined,
+          amountFormatted,
+          invoice.lines.data[0]?.description || 'ThreadMoat Subscription',
+          new Date((invoice.period_start ?? 0) * 1000),
+          new Date((invoice.period_end ?? 0) * 1000),
+          invoice.hosted_invoice_url || ''
+        ).catch(err => console.error('[Webhook] Receipt email failed:', err))
         break
       }
     }
