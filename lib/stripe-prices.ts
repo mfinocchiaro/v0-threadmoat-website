@@ -5,28 +5,32 @@
  * (used by getAccessTier in lib/tiers.ts). All Price IDs are env-var driven
  * so test and live modes use different values.
  *
+ * Products:
+ *   Analyst    — one-time $4,999 purchase (1 report + 10 charts)
+ *   Strategist — annual €18,999 subscription (4 reports + 25+ charts)
+ *
  * Env vars:
- *   STRIPE_PRICE_ANALYST_ANNUAL     — Price ID for Analyst annual subscription
- *   STRIPE_PRICE_STRATEGIST_ANNUAL  — Price ID for Strategist annual subscription
- *   STRIPE_PRICE_REPORT_Q1          — Price ID for 2026 Q1 Market Report (one-time)
+ *   STRIPE_PRICE_ANALYST             — Price ID for Analyst one-time purchase
+ *   STRIPE_PRICE_STRATEGIST_ANNUAL   — Price ID for Strategist annual subscription
  */
 
 /** Stripe Price IDs keyed by internal product identifier */
 export const STRIPE_PRICES: Record<string, string> = {
-  analyst_annual: process.env.STRIPE_PRICE_ANALYST_ANNUAL || '',
+  analyst: process.env.STRIPE_PRICE_ANALYST || '',
   strategist_annual: process.env.STRIPE_PRICE_STRATEGIST_ANNUAL || '',
-  market_report_q1: process.env.STRIPE_PRICE_REPORT_Q1 || '',
 }
 
 /**
  * Internal product IDs that map to what getAccessTier() expects.
  * Keys here match STRIPE_PRICES keys; values match product IDs in
- * lib/products.ts and lib/tiers.ts.
+ * lib/tiers.ts.
+ *
+ * Analyst (one-time) → 'analyst' tier access
+ * Strategist (annual) → 'strategist' tier access
  */
 const INTERNAL_PRODUCT_IDS: Record<string, string> = {
-  analyst_annual: 'analyst_annual',
+  analyst: 'analyst_annual',
   strategist_annual: 'strategist_annual',
-  market_report_q1: 'market-report-2026-q1',
 }
 
 /**
