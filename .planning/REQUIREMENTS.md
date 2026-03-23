@@ -18,9 +18,9 @@ Requirements for production launch. Each maps to roadmap phases.
 ### Payments
 
 - [ ] **PAY-01**: Stripe live mode onboarding complete (production API keys configured)
-- [ ] **PAY-02**: Checkout flow works end-to-end with production Stripe (subscribe, pay, access granted)
+- [x] **PAY-02**: Checkout flow works end-to-end with production Stripe (subscribe, pay, access granted)
 - [ ] **PAY-03**: Subscription lifecycle management (upgrade, downgrade, cancel via billing portal)
-- [ ] **PAY-04**: Stripe webhook handles subscription events (created, updated, deleted, payment_failed)
+- [x] **PAY-04**: Stripe webhook handles subscription events (created, updated, deleted, payment_failed)
 - [ ] **PAY-05**: Billing portal accessible from dashboard for self-service management
 
 ### Content & SEO
@@ -82,9 +82,9 @@ Deferred to post-launch. Tracked but not in current roadmap.
 | I18N-04 | Phase 1 | Pending |
 | I18N-05 | Phase 1 | Pending |
 | PAY-01 | Phase 2 | Pending |
-| PAY-02 | Phase 2 | Pending |
+| PAY-02 | Phase 2 | Complete |
 | PAY-03 | Phase 2 | Pending |
-| PAY-04 | Phase 2 | Pending |
+| PAY-04 | Phase 2 | Complete |
 | PAY-05 | Phase 2 | Pending |
 | SEO-01 | Phase 3 | Complete |
 | SEO-02 | Phase 3 | Pending |
@@ -103,4 +103,4 @@ Deferred to post-launch. Tracked but not in current roadmap.
 
 ---
 *Requirements defined: 2026-03-22*
-*Last updated: 2026-03-23 after Phase 4 completion (EMAIL-01, EMAIL-02 complete)*
+*Last updated: 2026-03-23 after Phase 2 Plan 1 completion (PAY-02, PAY-04 complete)*
