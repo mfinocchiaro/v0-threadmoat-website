@@ -1,8 +1,8 @@
 import { Resend } from 'resend'
-import { VerificationEmail } from '@/emails/verification'
-import { PasswordResetEmail } from '@/emails/password-reset'
-import { WelcomeEmail } from '@/emails/welcome'
-import { ReceiptEmail } from '@/emails/receipt'
+import VerificationEmail from '@/emails/verification'
+import PasswordResetEmail from '@/emails/password-reset'
+import WelcomeEmail from '@/emails/welcome'
+import ReceiptEmail from '@/emails/receipt'
 
 function getResend() {
   if (!process.env.RESEND_API_KEY) {

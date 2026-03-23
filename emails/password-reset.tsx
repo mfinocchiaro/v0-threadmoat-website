@@ -5,7 +5,7 @@ interface PasswordResetEmailProps {
   url: string
 }
 
-export function PasswordResetEmail({ url }: PasswordResetEmailProps) {
+export default function PasswordResetEmail({ url }: PasswordResetEmailProps) {
   return (
     <EmailLayout preview="Reset your ThreadMoat password">
       <Text style={{
@@ -50,3 +50,7 @@ export function PasswordResetEmail({ url }: PasswordResetEmailProps) {
     </EmailLayout>
   )
 }
+
+PasswordResetEmail.PreviewProps = {
+  url: 'https://threadmoat.com/auth/reset-password?token=example456',
+} satisfies PasswordResetEmailProps

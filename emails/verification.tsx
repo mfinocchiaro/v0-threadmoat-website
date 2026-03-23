@@ -5,7 +5,7 @@ interface VerificationEmailProps {
   url: string
 }
 
-export function VerificationEmail({ url }: VerificationEmailProps) {
+export default function VerificationEmail({ url }: VerificationEmailProps) {
   return (
     <EmailLayout preview="Verify your ThreadMoat account">
       <Text style={{
@@ -50,3 +50,7 @@ export function VerificationEmail({ url }: VerificationEmailProps) {
     </EmailLayout>
   )
 }
+
+VerificationEmail.PreviewProps = {
+  url: 'https://threadmoat.com/auth/verify-email?token=example123',
+} satisfies VerificationEmailProps

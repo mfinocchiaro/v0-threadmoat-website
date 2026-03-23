@@ -7,7 +7,7 @@ interface WelcomeEmailProps {
   dashboardUrl: string
 }
 
-export function WelcomeEmail({ name, planName, dashboardUrl }: WelcomeEmailProps) {
+export default function WelcomeEmail({ name, planName, dashboardUrl }: WelcomeEmailProps) {
   return (
     <EmailLayout preview={`Welcome to ThreadMoat - your ${planName} is active`}>
       <Text style={{
@@ -46,3 +46,9 @@ export function WelcomeEmail({ name, planName, dashboardUrl }: WelcomeEmailProps
     </EmailLayout>
   )
 }
+
+WelcomeEmail.PreviewProps = {
+  name: 'Michael',
+  planName: 'Digital Thread',
+  dashboardUrl: 'https://threadmoat.com/dashboard',
+} satisfies WelcomeEmailProps

@@ -10,7 +10,7 @@ interface ReceiptEmailProps {
   invoiceUrl: string
 }
 
-export function ReceiptEmail({
+export default function ReceiptEmail({
   name,
   amountFormatted,
   planName,
@@ -66,3 +66,12 @@ export function ReceiptEmail({
     </EmailLayout>
   )
 }
+
+ReceiptEmail.PreviewProps = {
+  name: 'Michael',
+  amountFormatted: '$49.00',
+  planName: 'Digital Thread',
+  periodStart: 'Mar 23, 2026',
+  periodEnd: 'Apr 23, 2026',
+  invoiceUrl: 'https://invoice.stripe.com/i/example',
+} satisfies ReceiptEmailProps
