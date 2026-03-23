@@ -119,3 +119,33 @@ export async function sendReceiptEmail(
   }
   console.log('[Resend] Receipt email sent:', data?.id)
 }
+
+export async function sendAdminPurchaseNotification(
+  customerEmail: string,
+  customerName: string | undefined,
+  productName: string,
+  amountFormatted: string
+) {
+  const adminEmails = (process.env.ADMIN_EMAILS || '').split(',').filter(Boolean)
+  if (adminEmails.length === 0) return
+
+  const { data, error } = await getResend().emails.send({
+    from: FROM_EMAIL,
+    to: adminEmails,
+    subject: `New purchase: ${productName} — ${amountFormatted}`,
+    html: `
+      <h2>New ThreadMoat Purchase</h2>
+      <p><strong>Product:</strong> ${productName}</p>
+      <p><strong>Amount:</strong> ${amountFormatted}</p>
+      <p><strong>Customer:</strong> ${customerName || 'N/A'} (${customerEmail})</p>
+      <p><strong>Action needed:</strong> Send watermarked report to ${customerEmail}</p>
+      <p><em>Sent at ${new Date().toISOString()}</em></p>
+    `,
+  })
+
+  if (error) {
+    console.error('[Resend] Admin notification failed:', error)
+  } else {
+    console.log('[Resend] Admin purchase notification sent:', data?.id)
+  }
+}

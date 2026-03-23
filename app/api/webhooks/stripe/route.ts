@@ -4,7 +4,7 @@ import Stripe from 'stripe'
 import { sql } from '@/lib/db'
 import { getStripe } from '@/lib/stripe'
 import { getInternalProductId } from '@/lib/stripe-prices'
-import { sendWelcomeEmail, sendReceiptEmail } from '@/lib/email'
+import { sendWelcomeEmail, sendReceiptEmail, sendAdminPurchaseNotification } from '@/lib/email'
 import { getProduct } from '@/lib/products'
 
 /** Extract period dates from subscription items (Stripe SDK v20+) */
@@ -71,6 +71,14 @@ export async function POST(request: Request) {
             new Date(),
             '' // no hosted invoice URL for one-time payments
           ).catch(err => console.error('[Webhook] One-time receipt email failed:', err))
+
+          // Notify admins to send watermarked report
+          sendAdminPurchaseNotification(
+            session.customer_details.email,
+            session.customer_details.name || undefined,
+            product?.name || 'ThreadMoat Purchase',
+            amountFormatted
+          ).catch(err => console.error('[Webhook] Admin notification failed:', err))
         }
 
         break
