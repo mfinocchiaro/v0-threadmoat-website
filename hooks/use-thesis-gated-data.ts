@@ -31,7 +31,7 @@ export function useThesisGatedData() {
     [displayData, filterCompany]
   )
 
-  // Mask company names for Forge tier (Red Keep + Admin see real names)
+  // Mask company names for Analyst tier (Strategist + Admin see real names)
   const maskedFiltered = useMemo(
     () => maskCompanies(filtered, accessTier),
     [filtered, accessTier]

@@ -3,16 +3,16 @@ import { Company } from '@/lib/company-data'
 
 /**
  * Whether to show full company names at this tier.
- * Red Keep and Admin see names. Forge sees investment list rollups.
+ * Strategist and Admin see names. Analyst sees investment list rollups.
  */
 export function canSeeCompanyNames(tier: AccessTier): boolean {
-  return tier === 'admin' || tier === 'red_keep'
+  return tier === 'admin' || tier === 'strategist'
 }
 
 /**
  * Mask a company name based on tier.
- * Forge: shows investment list (e.g., "Factory Futures (MES, IIOT)")
- * Red Keep / Admin: shows real name
+ * Analyst: shows investment list (e.g., "Factory Futures (MES, IIOT)")
+ * Strategist / Admin: shows real name
  */
 export function maskCompanyName(
   name: string,
@@ -24,7 +24,7 @@ export function maskCompanyName(
 }
 
 /**
- * Create a masked copy of Company[] for Forge-tier users.
+ * Create a masked copy of Company[] for Analyst-tier users.
  * Replaces name with investmentList + index so charts still
  * show distinct entries without revealing real names.
  * All other data (scores, funding, tags) is preserved.

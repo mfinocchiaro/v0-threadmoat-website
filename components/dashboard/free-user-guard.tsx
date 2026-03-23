@@ -89,7 +89,7 @@ function ExpiredTrialBanner() {
 function PaywallBlock({ accessTier, pathname, isExpiredTrial = false }: { accessTier: AccessTier; pathname: string; isExpiredTrial?: boolean }) {
   const requiredTier = getRequiredTier(pathname)
   const requiredLabel = requiredTier ? getTierLabel(requiredTier) : 'Premium'
-  const isRedKeepFeature = requiredTier === 'red_keep'
+  const isStrategistFeature = requiredTier === 'strategist'
 
   return (
     <div className="flex flex-1 items-center justify-center py-20">
@@ -97,7 +97,7 @@ function PaywallBlock({ accessTier, pathname, isExpiredTrial = false }: { access
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
           {isExpiredTrial
             ? <AlertTriangle className="h-8 w-8 text-red-500" />
-            : isRedKeepFeature
+            : isStrategistFeature
               ? <Shield className="h-8 w-8 text-red-500" />
               : <Lock className="h-8 w-8 text-primary" />
           }
@@ -108,15 +108,15 @@ function PaywallBlock({ accessTier, pathname, isExpiredTrial = false }: { access
             <h2 className="mt-6 text-2xl font-bold">Your Recon Trial Has Ended</h2>
             <p className="mt-3 text-muted-foreground">
               Your 30-day Explorer window has closed. Upgrade to unlock all dashboards,
-              charts, and analytics — or get the full picture with The Red Keep.
+              charts, and analytics — or get the full picture with the Strategist plan.
             </p>
           </>
-        ) : isRedKeepFeature ? (
+        ) : isStrategistFeature ? (
           <>
-            <h2 className="mt-6 text-2xl font-bold">The Red Keep</h2>
+            <h2 className="mt-6 text-2xl font-bold">Strategist</h2>
             <p className="mt-3 text-muted-foreground">
-              This visualization is exclusive to The Red Keep — full platform access
-              with all 20+ charts, exports, watchlists, and dedicated analyst support.
+              This visualization is exclusive to the Strategist plan — full platform access
+              with all 28+ charts, exports, watchlists, and dedicated analyst support.
             </p>
           </>
         ) : (
@@ -124,7 +124,7 @@ function PaywallBlock({ accessTier, pathname, isExpiredTrial = false }: { access
             <h2 className="mt-6 text-2xl font-bold">{requiredLabel} Feature</h2>
             <p className="mt-3 text-muted-foreground">
               This visualization requires the <strong>{requiredLabel}</strong> plan.
-              Upgrade to unlock {requiredTier === 'forge' ? '10 interactive charts and strategic analytics' : 'additional features'}.
+              Upgrade to unlock {requiredTier === 'analyst' ? '13 interactive charts and strategic analytics' : 'additional features'}.
             </p>
           </>
         )}
@@ -138,14 +138,14 @@ function PaywallBlock({ accessTier, pathname, isExpiredTrial = false }: { access
             </Button>
           </Link>
 
-          {/* Red Keep nudge for Explorer/Investor users on Red Keep pages */}
-          {isRedKeepFeature && accessTier !== 'red_keep' && (
+          {/* Strategist nudge for Explorer/Analyst users on Strategist pages */}
+          {isStrategistFeature && accessTier !== 'strategist' && (
             <Link
-              href="/pricing#red-keep"
+              href="/pricing#strategist"
               className="mt-2 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               <Shield className="h-4 w-4 text-red-500" />
-              <span>Learn about <strong>The Red Keep</strong> — full platform access + analyst support</span>
+              <span>Learn about <strong>Strategist</strong> — full platform access + analyst support</span>
             </Link>
           )}
         </div>

@@ -1,18 +1,19 @@
 /**
  * ThreadMoat Access Tier System
  *
- * Tier 1 (Recon):      Free 30-day trial — 3 graphs (network, landscape-intro, map)
- * Tier 2 (The Forge):  $14,999/yr — 10 visual analytics graphs
- * Tier 3 (Red Keep):   Custom contract — all graphs except admin (~25 total)
- * Admin:               Unrestricted (via ADMIN_EMAILS env var)
+ * Tier 1 (Recon):       Free 30-day trial — 3 graphs (network, landscape-intro, map)
+ * Tier 2 (Analyst):     $18,999/yr — 13 visual analytics graphs
+ * Tier 3 (Strategist):  Custom contract — all graphs except admin (~28 total)
+ * Advisory:             Custom pricing, dedicated analyst (contact-driven, no self-service)
+ * Admin:                Unrestricted (via ADMIN_EMAILS env var)
  *
  * Product IDs in Neon:
  *   explorer_trial / coupon_trial  → Recon
- *   forge_annual / friends_access / investor_annual  → The Forge
- *   red_keep / red_keep_annual  → The Red Keep
+ *   analyst_annual / friends_access / investor_annual  → Analyst
+ *   strategist / strategist_annual  → Strategist
  */
 
-export type AccessTier = 'explorer' | 'forge' | 'red_keep' | 'admin'
+export type AccessTier = 'explorer' | 'analyst' | 'strategist' | 'admin'
 
 /** Utility pages — always accessible to any authenticated user */
 export const UTILITY_PATHS = new Set([
@@ -28,8 +29,8 @@ export const EXPLORER_PATHS = new Set([
   '/dashboard/map',
 ])
 
-/** Tier 2: The Forge — 10 visual analytics graphs */
-export const FORGE_PATHS = new Set([
+/** Tier 2: Analyst — 13 visual analytics graphs */
+export const ANALYST_PATHS = new Set([
   '/dashboard/quadrant',          // Magic Quadrant positioning
   '/dashboard/bubbles',           // Bubble Chart (scatter plot)
   '/dashboard/landscape',         // Full Landscape (grouped tiles)
@@ -42,8 +43,8 @@ export const FORGE_PATHS = new Set([
   '/dashboard/periodic-table',    // Periodic Table (company tiles)
 ])
 
-/** Tier 3: The Red Keep — full platform access (unlocked on top of The Forge) */
-export const RED_KEEP_ONLY_PATHS = new Set([
+/** Tier 3: Strategist — full platform access (unlocked on top of Analyst) */
+export const STRATEGIST_ONLY_PATHS = new Set([
   '/dashboard/compare',           // Side-by-side company comparison
   '/dashboard/customers',         // Customer Network (2D/3D)
   '/dashboard/investor-network',  // Investor Network (2D/3D)
@@ -79,12 +80,12 @@ export function isPathAllowed(pathname: string, tier: AccessTier): boolean {
 
   if (tier === 'admin') return true
 
-  if (tier === 'red_keep') {
-    return FORGE_PATHS.has(pathname) || RED_KEEP_ONLY_PATHS.has(pathname)
+  if (tier === 'strategist') {
+    return ANALYST_PATHS.has(pathname) || STRATEGIST_ONLY_PATHS.has(pathname)
   }
 
-  if (tier === 'forge') {
-    return FORGE_PATHS.has(pathname)
+  if (tier === 'analyst') {
+    return ANALYST_PATHS.has(pathname)
   }
 
   // Recon tier — only utility + explorer paths
@@ -96,13 +97,14 @@ export function getAccessTier(productId: string | null | undefined, isAdmin: boo
   if (isAdmin) return 'admin'
 
   switch (productId) {
-    case 'red_keep':
-    case 'red_keep_annual':
-      return 'red_keep'
-    case 'forge_annual':
+    case 'strategist':
+    case 'strategist_annual':
+      return 'strategist'
+    case 'analyst_annual':
     case 'investor_annual':
     case 'friends_access':
-      return 'forge'
+    case 'coupon_trial':
+      return 'analyst'
     default:
       return 'explorer'
   }
@@ -112,8 +114,8 @@ export function getAccessTier(productId: string | null | undefined, isAdmin: boo
 export function getTierLabel(tier: AccessTier): string {
   switch (tier) {
     case 'admin': return 'Admin'
-    case 'red_keep': return 'The Red Keep'
-    case 'forge': return 'The Forge'
+    case 'strategist': return 'Strategist'
+    case 'analyst': return 'Analyst'
     case 'explorer': return 'Recon'
   }
 }
@@ -121,8 +123,8 @@ export function getTierLabel(tier: AccessTier): string {
 /** The minimum tier required to access a path */
 export function getRequiredTier(pathname: string): AccessTier | null {
   if (UTILITY_PATHS.has(pathname) || EXPLORER_PATHS.has(pathname)) return 'explorer'
-  if (FORGE_PATHS.has(pathname)) return 'forge'
-  if (RED_KEEP_ONLY_PATHS.has(pathname)) return 'red_keep'
+  if (ANALYST_PATHS.has(pathname)) return 'analyst'
+  if (STRATEGIST_ONLY_PATHS.has(pathname)) return 'strategist'
   if (ADMIN_PATHS.has(pathname)) return 'admin'
   return null
 }

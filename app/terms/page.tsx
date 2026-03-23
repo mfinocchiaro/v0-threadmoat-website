@@ -44,7 +44,7 @@ export default function TermsPage() {
           <h2 className="text-lg font-semibold mb-3">4. Dashboard access</h2>
           <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
             <li>Free Explorer accounts may access a limited set of dashboards at no cost.</li>
-            <li>Full dashboard access is available through Red Keep (annual) engagements or as an add-on to a report license.</li>
+            <li>Full dashboard access is available through Strategist (annual) engagements or as an add-on to a report license.</li>
             <li>We may modify available dashboards and features at any time.</li>
           </ul>
         </section>

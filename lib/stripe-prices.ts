@@ -6,15 +6,15 @@
  * so test and live modes use different values.
  *
  * Env vars:
- *   STRIPE_PRICE_FORGE_ANNUAL     — Price ID for The Forge annual subscription
- *   STRIPE_PRICE_RED_KEEP_ANNUAL  — Price ID for The Red Keep annual subscription
- *   STRIPE_PRICE_REPORT_Q1        — Price ID for 2026 Q1 Market Report (one-time)
+ *   STRIPE_PRICE_ANALYST_ANNUAL     — Price ID for Analyst annual subscription
+ *   STRIPE_PRICE_STRATEGIST_ANNUAL  — Price ID for Strategist annual subscription
+ *   STRIPE_PRICE_REPORT_Q1          — Price ID for 2026 Q1 Market Report (one-time)
  */
 
 /** Stripe Price IDs keyed by internal product identifier */
 export const STRIPE_PRICES: Record<string, string> = {
-  forge_annual: process.env.STRIPE_PRICE_FORGE_ANNUAL || '',
-  red_keep_annual: process.env.STRIPE_PRICE_RED_KEEP_ANNUAL || '',
+  analyst_annual: process.env.STRIPE_PRICE_ANALYST_ANNUAL || '',
+  strategist_annual: process.env.STRIPE_PRICE_STRATEGIST_ANNUAL || '',
   market_report_q1: process.env.STRIPE_PRICE_REPORT_Q1 || '',
 }
 
@@ -24,8 +24,8 @@ export const STRIPE_PRICES: Record<string, string> = {
  * lib/products.ts and lib/tiers.ts.
  */
 const INTERNAL_PRODUCT_IDS: Record<string, string> = {
-  forge_annual: 'forge_annual',
-  red_keep_annual: 'red_keep_annual',
+  analyst_annual: 'analyst_annual',
+  strategist_annual: 'strategist_annual',
   market_report_q1: 'market-report-2026-q1',
 }
 
@@ -53,7 +53,7 @@ export function getInternalProductId(stripePriceId: string): string {
  * free trials, or products not yet configured in Stripe).
  */
 export function getStripePriceId(internalProductId: string): string | undefined {
-  // Direct key match (e.g. "forge_annual")
+  // Direct key match (e.g. "analyst_annual")
   const directMatch = STRIPE_PRICES[internalProductId]
   if (directMatch) return directMatch
 

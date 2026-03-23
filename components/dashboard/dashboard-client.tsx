@@ -67,7 +67,7 @@ function DashboardInner({ companies, isLoading, profileType, onSelectProfile, is
   const { applyThesis } = useThesis()
   const { isFreeUser, accessTier } = usePlan()
 
-  // Mask company names for Forge tier (Red Keep + Admin see real names)
+  // Mask company names for Analyst tier (Strategist + Admin see real names)
   const maskedCompanies = useMemo(() => maskCompanies(companies, accessTier), [companies, accessTier])
 
   const handleSelectProfile = useCallback((key: string) => {
