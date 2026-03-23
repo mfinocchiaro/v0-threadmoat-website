@@ -2,6 +2,8 @@ import { Link } from "@/i18n/navigation"
 import NextLink from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
+import { auth } from "@/auth"
+import { CheckoutButton } from "@/components/checkout/checkout-button"
 import { Check, Calendar, MapPin, CalendarDays, BookOpen, Download, Castle, Flame, Crosshair } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { LanguageSwitcher } from "@/components/language-switcher"
@@ -34,6 +36,8 @@ export default async function PricingPage({ params }: Props) {
   setRequestLocale(locale)
   const t = await getTranslations('Pricing')
   const tCommon = await getTranslations('Common')
+  const session = await auth()
+  const userEmail = session?.user?.email
 
   const RECON_FEATURES = [
     t('features.reconF1'), t('features.reconF2'), t('features.reconF3'), t('features.reconF4'),
@@ -220,9 +224,13 @@ export default async function PricingPage({ params }: Props) {
               ))}
             </ul>
             <div className="mt-6 space-y-2.5">
-              <NextLink href="/auth/sign-up?product=market-report-2026-q1">
-                <Button className="w-full" size="sm">{t('tiers.reportCta')}</Button>
-              </NextLink>
+              {userEmail ? (
+                <CheckoutButton productId="market-report-2026-q1" userEmail={userEmail} label={t('tiers.reportCta')} />
+              ) : (
+                <NextLink href="/auth/sign-up?product=market-report-2026-q1">
+                  <Button className="w-full" size="sm">{t('tiers.reportCta')}</Button>
+                </NextLink>
+              )}
               <a
                 href="/reports/2026-q1-market-report-sample.pdf"
                 target="_blank"
