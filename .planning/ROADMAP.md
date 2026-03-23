@@ -54,6 +54,9 @@
 - [ ] Phase 4: Transactional Email Polish — professional email experience
   - **Goal:** Create professionally styled welcome and receipt emails with ThreadMoat branding using Resend
   - **Requirements:** EMAIL-01, EMAIL-02, EMAIL-03
+  - **Plans:** 2 plans
+    - [ ] 04-01-PLAN.md — React Email templates with ThreadMoat branding, refactor lib/email.ts
+    - [ ] 04-02-PLAN.md — Wire welcome + receipt emails into Stripe webhook handler
   - **Depends on:** Phase 3 (build templates now, test with sandbox Stripe, go live with Phase 2)
   - **Success criteria:**
     1. New subscriber receives branded welcome email within 1 minute
@@ -78,9 +81,9 @@
 | 1. Portuguese & Flags | v1.0 | 0/1 | Planned | - |
 | 2. Production Stripe | v1.0 | 0/? | Not started | - |
 | 3. Content & SEO | v1.0 | 1/2 | In Progress | - |
-| 4. Email Polish | v1.0 | 0/? | Not started | - |
+| 4. Email Polish | v1.0 | 0/2 | Planned | - |
 | 5. Onboarding | v1.0 | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-03-22*
-*Last updated: 2026-03-22 after Phase 3 planning*
+*Last updated: 2026-03-23 after Phase 4 planning*
