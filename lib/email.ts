@@ -1,4 +1,8 @@
 import { Resend } from 'resend'
+import { VerificationEmail } from '@/emails/verification'
+import { PasswordResetEmail } from '@/emails/password-reset'
+import { WelcomeEmail } from '@/emails/welcome'
+import { ReceiptEmail } from '@/emails/receipt'
 
 function getResend() {
   if (!process.env.RESEND_API_KEY) {
@@ -23,20 +27,7 @@ export async function sendVerificationEmail(email: string, token: string) {
     from: FROM_EMAIL,
     to: email,
     subject: 'Verify your ThreadMoat account',
-    html: `
-      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2>Welcome to ThreadMoat</h2>
-        <p>Click the button below to verify your email address:</p>
-        <p style="margin: 24px 0;">
-          <a href="${url}" style="background: #2563eb; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; display: inline-block;">
-            Verify Email
-          </a>
-        </p>
-        <p style="color: #666; font-size: 14px;">
-          This link expires in 24 hours. If you didn't create an account, you can ignore this email.
-        </p>
-      </div>
-    `,
+    react: VerificationEmail({ url }),
   })
 
   if (error) {
@@ -53,20 +44,7 @@ export async function sendPasswordResetEmail(email: string, token: string) {
     from: FROM_EMAIL,
     to: email,
     subject: 'Reset your ThreadMoat password',
-    html: `
-      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2>Password Reset</h2>
-        <p>Click the button below to reset your password:</p>
-        <p style="margin: 24px 0;">
-          <a href="${url}" style="background: #2563eb; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; display: inline-block;">
-            Reset Password
-          </a>
-        </p>
-        <p style="color: #666; font-size: 14px;">
-          This link expires in 1 hour. If you didn't request a password reset, you can ignore this email.
-        </p>
-      </div>
-    `,
+    react: PasswordResetEmail({ url }),
   })
 
   if (error) {
@@ -74,4 +52,70 @@ export async function sendPasswordResetEmail(email: string, token: string) {
     throw new Error(`Email send failed: ${error.message}`)
   }
   console.log('[Resend] Password reset email sent:', data?.id)
+}
+
+export async function sendWelcomeEmail(
+  email: string,
+  name: string | undefined,
+  planName: string
+) {
+  const dashboardUrl = `${getBaseUrl()}/dashboard`
+
+  const { data, error } = await getResend().emails.send({
+    from: FROM_EMAIL,
+    to: email,
+    subject: 'Welcome to ThreadMoat',
+    react: WelcomeEmail({
+      name: name || undefined,
+      planName,
+      dashboardUrl,
+    }),
+  })
+
+  if (error) {
+    console.error('[Resend] Welcome email failed:', error)
+    throw new Error(`Email send failed: ${error.message}`)
+  }
+  console.log('[Resend] Welcome email sent:', data?.id)
+}
+
+export async function sendReceiptEmail(
+  email: string,
+  name: string | undefined,
+  amountFormatted: string,
+  planName: string,
+  periodStart: Date,
+  periodEnd: Date,
+  invoiceUrl: string
+) {
+  const formattedStart = periodStart.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+  const formattedEnd = periodEnd.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+
+  const { data, error } = await getResend().emails.send({
+    from: FROM_EMAIL,
+    to: email,
+    subject: `Payment Receipt - ${amountFormatted}`,
+    react: ReceiptEmail({
+      name: name || undefined,
+      amountFormatted,
+      planName,
+      periodStart: formattedStart,
+      periodEnd: formattedEnd,
+      invoiceUrl,
+    }),
+  })
+
+  if (error) {
+    console.error('[Resend] Receipt email failed:', error)
+    throw new Error(`Email send failed: ${error.message}`)
+  }
+  console.log('[Resend] Receipt email sent:', data?.id)
 }
