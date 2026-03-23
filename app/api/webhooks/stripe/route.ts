@@ -2,12 +2,10 @@ import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { sql } from '@/lib/db'
+import { getStripe } from '@/lib/stripe'
+import { getInternalProductId } from '@/lib/stripe-prices'
 import { sendWelcomeEmail, sendReceiptEmail } from '@/lib/email'
 import { getProduct } from '@/lib/products'
-
-function getStripe() {
-  return new Stripe(process.env.STRIPE_SECRET_KEY!)
-}
 
 /** Extract period dates from subscription items (Stripe SDK v20+) */
 function getPeriodDates(subscription: Stripe.Subscription) {
@@ -75,6 +73,12 @@ export async function POST(request: Request) {
           ).catch(err => console.error('[Webhook] One-time receipt email failed:', err))
         }
 
+        break
+      }
+      case 'customer.subscription.created': {
+        // Covers subscriptions created outside of Checkout (e.g. via Stripe Dashboard or API)
+        const subscription = event.data.object as Stripe.Subscription
+        await handleSubscriptionCreated(subscription)
         break
       }
       case 'customer.subscription.updated': {
@@ -175,7 +179,40 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session, stripe:
     VALUES (
       ${userId},
       ${subscriptionId},
-      ${subscription.items.data[0]?.price.id ?? 'stripe'},
+      ${getInternalProductId(subscription.items.data[0]?.price.id ?? '')},
+      ${subscription.status},
+      ${period.start},
+      ${period.end}
+    )
+    ON CONFLICT (user_id) DO UPDATE SET
+      stripe_subscription_id = EXCLUDED.stripe_subscription_id,
+      product_id             = EXCLUDED.product_id,
+      status                 = EXCLUDED.status,
+      current_period_start   = EXCLUDED.current_period_start,
+      current_period_end     = EXCLUDED.current_period_end,
+      updated_at             = NOW()
+  `
+}
+
+async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
+  const customerId = subscription.customer as string
+  const period = getPeriodDates(subscription)
+
+  // Look up user by Stripe customer ID stored in profiles
+  const rows = await sql`SELECT id FROM profiles WHERE stripe_customer_id = ${customerId}`
+  const profile = rows[0]
+
+  if (!profile) {
+    console.error('No profile found for customer (subscription.created):', customerId)
+    return
+  }
+
+  await sql`
+    INSERT INTO subscriptions (user_id, stripe_subscription_id, product_id, status, current_period_start, current_period_end)
+    VALUES (
+      ${profile.id as string},
+      ${subscription.id},
+      ${getInternalProductId(subscription.items.data[0]?.price.id ?? '')},
       ${subscription.status},
       ${period.start},
       ${period.end}
@@ -206,7 +243,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   await sql`
     UPDATE subscriptions SET
       stripe_subscription_id = ${subscription.id},
-      product_id             = ${subscription.items.data[0]?.price.id ?? 'stripe'},
+      product_id             = ${getInternalProductId(subscription.items.data[0]?.price.id ?? '')},
       status                 = ${subscription.status},
       current_period_start   = ${period.start},
       current_period_end     = ${period.end},

@@ -2,6 +2,7 @@
 
 import { getStripe } from '@/lib/stripe'
 import { getProduct } from '@/lib/products'
+import { getStripePriceId } from '@/lib/stripe-prices'
 import { auth } from '@/auth'
 import { sql } from '@/lib/db'
 
@@ -37,20 +38,24 @@ export async function createCheckoutSession(productId: string, userEmail: string
 
   if (product.mode === 'payment') {
     // One-time payment (e.g. market reports)
-    const checkoutSession = await getStripe().checkout.sessions.create({
-      customer: customerId,
-      mode: 'payment',
-      payment_method_types: ['card'],
-      line_items: [
-        {
+    const stripePriceId = getStripePriceId(productId)
+
+    const lineItem = stripePriceId
+      ? { price: stripePriceId, quantity: 1 }
+      : {
           price_data: {
-            currency: 'usd',
+            currency: 'usd' as const,
             product_data: { name: product.name, description: product.description || '' },
             unit_amount: product.priceInCents,
           },
           quantity: 1,
-        },
-      ],
+        }
+
+    const checkoutSession = await getStripe().checkout.sessions.create({
+      customer: customerId,
+      mode: 'payment',
+      payment_method_types: ['card'],
+      line_items: [lineItem],
       success_url: `${baseUrl}/dashboard?checkout=success&product=${productId}`,
       cancel_url: `${baseUrl}/pricing?checkout=canceled`,
       metadata: { user_id: userId, product_id: productId },
@@ -60,23 +65,25 @@ export async function createCheckoutSession(productId: string, userEmail: string
   }
 
   // Recurring subscription
-  const interval = product.interval === 'year' ? 'year' as const : 'month' as const
+  const stripePriceId = getStripePriceId(productId)
+
+  const lineItem = stripePriceId
+    ? { price: stripePriceId, quantity: 1 }
+    : {
+        price_data: {
+          currency: 'usd' as const,
+          product_data: { name: product.name, description: product.description || '' },
+          unit_amount: product.priceInCents,
+          recurring: { interval: (product.interval === 'year' ? 'year' : 'month') as 'year' | 'month' },
+        },
+        quantity: 1,
+      }
 
   const checkoutSession = await getStripe().checkout.sessions.create({
     customer: customerId,
     mode: 'subscription' as const,
     payment_method_types: ['card' as const],
-    line_items: [
-      {
-        price_data: {
-          currency: 'usd',
-          product_data: { name: product.name, description: product.description || '' },
-          unit_amount: product.priceInCents,
-          recurring: { interval },
-        },
-        quantity: 1,
-      },
-    ],
+    line_items: [lineItem],
     success_url: `${baseUrl}/dashboard?checkout=success`,
     cancel_url: `${baseUrl}/dashboard?checkout=canceled`,
     metadata: { user_id: userId, product_id: productId },
