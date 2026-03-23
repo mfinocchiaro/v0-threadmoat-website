@@ -44,7 +44,7 @@
     "title": "Lo que obtiene",
     "subtitle": "Vistas de ejemplo de dashboards y briefings de analistas.",
     "investorNetwork": "Red de inversores",
-    "investorNetworkDesc": "Gr\u00e1fico interactivo de red mapeando inversores, empresas del portafolio y relaciones de co-inversi\u00f3n",
+    "investorNetworkDesc": "Gr\u00e1fico interactivo de red mapeando inversores, empresas del cartera y relaciones de co-inversi\u00f3n",
     "fundingDistribution": "Distribuci\u00f3n de financiamiento",
     "fundingDistributionDesc": "Gr\u00e1fico de empresas por etapa de financiamiento (Seed a Serie D+) con capital total desplegado",
     "disciplineBreakdown": "Desglose por disciplina",
@@ -102,7 +102,7 @@
     "redKeepF5": "Sankey, Chord, Marimekko \u2014 an\u00e1lisis avanzado de flujos",
     "redKeepF6": "Coordenadas paralelas, Diagramas de caja, SPLOM \u2014 vistas estad\u00edsticas",
     "redKeepF7": "Informes anuales de estado del mercado (todos los trimestres)",
-    "redKeepF8": "Listas de vigilancia + alertas sobre empresas del portafolio",
+    "redKeepF8": "Listas de vigilancia + alertas sobre empresas del cartera",
     "redKeepF9": "Exportaciones: gr\u00e1ficos + tablas agregadas",
     "redKeepF10": "Informes personalizados + briefings + consultor\u00eda"
   }
