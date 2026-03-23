@@ -1,114 +1,75 @@
-"""
-Fetch Airtable views as CSVs and write to data/ (private, not public).
-Run locally or via GitHub Actions (see .github/workflows/sync-airtable.yml).
-"""
-
 import csv
+import io
 import os
 import sys
-from urllib.parse import quote
-
 import requests
 
-TOKEN = os.environ.get("AIRTABLE_TOKEN")
-BASE_ID = os.environ.get("AIRTABLE_BASE_ID")
+TOKEN   = os.environ["AIRTABLE_TOKEN"]
+BASE_ID = os.environ["AIRTABLE_BASE_ID"]
+BASE_URL = f"https://api.airtable.com/v0/{BASE_ID}"
 
-if not TOKEN or not BASE_ID:
-    print("ERROR: AIRTABLE_TOKEN and AIRTABLE_BASE_ID must be set.")
-    sys.exit(1)
-
-# Each entry maps a table + view to an output CSV path.
-# Table names and view names must match exactly what's in Airtable.
 VIEWS = [
     {
         "table": "Startups",
-        "view": "Grid view",
+        "view":   "Software-Only ThreadMoat",
         "output": "data/Startups-Grid view.csv",
     },
     {
         "table": "Startups",
-        "view": "Financial Health",
+        "view":   "Financial Health",
         "output": "data/Startups-Financial Health.csv",
     },
     {
         "table": "Investors",
-        "view": "Grid view",
-        "output": "data/Investors-Grid view.csv",
+        "view":   "Grid view",
+        "output": "data/Investors-main.csv",
     },
 ]
 
 
 def fetch_all_records(table: str, view: str) -> list[dict]:
-    """Paginate through all records in a given Airtable table/view."""
-    records, offset = [], None
-    url = f"https://api.airtable.com/v0/{BASE_ID}/{quote(table)}"
     headers = {"Authorization": f"Bearer {TOKEN}"}
+    records = []
+    params  = {"view": view, "pageSize": 100}
 
     while True:
-        params: dict = {"view": view, "pageSize": 100}
-        if offset:
-            params["offset"] = offset
-
-        r = requests.get(url, headers=headers, params=params, timeout=30)
-        r.raise_for_status()
-
-        data = r.json()
-        records.extend(data.get("records", []))
-        offset = data.get("offset")
+        resp = requests.get(f"{BASE_URL}/{requests.utils.quote(table)}", headers=headers, params=params)
+        resp.raise_for_status()
+        body = resp.json()
+        records.extend(body.get("records", []))
+        offset = body.get("offset")
         if not offset:
             break
+        params["offset"] = offset
 
     return records
 
 
-def flatten_value(v: object) -> str:
-    """Flatten Airtable field values to plain strings.
-
-    Airtable computed/AI fields return dicts like:
-      {'state': 'generated', 'isStale': False, 'value': 'Insight Partners'}
-    Linked-record fields return lists of strings or dicts.
-    Everything else is coerced to str.
-    """
-    if isinstance(v, dict):
-        return str(v.get("value", ""))
-    if isinstance(v, list):
-        parts = []
-        for item in v:
-            if isinstance(item, dict):
-                parts.append(str(item.get("value", item.get("name", ""))))
-            else:
-                parts.append(str(item))
-        return ", ".join(parts)
-    return str(v) if v is not None else ""
-
-
-def records_to_csv(records: list[dict], path: str) -> None:
-    """Write a list of Airtable records to a CSV file."""
+def records_to_csv(records: list[dict], output_path: str) -> None:
     if not records:
-        print(f"  No records — skipping {path}")
+        print(f"  No records returned — skipping {output_path}")
         return
 
-    # Collect all field names across records (some records may omit empty fields)
-    all_fields: list[str] = []
-    seen: set[str] = set()
+    # Collect all field names preserving insertion order
+    fieldnames: list[str] = ["id"]
     for rec in records:
-        for key in rec.get("fields", {}).keys():
-            if key not in seen:
-                all_fields.append(key)
-                seen.add(key)
+        for key in rec.get("fields", {}):
+            if key not in fieldnames:
+                fieldnames.append(key)
 
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=all_fields, extrasaction="ignore")
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    with open(output_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
         writer.writeheader()
         for rec in records:
-            flat = {k: flatten_value(v) for k, v in rec.get("fields", {}).items()}
-            writer.writerow(flat)
+            row = {"id": rec["id"], **rec.get("fields", {})}
+            writer.writerow(row)
 
-    print(f"  Wrote {len(records)} rows → {path}")
+    print(f"  Wrote {len(records)} records → {output_path}")
 
 
 def main() -> None:
+    errors = []
     for cfg in VIEWS:
         table, view, output = cfg["table"], cfg["view"], cfg["output"]
         print(f"Fetching '{table}' / '{view}' ...")
@@ -116,10 +77,17 @@ def main() -> None:
             recs = fetch_all_records(table, view)
             records_to_csv(recs, output)
         except requests.HTTPError as e:
-            print(f"  HTTP error: {e.response.status_code} — {e.response.text}")
-            sys.exit(1)
+            msg = f"  HTTP error: {e.response.status_code} — {e.response.text}"
+            print(msg)
+            errors.append(f"{table}/{view}: {msg}")
 
-    print("Done.")
+    if errors:
+        print("\nCompleted with errors:")
+        for err in errors:
+            print(f"  {err}")
+        sys.exit(1)
+
+    print("\nDone.")
 
 
 if __name__ == "__main__":
