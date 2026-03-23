@@ -30,6 +30,9 @@
 - [ ] Phase 2: Production Stripe Integration — payments go live
   - **Goal:** Switch Stripe from sandbox to live mode, verify end-to-end checkout, implement subscription lifecycle management and billing portal
   - **Requirements:** PAY-01, PAY-02, PAY-03, PAY-04, PAY-05
+  - **Plans:** 2 plans
+    - [ ] 02-01-PLAN.md — Price ID mapping layer, checkout migration to Price IDs, webhook product_id fix
+    - [ ] 02-02-PLAN.md — Stripe dashboard setup (live mode), end-to-end payment verification
   - **Depends on:** None (independent)
   - **Success criteria:**
     1. Real credit card charge succeeds in production Stripe
@@ -79,11 +82,11 @@
 |-------|-----------|---------------|--------|-----------|
 | 14. Internationalization | pre-v1.0 | 3/3 | Complete | 2026-03-22 |
 | 1. Portuguese & Flags | v1.0 | 0/1 | Planned | - |
-| 2. Production Stripe | v1.0 | 0/? | Not started | - |
+| 2. Production Stripe | v1.0 | 0/2 | Planned | - |
 | 3. Content & SEO | v1.0 | 1/2 | In Progress | - |
 | 4. Email Polish | v1.0 | 2/2 | Complete | 2026-03-23 |
 | 5. Onboarding | v1.0 | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-03-22*
-*Last updated: 2026-03-23 after Phase 4 completion*
+*Last updated: 2026-03-23 after Phase 2 planning*
