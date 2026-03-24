@@ -183,19 +183,18 @@ function NavLink({ href, icon: Icon, label, collapsed, exact, locked }: {
   const pathname = usePathname();
   const isActive = exact ? pathname === href : pathname.startsWith(href);
 
-  const link = (
-    <Link
-      href={href}
-      className={cn(
-        "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
-        isActive
-          ? "bg-primary/10 text-primary font-medium"
-          : locked
-            ? "text-muted-foreground/40 hover:bg-muted/50 hover:text-muted-foreground/60"
-            : "text-foreground font-medium hover:bg-muted",
-        collapsed && "justify-center px-2"
-      )}
-    >
+  const classes = cn(
+    "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+    isActive
+      ? "bg-primary/10 text-primary font-medium"
+      : locked
+        ? "text-muted-foreground/40 cursor-default"
+        : "text-foreground font-medium hover:bg-muted",
+    collapsed && "justify-center px-2"
+  )
+
+  const content = (
+    <>
       <Icon className="h-4 w-4 shrink-0" />
       {!collapsed && (
         <>
@@ -203,15 +202,19 @@ function NavLink({ href, icon: Icon, label, collapsed, exact, locked }: {
           {locked && <Lock className="h-3 w-3 shrink-0 text-muted-foreground/40" />}
         </>
       )}
-    </Link>
-  );
+    </>
+  )
+
+  const link = locked
+    ? <div className={classes}>{content}</div>
+    : <Link href={href} className={classes}>{content}</Link>
 
   if (collapsed) {
     return (
       <Tooltip delayDuration={0}>
         <TooltipTrigger asChild>{link}</TooltipTrigger>
         <TooltipContent side="right" className="text-xs">
-          {label}{locked ? " (Pro)" : ""}
+          {label}{locked ? " (upgrade to access)" : ""}
         </TooltipContent>
       </Tooltip>
     );
@@ -274,7 +277,7 @@ function TabGroupNav({ group, collapsed, isFreeUser, accessTier = 'explorer', op
         <button
           onClick={() => toggleGroup(group.key)}
           className={cn(
-            "rounded-r-md px-1.5 py-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors",
+            "rounded-r-md px-3 py-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors",
             isGroupActive && "bg-primary/10"
           )}
         >
