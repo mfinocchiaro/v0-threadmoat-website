@@ -69,6 +69,9 @@
 - [ ] Phase 5: Subscriber Onboarding — first-visit experience
   - **Goal:** Create a guided onboarding flow that demonstrates dashboard value within 60 seconds of first login
   - **Requirements:** ONBD-01, ONBD-02
+  - **Plans:** 2 plans
+    - [ ] 05-01-PLAN.md — DB migration, onboarding API endpoint, tier-aware wizard component
+    - [ ] 05-02-PLAN.md — Wire wizard into dashboard layout, end-to-end verification
   - **Depends on:** Phase 2 (needs active subscription for testing)
   - **Success criteria:**
     1. First-time subscriber sees onboarding overlay/wizard
@@ -85,8 +88,8 @@
 | 2. Production Stripe | v1.0 | 1/2 | In Progress | - |
 | 3. Content & SEO | v1.0 | 1/2 | In Progress | - |
 | 4. Email Polish | v1.0 | 2/2 | Complete | 2026-03-23 |
-| 5. Onboarding | v1.0 | 0/? | Not started | - |
+| 5. Onboarding | v1.0 | 0/2 | Planned | - |
 
 ---
 *Roadmap created: 2026-03-22*
-*Last updated: 2026-03-23 after Phase 2 Plan 1 completion*
+*Last updated: 2026-03-24 after Phase 5 planning*
