@@ -192,7 +192,7 @@ function NavLink({ href, icon: Icon, label, collapsed, exact, locked }: {
           ? "bg-primary/10 text-primary font-medium"
           : locked
             ? "text-muted-foreground/40 hover:bg-muted/50 hover:text-muted-foreground/60"
-            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+            : "text-foreground font-medium hover:bg-muted",
         collapsed && "justify-center px-2"
       )}
     >
