@@ -2,7 +2,7 @@
 status: active
 last_activity: 2026-03-24
 current_phase: 5
-current_plan: 1
+current_plan: 2
 milestone: v1.0
 ---
 
@@ -10,12 +10,12 @@ milestone: v1.0
 
 ## Status
 
-Active — Phase 5, Plan 1 complete. Onboarding wizard foundation built: migration script, API endpoint, tier-aware wizard component.
+Active — Phase 5, Plan 2 complete. Onboarding wizard wired into dashboard layout with conditional rendering.
 
 ## Current Position
 
 Phase 5 of 5: Subscriber Onboarding
-Plan: 1 complete
+Plan: 2 complete (awaiting human verification checkpoint)
 
 ## Project Reference
 
@@ -50,6 +50,8 @@ See: .planning/PROJECT.md (updated 2026-03-22)
 - Best-effort API call pattern for onboarding completion (don't block user on failure)
 - Admin tier reuses Strategist onboarding steps
 - No zod validation on onboarding endpoint (no request body, toggle-to-true only)
+- Local onboardingDismissed state prevents wizard re-render after API call before page reload
+- Wizard rendered after main content inside SidebarShell so dashboard visible behind dialog overlay
 
 ### Blockers
 
