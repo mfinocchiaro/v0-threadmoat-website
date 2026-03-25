@@ -39,18 +39,18 @@ Requirements for UX & Data Polish milestone.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| UX-01 | TBD | Pending |
-| UX-02 | TBD | Pending |
-| UX-03 | TBD | Pending |
-| UX-04 | TBD | Pending |
-| MON-01 | TBD | Pending |
-| I18N-06 | TBD | Pending |
-| DATA-01 | TBD | Pending |
+| UX-01 | Phase 6 | Pending |
+| UX-02 | Phase 6 | Pending |
+| UX-03 | Phase 6 | Pending |
+| UX-04 | Phase 6 | Pending |
+| MON-01 | Phase 7 | Pending |
+| I18N-06 | Phase 8 | Pending |
+| DATA-01 | Phase 9 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 7 total
-- Mapped to phases: 0
-- Unmapped: 7 (roadmap pending)
+- Mapped to phases: 7
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-25*
