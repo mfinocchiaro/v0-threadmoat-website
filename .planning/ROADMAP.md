@@ -35,6 +35,8 @@ See: `milestones/v1.0-ROADMAP.md` for full details.
   - **Goal:** Create and wire a Stripe coupon that credits $4,999 when an Analyst (report) purchaser upgrades to Strategist subscription
   - **Requirements:** MON-01
   - **Depends on:** None
+  - **Plans:** 1 plan
+    - [ ] 07-01-PLAN.md — Create coupon, detect Analyst purchase, apply discount in Strategist checkout
   - **Success criteria:**
     1. Coupon exists in Stripe dashboard with $4,999 one-time discount
     2. Upgrade flow detects existing Analyst purchase and applies coupon automatically
@@ -62,10 +64,10 @@ See: `milestones/v1.0-ROADMAP.md` for full details.
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|---------------|--------|-----------|
 | 6. Filter Toolbar | v1.1 | 1/3 | In Progress | - |
-| 7. Upgrade Coupon | v1.1 | 0/? | Not started | - |
+| 7. Upgrade Coupon | v1.1 | 0/1 | Not started | - |
 | 8. French Review | v1.1 | 0/? | Not started | - |
 | 9. CSV Refresh | v1.1 | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-03-22*
-*Last updated: 2026-03-25 after Phase 6 Plan 01 complete*
+*Last updated: 2026-03-25 after Phase 7 planning complete*
