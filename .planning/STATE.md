@@ -1,36 +1,39 @@
 ---
-status: milestone_complete
-last_activity: 2026-03-24
+status: active
+last_activity: 2026-03-25
 current_phase: null
 current_plan: null
-milestone: v1.0
+milestone: v1.1
 ---
 
 # ThreadMoat Website — Project State
 
 ## Status
 
-v1.0 milestone complete. Ready for next milestone planning.
+Active — Defining requirements for v1.1 UX & Data Polish
 
 ## Current Position
 
-All v1.0 phases complete. No active work.
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-03-25 — Milestone v1.1 started
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-24)
+See: .planning/PROJECT.md (updated 2026-03-25)
 
 **Core value:** Converting visitors into paying dashboard subscribers
-**Current focus:** Planning v1.1 milestone
+**Current focus:** v1.1 UX & Data Polish — filter toolbar, coupon, French review, CSV refresh
 
 ## Accumulated Context
 
 ### Decisions
 
 - Tiers: Recon (free) → Analyst ($4,999) → Strategist (€18,999/yr) → Advisory (custom)
-- intlMiddleware runs outside auth() wrapper to prevent redirect issues on Vercel
+- intlMiddleware runs outside auth() wrapper
 - React Email + Resend for all transactional emails
-- Admin purchase notification for watermarked report delivery workflow
+- Staging branch available for pre-production testing
 
 ### Blockers
 
@@ -38,8 +41,6 @@ None.
 
 ### Notes
 
-- Staging branch available for pre-production testing
-- French and Portuguese translations pending native speaker review
-- Filter bar UX redesign queued for v1.1 (dialog → sticky toolbar)
-- Stripe upgrade coupon ($4,999 credit) needed for report→subscription upgrades
-- Funding CSV data audit corrections pending (Buildots, Campfire, BeyondMath, etc.)
+- CSV data refresh depends on separate GSD project completing fact-checking
+- French translation review to be done by Michael personally
+- Portuguese translation still pending native speaker review

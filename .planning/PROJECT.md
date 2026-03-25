@@ -25,7 +25,10 @@ Converting visitors into paying dashboard subscribers through compelling market 
 
 ### Active
 
-(None yet — define for v1.1 milestone)
+- [ ] Compact sticky filter toolbar replacing dialog overlay (filters all charts)
+- [ ] Stripe upgrade coupon ($4,999 credit for report→subscription upgrades)
+- [ ] French translation careful review pass
+- [ ] CSV data refresh from corrected dataset (when available from other GSD project)
 
 ### Out of Scope
 
