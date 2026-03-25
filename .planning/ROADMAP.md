@@ -21,7 +21,7 @@ See: `milestones/v1.0-ROADMAP.md` for full details.
   - **Requirements:** UX-01, UX-02, UX-03, UX-04
   - **Depends on:** None
   - **Plans:** 3 plans
-    - [ ] 06-01-PLAN.md — Lift FilterProvider to layout level, create CompanyDataProvider
+    - [x] 06-01-PLAN.md — Lift FilterProvider to layout level, create CompanyDataProvider
     - [ ] 06-02-PLAN.md — Build compact sticky FilterToolbar component and wire into layout
     - [ ] 06-03-PLAN.md — Remove VizFilterBar from all 45 dashboard page files
   - **Success criteria:**
@@ -61,11 +61,11 @@ See: `milestones/v1.0-ROADMAP.md` for full details.
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|---------------|--------|-----------|
-| 6. Filter Toolbar | v1.1 | 0/3 | Planned | - |
+| 6. Filter Toolbar | v1.1 | 1/3 | In Progress | - |
 | 7. Upgrade Coupon | v1.1 | 0/? | Not started | - |
 | 8. French Review | v1.1 | 0/? | Not started | - |
 | 9. CSV Refresh | v1.1 | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-03-22*
-*Last updated: 2026-03-25 after Phase 6 planning complete*
+*Last updated: 2026-03-25 after Phase 6 Plan 01 complete*

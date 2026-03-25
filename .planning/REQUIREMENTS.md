@@ -11,7 +11,7 @@ Requirements for UX & Data Polish milestone.
 
 - [ ] **UX-01**: Compact sticky filter toolbar visible at top of dashboard content area
 - [ ] **UX-02**: Filter toolbar shows active filters as pills/chips with remove buttons
-- [ ] **UX-03**: Filter state persists across chart navigation within the dashboard
+- [x] **UX-03**: Filter state persists across chart navigation within the dashboard
 - [ ] **UX-04**: Filter toolbar applies to all visible charts simultaneously
 
 ### Monetization
@@ -41,7 +41,7 @@ Requirements for UX & Data Polish milestone.
 |-------------|-------|--------|
 | UX-01 | Phase 6 | Pending |
 | UX-02 | Phase 6 | Pending |
-| UX-03 | Phase 6 | Pending |
+| UX-03 | Phase 6 | Complete (06-01) |
 | UX-04 | Phase 6 | Pending |
 | MON-01 | Phase 7 | Pending |
 | I18N-06 | Phase 8 | Pending |
