@@ -20,6 +20,10 @@ See: `milestones/v1.0-ROADMAP.md` for full details.
   - **Goal:** Replace the large filter dialog overlay with a compact sticky toolbar at the top of the dashboard content area that filters all charts simultaneously
   - **Requirements:** UX-01, UX-02, UX-03, UX-04
   - **Depends on:** None
+  - **Plans:** 3 plans
+    - [ ] 06-01-PLAN.md — Lift FilterProvider to layout level, create CompanyDataProvider
+    - [ ] 06-02-PLAN.md — Build compact sticky FilterToolbar component and wire into layout
+    - [ ] 06-03-PLAN.md — Remove VizFilterBar from all 45 dashboard page files
   - **Success criteria:**
     1. Sticky toolbar visible at top of dashboard, never blocks content
     2. Active filters shown as removable pills/chips
@@ -57,11 +61,11 @@ See: `milestones/v1.0-ROADMAP.md` for full details.
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|---------------|--------|-----------|
-| 6. Filter Toolbar | v1.1 | 0/? | Not started | - |
+| 6. Filter Toolbar | v1.1 | 0/3 | Planned | - |
 | 7. Upgrade Coupon | v1.1 | 0/? | Not started | - |
 | 8. French Review | v1.1 | 0/? | Not started | - |
 | 9. CSV Refresh | v1.1 | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-03-22*
-*Last updated: 2026-03-25 after v1.1 milestone initialization*
+*Last updated: 2026-03-25 after Phase 6 planning complete*
