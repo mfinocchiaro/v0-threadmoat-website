@@ -2,7 +2,6 @@
 
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
-import { VizFilterBar } from "@/components/viz-filter-bar"
 import { ChartCard } from "@/components/dashboard/chart-card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { NetworkGraphToggle } from "@/components/charts/network-graph-toggle"
@@ -22,7 +21,7 @@ const InvestorNetwork = dynamic(
 )
 
 function NetworkInner() {
-  const { companies, filtered, isLoading } = useThesisGatedData()
+  const { filtered, isLoading } = useThesisGatedData()
 
   if (isLoading) {
     return (
@@ -46,7 +45,6 @@ function NetworkInner() {
         </p>
       </div>
 
-      <VizFilterBar companies={companies} />
 
       <div className="grid gap-4 md:grid-cols-2">
         <ChartCard

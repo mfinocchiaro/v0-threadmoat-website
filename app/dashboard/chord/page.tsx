@@ -2,12 +2,11 @@
 
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
-import { VizFilterBar } from "@/components/viz-filter-bar"
 import { ChordChart } from "@/components/charts/chord-chart"
 import { Skeleton } from "@/components/ui/skeleton"
 
 function ChordInner() {
-  const { companies, filtered, isLoading } = useThesisGatedData()
+  const { filtered, isLoading } = useThesisGatedData()
 
   return (
     <div className="space-y-4">
@@ -20,10 +19,7 @@ function ChordInner() {
       {isLoading ? (
         <Skeleton className="h-[680px] rounded-xl" />
       ) : (
-        <>
-          <VizFilterBar companies={companies} />
           <ChordChart data={filtered} className="h-[680px]" />
-        </>
       )}
     </div>
   )

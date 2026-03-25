@@ -2,12 +2,11 @@
 
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
-import { VizFilterBar } from "@/components/viz-filter-bar"
 import { SpiralTimelineChart } from "@/components/charts/spiral-timeline-chart"
 import { Skeleton } from "@/components/ui/skeleton"
 
 function SpiralInner() {
-  const { companies, filtered, isLoading } = useThesisGatedData()
+  const { filtered, isLoading } = useThesisGatedData()
 
   return (
     <div className="space-y-4">
@@ -20,10 +19,7 @@ function SpiralInner() {
       {isLoading ? (
         <Skeleton className="h-[680px] rounded-xl" />
       ) : (
-        <>
-          <VizFilterBar companies={companies} />
           <SpiralTimelineChart data={filtered} className="w-full" />
-        </>
       )}
     </div>
   )

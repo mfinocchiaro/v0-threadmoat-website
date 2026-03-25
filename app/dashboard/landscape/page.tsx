@@ -2,12 +2,11 @@
 
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
-import { VizFilterBar } from "@/components/viz-filter-bar"
 import { LandscapeChart } from "@/components/charts/landscape-chart"
 import { Skeleton } from "@/components/ui/skeleton"
 
 function LandscapeInner() {
-  const { companies, filtered, isLoading } = useThesisGatedData()
+  const { filtered, isLoading } = useThesisGatedData()
 
   return (
     <div className="space-y-4">
@@ -18,10 +17,7 @@ function LandscapeInner() {
       {isLoading ? (
         <Skeleton className="h-[600px] rounded-xl" />
       ) : (
-        <>
-          <VizFilterBar companies={companies} />
           <LandscapeChart data={filtered} />
-        </>
       )}
     </div>
   )

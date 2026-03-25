@@ -2,12 +2,11 @@
 
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
-import { VizFilterBar } from "@/components/viz-filter-bar"
 import { HeatmapChart } from "@/components/charts/heatmap-chart"
 import { Skeleton } from "@/components/ui/skeleton"
 
 function HeatmapInner() {
-  const { companies, filtered, isLoading } = useThesisGatedData()
+  const { filtered, isLoading } = useThesisGatedData()
 
   return (
     <div className="space-y-4">
@@ -20,10 +19,7 @@ function HeatmapInner() {
       {isLoading ? (
         <Skeleton className="h-[600px] rounded-xl" />
       ) : (
-        <>
-          <VizFilterBar companies={companies} />
           <HeatmapChart data={filtered} className="min-h-[400px]" />
-        </>
       )}
     </div>
   )

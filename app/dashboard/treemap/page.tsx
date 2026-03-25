@@ -2,12 +2,11 @@
 
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
-import { VizFilterBar } from "@/components/viz-filter-bar"
 import { TreemapChart } from "@/components/charts/treemap-chart"
 import { Skeleton } from "@/components/ui/skeleton"
 
 function TreemapInner() {
-  const { companies, filtered, isLoading } = useThesisGatedData()
+  const { filtered, isLoading } = useThesisGatedData()
 
   return (
     <div className="space-y-4">
@@ -20,10 +19,7 @@ function TreemapInner() {
       {isLoading ? (
         <Skeleton className="h-[600px] rounded-xl" />
       ) : (
-        <>
-          <VizFilterBar companies={companies} />
           <TreemapChart data={filtered} className="h-[640px]" />
-        </>
       )}
     </div>
   )

@@ -2,12 +2,11 @@
 
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
-import { VizFilterBar } from "@/components/viz-filter-bar"
 import { SwotChart } from "@/components/charts/swot-chart"
 import { Skeleton } from "@/components/ui/skeleton"
 
 function SwotInner() {
-  const { companies, filtered, isLoading } = useThesisGatedData()
+  const { filtered, isLoading } = useThesisGatedData()
 
   return (
     <div className="space-y-4">
@@ -21,10 +20,7 @@ function SwotInner() {
       {isLoading ? (
         <Skeleton className="h-[640px] rounded-xl" />
       ) : (
-        <>
-          <VizFilterBar companies={companies} />
           <SwotChart data={filtered} className="min-h-[640px]" />
-        </>
       )}
     </div>
   )

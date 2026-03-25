@@ -2,12 +2,11 @@
 
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
-import { VizFilterBar } from "@/components/viz-filter-bar"
 import { SplomChart } from "@/components/charts/splom-chart"
 import { Skeleton } from "@/components/ui/skeleton"
 
 function SplomInner() {
-  const { companies, filtered, isLoading } = useThesisGatedData()
+  const { filtered, isLoading } = useThesisGatedData()
 
   return (
     <div className="space-y-4">
@@ -20,10 +19,7 @@ function SplomInner() {
       {isLoading ? (
         <Skeleton className="h-[760px] rounded-xl" />
       ) : (
-        <>
-          <VizFilterBar companies={companies} />
           <SplomChart data={filtered} className="h-[760px]" />
-        </>
       )}
     </div>
   )

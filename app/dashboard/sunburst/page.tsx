@@ -2,12 +2,11 @@
 
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
-import { VizFilterBar } from "@/components/viz-filter-bar"
 import { SunburstChart } from "@/components/charts/sunburst-chart"
 import { Skeleton } from "@/components/ui/skeleton"
 
 function SunburstInner() {
-  const { companies, filtered, isLoading } = useThesisGatedData()
+  const { filtered, isLoading } = useThesisGatedData()
 
   return (
     <div className="space-y-4">
@@ -18,10 +17,7 @@ function SunburstInner() {
       {isLoading ? (
         <Skeleton className="h-[calc(100vh-12rem)] rounded-xl" />
       ) : (
-        <>
-          <VizFilterBar companies={companies} />
           <SunburstChart data={filtered} />
-        </>
       )}
     </div>
   )

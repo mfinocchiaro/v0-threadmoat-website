@@ -2,12 +2,11 @@
 
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
-import { VizFilterBar } from "@/components/viz-filter-bar"
 import { MaturityMatrixChart } from "@/components/charts/maturity-matrix-chart"
 import { Skeleton } from "@/components/ui/skeleton"
 
 function MaturityMatrixInner() {
-  const { companies, filtered, isLoading } = useThesisGatedData()
+  const { filtered, isLoading } = useThesisGatedData()
 
   return (
     <div className="space-y-4">
@@ -20,10 +19,7 @@ function MaturityMatrixInner() {
       {isLoading ? (
         <Skeleton className="h-[640px] rounded-xl" />
       ) : (
-        <>
-          <VizFilterBar companies={companies} />
           <MaturityMatrixChart data={filtered} />
-        </>
       )}
     </div>
   )

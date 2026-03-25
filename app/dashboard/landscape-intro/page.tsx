@@ -6,7 +6,6 @@ import { Company, formatCurrency } from "@/lib/company-data"
 import { INVESTMENT_LIST_COLORS } from "@/lib/investment-colors"
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
-import { VizFilterBar } from "@/components/viz-filter-bar"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card } from "@/components/ui/card"
 import { ArrowRight } from "lucide-react"
@@ -137,7 +136,7 @@ function DonutByDomain({ domains }: { domains: { name: string; color: string; co
 }
 
 function LandscapeIntroInner() {
-  const { companies: allCompanies, filtered: companies, isLoading } = useThesisGatedData()
+  const { filtered: companies, isLoading } = useThesisGatedData()
 
   const domains = useMemo(() => {
     const grouped = new Map<string, Company[]>()
@@ -239,7 +238,6 @@ function LandscapeIntroInner() {
       </div>
 
       {/* Filters */}
-      <VizFilterBar companies={allCompanies} />
 
       {/* Color legend strip */}
       <div className="flex flex-wrap gap-3">

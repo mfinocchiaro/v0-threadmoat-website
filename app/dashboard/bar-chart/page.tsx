@@ -2,12 +2,11 @@
 
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
-import { VizFilterBar } from "@/components/viz-filter-bar"
 import { BarChart } from "@/components/charts/bar-chart"
 import { Skeleton } from "@/components/ui/skeleton"
 
 function BarChartInner() {
-  const { companies, filtered, isLoading } = useThesisGatedData()
+  const { filtered, isLoading } = useThesisGatedData()
 
   return (
     <div className="space-y-4">
@@ -18,10 +17,7 @@ function BarChartInner() {
       {isLoading ? (
         <Skeleton className="h-[600px] rounded-xl" />
       ) : (
-        <>
-          <VizFilterBar companies={companies} />
           <BarChart data={filtered} />
-        </>
       )}
     </div>
   )

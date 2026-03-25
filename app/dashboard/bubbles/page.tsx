@@ -2,12 +2,11 @@
 
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
-import { VizFilterBar } from "@/components/viz-filter-bar"
 import { BubbleChart } from "@/components/charts/bubble-chart"
 import { Skeleton } from "@/components/ui/skeleton"
 
 function BubblesInner() {
-  const { companies, filtered, isLoading } = useThesisGatedData()
+  const { filtered, isLoading } = useThesisGatedData()
 
   return (
     <div className="space-y-4">
@@ -18,12 +17,9 @@ function BubblesInner() {
       {isLoading ? (
         <Skeleton className="h-[600px] rounded-xl" />
       ) : (
-        <>
-          <VizFilterBar companies={companies} />
           <div className="w-full" style={{ aspectRatio: "1 / 1", maxHeight: "85vh" }}>
             <BubbleChart data={filtered} className="h-full" />
           </div>
-        </>
       )}
     </div>
   )

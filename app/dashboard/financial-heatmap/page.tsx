@@ -3,12 +3,11 @@
 import { useMemo } from "react"
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
-import { VizFilterBar } from "@/components/viz-filter-bar"
 import { FinancialHeatmapChart } from "@/components/charts/financial-heatmap-chart"
 import { Skeleton } from "@/components/ui/skeleton"
 
 function FinancialHeatmapInner() {
-  const { companies, filtered, isLoading } = useThesisGatedData()
+  const { filtered, isLoading } = useThesisGatedData()
 
   const filteredNames = useMemo(() => {
     return new Set(filtered.map((c) => c.name))
@@ -25,10 +24,7 @@ function FinancialHeatmapInner() {
       {isLoading ? (
         <Skeleton className="h-[600px] rounded-xl" />
       ) : (
-        <>
-          <VizFilterBar companies={companies} />
           <FinancialHeatmapChart className="min-h-[500px]" filteredCompanyNames={filteredNames} />
-        </>
       )}
     </div>
   )

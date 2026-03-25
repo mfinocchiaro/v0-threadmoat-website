@@ -2,12 +2,11 @@
 
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
-import { VizFilterBar } from "@/components/viz-filter-bar"
 import { PatternsChart } from "@/components/charts/patterns-chart"
 import { Skeleton } from "@/components/ui/skeleton"
 
 function PatternsInner() {
-  const { companies, filtered, isLoading } = useThesisGatedData()
+  const { filtered, isLoading } = useThesisGatedData()
 
   return (
     <div className="space-y-4">
@@ -20,10 +19,7 @@ function PatternsInner() {
       {isLoading ? (
         <Skeleton className="h-[600px] rounded-xl" />
       ) : (
-        <>
-          <VizFilterBar companies={companies} />
           <PatternsChart companies={filtered} className="w-full" />
-        </>
       )}
     </div>
   )

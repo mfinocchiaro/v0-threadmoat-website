@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
-import { VizFilterBar } from "@/components/viz-filter-bar"
 import { InvestorNetwork } from "@/components/charts/investor-network"
 import { InvestorNetwork3D } from "@/components/charts/investor-network-3d"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
@@ -11,7 +10,7 @@ import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
 
 function InvestorNetworkInner() {
   const [mode, setMode] = useState<"2d" | "3d">("2d")
-  const { companies, filtered } = useThesisGatedData()
+  const { filtered } = useThesisGatedData()
 
   // Build a set of company names that pass the current filters
   const filteredNames = new Set(filtered.map(c => c.name))
@@ -37,7 +36,6 @@ function InvestorNetworkInner() {
         </ToggleGroup>
       </div>
 
-      <VizFilterBar companies={companies} />
 
       {mode === "2d" ? (
         <InvestorNetwork className="h-[700px]" filteredCompanyNames={filteredNames} />

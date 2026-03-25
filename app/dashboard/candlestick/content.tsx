@@ -3,12 +3,11 @@
 import { useMemo } from "react"
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
-import { VizFilterBar } from "@/components/viz-filter-bar"
 import { CandlestickChart } from "@/components/charts/candlestick-chart"
 import { Skeleton } from "@/components/ui/skeleton"
 
 function CandlestickInner() {
-  const { companies, filtered, isLoading } = useThesisGatedData()
+  const { filtered, isLoading } = useThesisGatedData()
 
   const filteredNames = useMemo(() => {
     return new Set(filtered.map((c) => c.name))
@@ -28,10 +27,7 @@ function CandlestickInner() {
       {isLoading ? (
         <Skeleton className="h-[640px] rounded-xl" />
       ) : (
-        <>
-          <VizFilterBar companies={companies} />
           <CandlestickChart className="min-h-[600px]" filteredCompanyNames={filteredNames} />
-        </>
       )}
     </div>
   )

@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
-import { VizFilterBar } from "@/components/viz-filter-bar"
 import { CustomerNetwork } from "@/components/charts/customer-network"
 import { CustomerNetwork3D } from "@/components/charts/customer-network-3d"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -11,7 +10,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Box, LayoutGrid } from "lucide-react"
 
 function CustomersInner() {
-  const { companies, filtered, isLoading } = useThesisGatedData()
+  const { filtered, isLoading } = useThesisGatedData()
   const [mode, setMode] = useState<"2d" | "3d">("2d")
 
   return (
@@ -37,15 +36,10 @@ function CustomersInner() {
 
       {isLoading ? (
         <Skeleton className="h-[700px] rounded-xl" />
+      ) : mode === "2d" ? (
+        <CustomerNetwork data={filtered} className="h-[700px]" />
       ) : (
-        <>
-          {mode === "2d" && <VizFilterBar companies={companies} />}
-          {mode === "2d" ? (
-            <CustomerNetwork data={filtered} className="h-[700px]" />
-          ) : (
-            <CustomerNetwork3D data={filtered} className="h-[700px] rounded-xl border border-border" />
-          )}
-        </>
+        <CustomerNetwork3D data={filtered} className="h-[700px] rounded-xl border border-border" />
       )}
     </div>
   )

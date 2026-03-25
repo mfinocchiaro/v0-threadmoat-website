@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
-import { VizFilterBar } from "@/components/viz-filter-bar"
 import { MapChart } from "@/components/charts/map-chart"
 import { GlobeChart } from "@/components/charts/globe-chart"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -11,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Map, Globe } from "lucide-react"
 
 function MapInner() {
-  const { companies, filtered, isLoading } = useThesisGatedData()
+  const { filtered, isLoading } = useThesisGatedData()
   const [view, setView] = useState<"2d" | "3d">("2d")
 
   return (
@@ -46,17 +45,12 @@ function MapInner() {
       </div>
       {isLoading ? (
         <Skeleton className="h-[600px] rounded-xl" />
+      ) : view === "2d" ? (
+        <MapChart data={filtered} className="h-[600px]" />
       ) : (
-        <>
-          <VizFilterBar companies={companies} />
-          {view === "2d" ? (
-            <MapChart data={filtered} className="h-[600px]" />
-          ) : (
-            <div className="h-[600px] rounded-xl overflow-hidden border border-border bg-black">
-              <GlobeChart data={filtered} />
-            </div>
-          )}
-        </>
+        <div className="h-[600px] rounded-xl overflow-hidden border border-border bg-black">
+          <GlobeChart data={filtered} />
+        </div>
       )}
     </div>
   )

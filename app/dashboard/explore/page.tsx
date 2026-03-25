@@ -5,7 +5,6 @@ import { loadCompanyData } from "@/lib/company-data"
 import type { Company } from "@/lib/company-data"
 import { FilterProvider } from "@/contexts/filter-context"
 import { useFilter } from "@/contexts/filter-context"
-import { VizFilterBar } from "@/components/viz-filter-bar"
 import { NetworkGraphToggle } from "@/components/charts/network-graph-toggle"
 import { GlobeChart } from "@/components/charts/globe-chart"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -34,11 +33,7 @@ function ExploreContent({ companies, isLoading }: { companies: Company[]; isLoad
         {isLoading ? (
           <Skeleton className="h-[640px] rounded-xl" />
         ) : (
-          <>
-            <div className="mb-3">
-              <VizFilterBar companies={companies} />
-            </div>
-            <div ref={graphContainerRef} className="relative rounded-xl border border-border overflow-hidden h-[640px]">
+          <div ref={graphContainerRef} className="relative rounded-xl border border-border overflow-hidden h-[640px]">
               <NetworkGraphToggle data={filtered} />
               <button
                 onClick={() => graphContainerRef.current?.requestFullscreen()}
@@ -48,7 +43,6 @@ function ExploreContent({ companies, isLoading }: { companies: Company[]; isLoad
                 <Maximize2 className="h-4 w-4 text-muted-foreground" />
               </button>
             </div>
-          </>
         )}
       </section>
 

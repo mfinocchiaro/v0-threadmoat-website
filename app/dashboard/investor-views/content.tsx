@@ -2,12 +2,11 @@
 
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
-import { VizFilterBar } from "@/components/viz-filter-bar"
 import { InvestorViewsChart } from "@/components/charts/investor-views-chart"
 import { Skeleton } from "@/components/ui/skeleton"
 
 function InvestorViewsInner() {
-  const { companies, filtered, isLoading } = useThesisGatedData()
+  const { filtered, isLoading } = useThesisGatedData()
 
   return (
     <div className="space-y-4">
@@ -20,10 +19,7 @@ function InvestorViewsInner() {
       {isLoading ? (
         <Skeleton className="h-[600px] rounded-xl" />
       ) : (
-        <>
-          <VizFilterBar companies={companies} />
           <InvestorViewsChart data={filtered} className="w-full" />
-        </>
       )}
     </div>
   )

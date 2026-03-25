@@ -2,12 +2,11 @@
 
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
-import { VizFilterBar } from "@/components/viz-filter-bar"
 import { CorrelationMatrixChart } from "@/components/charts/correlation-matrix-chart"
 import { Skeleton } from "@/components/ui/skeleton"
 
 function CorrelationInner() {
-  const { companies, filtered, isLoading } = useThesisGatedData()
+  const { filtered, isLoading } = useThesisGatedData()
 
   return (
     <div className="space-y-4">
@@ -20,10 +19,7 @@ function CorrelationInner() {
       {isLoading ? (
         <Skeleton className="h-[640px] rounded-xl" />
       ) : (
-        <>
-          <VizFilterBar companies={companies} />
           <CorrelationMatrixChart data={filtered} className="h-auto" />
-        </>
       )}
     </div>
   )

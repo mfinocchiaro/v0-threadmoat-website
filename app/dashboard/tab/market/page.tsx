@@ -2,7 +2,6 @@
 
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
-import { VizFilterBar } from "@/components/viz-filter-bar"
 import { ChartCard } from "@/components/dashboard/chart-card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { QuadrantChart } from "@/components/charts/quadrant-chart"
@@ -17,7 +16,7 @@ const LandscapeChart = dynamic(
 )
 
 function MarketInner() {
-  const { companies, filtered, isLoading } = useThesisGatedData()
+  const { filtered, isLoading } = useThesisGatedData()
 
   if (isLoading) {
     return (
@@ -41,7 +40,6 @@ function MarketInner() {
         </p>
       </div>
 
-      <VizFilterBar companies={companies} />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         <ChartCard

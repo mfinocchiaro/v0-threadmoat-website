@@ -2,12 +2,11 @@
 
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
-import { VizFilterBar } from "@/components/viz-filter-bar"
 import { QuadrantChart } from "@/components/charts/quadrant-chart"
 import { Skeleton } from "@/components/ui/skeleton"
 
 function QuadrantInner() {
-  const { companies, filtered, isLoading } = useThesisGatedData()
+  const { filtered, isLoading } = useThesisGatedData()
 
   return (
     <div className="space-y-4">
@@ -18,10 +17,7 @@ function QuadrantInner() {
       {isLoading ? (
         <Skeleton className="h-[calc(100vh-12rem)] rounded-xl" />
       ) : (
-        <>
-          <VizFilterBar companies={companies} />
           <QuadrantChart data={filtered} />
-        </>
       )}
     </div>
   )

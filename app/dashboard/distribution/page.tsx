@@ -2,12 +2,11 @@
 
 import { useThesisGatedData } from "@/hooks/use-thesis-gated-data"
 import { VizPageShell } from "@/components/dashboard/viz-page-shell"
-import { VizFilterBar } from "@/components/viz-filter-bar"
 import { DistributionChart } from "@/components/charts/distribution-chart"
 import { Skeleton } from "@/components/ui/skeleton"
 
 function DistributionInner() {
-  const { companies, filtered, isLoading } = useThesisGatedData()
+  const { filtered, isLoading } = useThesisGatedData()
 
   return (
     <div className="space-y-4">
@@ -21,10 +20,7 @@ function DistributionInner() {
       {isLoading ? (
         <Skeleton className="h-[600px] rounded-xl" />
       ) : (
-        <>
-          <VizFilterBar companies={companies} />
           <DistributionChart data={filtered} className="h-[600px]" />
-        </>
       )}
     </div>
   )
