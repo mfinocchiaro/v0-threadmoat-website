@@ -117,8 +117,8 @@ function SignUpForm() {
       marketingConsent,
     })
     if (result.success) {
-      const productParam = pendingProduct ? `&product=${encodeURIComponent(pendingProduct)}` : ''
-      router.push(result.emailSent === false ? `/auth/sign-up-success?warn=email${productParam}` : `/auth/sign-up-success?${productParam.slice(1)}`)
+      const productParam = pendingProduct ? `product=${encodeURIComponent(pendingProduct)}` : ''
+      router.push(`/auth/sign-up-success?${productParam}`)
     } else {
       setError(result.error)
       setIsLoading(false)

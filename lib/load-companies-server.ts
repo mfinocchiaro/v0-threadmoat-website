@@ -3,6 +3,27 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import type { Company } from './company-data'
 
+/**
+ * Parse Python-style list strings from Airtable CSV exports:
+ *   "['Physics & Domain AI', 'System of Record Enhancement']"
+ * Returns clean string array with no brackets or quotes.
+ * Falls back to comma-split for plain CSV values.
+ */
+function parsePythonList(raw: string | undefined): string[] {
+  if (!raw) return []
+  const s = raw.trim()
+  if (s.startsWith('[') && s.endsWith(']')) {
+    // Strip outer brackets, then split on quoted boundaries
+    const inner = s.slice(1, -1)
+    return inner
+      .split(/,\s*/)
+      .map(v => v.replace(/^['"]|['"]$/g, '').trim())
+      .filter(Boolean)
+  }
+  // Plain comma-separated
+  return s.split(',').map(v => v.trim()).filter(Boolean)
+}
+
 const JUNK_VALUES = new Set(['n/a', 'n a', 'na', 'unknown', 'none', 'null', '-', '—'])
 function cleanField(value: string | undefined): string {
   const v = (value || '').trim()
@@ -111,29 +132,19 @@ export async function loadCompaniesFromCSV(): Promise<Company[]> {
     workflowSegment: row['Workflow Segment'] || '',
     subsegment: row['Subsegment'] || '',
     sectorFocus: row['Sector Focus'] || '',
-    categoryTags: Array.from(new Set(
-      (row['Category/Function Tags'] || '').split(',').map(t => t.trim()).filter(Boolean)
-    )),
-    differentiationTags: Array.from(new Set(
-      (row['Differentiation Tags'] || '').split(',').map(t => t.trim()).filter(Boolean)
-    )),
-    deploymentModel: Array.from(new Set(
-      (row['Deployment Model'] || '').split(',').map(t => t.trim()).filter(Boolean)
-    )),
-    operatingModelTags: Array.from(new Set(
-      (row['Operating Model Tags'] || '').split(',').map(t => t.trim()).filter(Boolean)
-    )),
+    categoryTags: Array.from(new Set(parsePythonList(row['Category/Function Tags']))),
+    differentiationTags: Array.from(new Set(parsePythonList(row['Differentiation Tags']))),
+    deploymentModel: Array.from(new Set(parsePythonList(row['Deployment Model']))),
+    operatingModelTags: Array.from(new Set(parsePythonList(row['Operating Model Tags']))),
     tags: Array.from(new Set([
-      ...(row['Tags'] || '').split(','),
-      ...(row['Category/Function Tags'] || '').split(','),
-      ...(row['Differentiation Tags'] || '').split(','),
-    ].map(t => t.trim()).filter(Boolean))),
+      ...parsePythonList(row['Tags']),
+      ...parsePythonList(row['Category/Function Tags']),
+      ...parsePythonList(row['Differentiation Tags']),
+    ])),
     manufacturingType: row['Manufacturing Type'] || '',
-    industriesServed: Array.from(new Set(
-      (row['Industries Served'] || '').split(',').map(t => t.trim()).filter(Boolean)
-    )),
+    industriesServed: Array.from(new Set(parsePythonList(row['Industries Served']))),
     investmentList: row['Investment List'] || '',
-    investmentTheses: (row['Investment Thesis'] || '').split(',').map((t: string) => t.trim()).filter(Boolean),
+    investmentTheses: parsePythonList(row['Investment Thesis']),
     subcategories: row['Subcategories'] || '',
     companyGroup: row['Company Group'] || '',
     startupLifecyclePhase: row['Startup Lifecycle Phase'] || '',

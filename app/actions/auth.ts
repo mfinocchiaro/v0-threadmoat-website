@@ -97,8 +97,30 @@ export async function registerUser(data: RegisterData): Promise<ActionResult> {
         // Verified account exists — generic message to prevent enumeration
         return { success: false, error: 'Unable to create account. Please try again or sign in.' }
       }
-      // Unverified account from a failed previous attempt — clean it up so they can retry
-      await sql`DELETE FROM users WHERE id = ${existing[0].id as string}`
+      // Unverified account from a previous attempt — update credentials, regenerate token, resend email
+      const passwordHash = await bcrypt.hash(password, 12)
+      const verificationToken = crypto.randomBytes(32).toString('hex')
+      const tokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000)
+
+      await sql`
+        UPDATE users SET password_hash = ${passwordHash}, verification_token = ${verificationToken},
+          verification_token_expires = ${tokenExpires.toISOString()}, invite_code = ${inviteCode}
+        WHERE id = ${existing[0].id as string}
+      `
+      await sql`
+        UPDATE profiles SET full_name = ${fullName}, company = ${company}, title = ${title},
+          profile_type = ${profileType}, phone = ${phone}, linkedin_url = ${linkedinUrl},
+          company_size = ${companySize ?? null}, marketing_consent = ${marketingConsent}
+        WHERE id = ${existing[0].id as string}
+      `
+
+      try {
+        await sendVerificationEmail(email, verificationToken)
+      } catch (err) {
+        console.error('[email verification] Failed to send on retry:', err)
+        return { success: false, error: 'Account updated but verification email failed to send. Please try again or contact support.' }
+      }
+      return { success: true, emailSent: true }
     }
 
     const passwordHash = await bcrypt.hash(password, 12)
@@ -130,15 +152,17 @@ export async function registerUser(data: RegisterData): Promise<ActionResult> {
 
     // --- Send verification email ---
     // Coupon is redeemed after email verification (see verifyEmail), not here.
-    let emailSent = true
     try {
       await sendVerificationEmail(email, verificationToken)
     } catch (err) {
       console.error('[email verification] Failed to send:', err)
-      emailSent = false
+      // Clean up the account — don't leave user stuck with no way to verify
+      await sql`DELETE FROM profiles WHERE id = ${user.id as string}`
+      await sql`DELETE FROM users WHERE id = ${user.id as string}`
+      return { success: false, error: 'Registration failed — could not send verification email. Please try again.' }
     }
 
-    return { success: true, emailSent }
+    return { success: true, emailSent: true }
   } catch (err) {
     console.error('[registerUser]', err)
     return { success: false, error: 'Registration failed. Please try again later.' }
