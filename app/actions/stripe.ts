@@ -8,17 +8,12 @@ import { sql } from '@/lib/db'
 
 export async function createCheckoutSession(productId: string, userEmail: string) {
   try {
-  console.log('[Checkout] Starting for productId:', productId, 'email:', userEmail)
-
   const product = getProduct(productId)
   if (!product) {
-    console.error('[Checkout] Product not found:', productId)
     throw new Error(`Product not found: ${productId}`)
   }
-  console.log('[Checkout] Product found:', product.name, 'mode:', product.mode)
 
   const session = await auth()
-  console.log('[Checkout] Auth result:', session?.user?.id ? 'authenticated' : 'NO SESSION')
   if (!session?.user?.id) {
     throw new Error('User not authenticated')
   }
@@ -28,15 +23,12 @@ export async function createCheckoutSession(productId: string, userEmail: string
   // Check if user already has a Stripe customer ID
   const rows = await sql`SELECT stripe_customer_id FROM profiles WHERE id = ${userId}`
   let customerId: string = (rows[0]?.stripe_customer_id as string) || ''
-  console.log('[Checkout] Existing customerId:', customerId || 'NONE')
 
   // Validate existing customer ID works with current Stripe key (test vs live mismatch)
   if (customerId) {
     try {
       await getStripe().customers.retrieve(customerId)
-      console.log('[Checkout] Customer validated OK')
-    } catch (err) {
-      console.log('[Checkout] Stale customer ID, creating new. Error:', String(err))
+    } catch {
       customerId = ''
       await sql`UPDATE profiles SET stripe_customer_id = NULL WHERE id = ${userId}`
     }
@@ -44,13 +36,11 @@ export async function createCheckoutSession(productId: string, userEmail: string
 
   // Create Stripe customer if one doesn't exist yet
   if (customerId === '') {
-    console.log('[Checkout] Creating new Stripe customer for:', userEmail)
     const customer = await getStripe().customers.create({
       email: userEmail,
       metadata: { user_id: userId },
     })
     customerId = customer.id
-    console.log('[Checkout] Created customer:', customerId)
 
     await sql`
       UPDATE profiles SET stripe_customer_id = ${customerId} WHERE id = ${userId}
@@ -61,12 +51,9 @@ export async function createCheckoutSession(productId: string, userEmail: string
     process.env.NEXT_PUBLIC_BASE_URL ||
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
 
-  console.log('[Checkout] Customer:', customerId, 'Mode:', product.mode, 'BaseURL:', baseUrl)
-
   if (product.mode === 'payment') {
     // One-time payment (e.g. market reports)
     const stripePriceId = getStripePriceId(productId)
-    console.log('[Checkout] StripePriceId resolved:', stripePriceId)
 
     const lineItem = stripePriceId
       ? { price: stripePriceId, quantity: 1 }
@@ -123,7 +110,7 @@ export async function createCheckoutSession(productId: string, userEmail: string
 
   return { url: checkoutSession.url }
   } catch (err) {
-    console.error('[Checkout] FULL ERROR:', String(err), err instanceof Error ? err.stack : '')
+    console.error('[Checkout]', err instanceof Error ? err.message : String(err))
     throw err
   }
 }
@@ -178,8 +165,6 @@ async function getUpgradeDiscounts(
 
   if (purchases.length === 0) return []
 
-  console.log('[Checkout] Analyst purchase found — applying $4,999 upgrade credit')
-
   // Ensure the coupon exists in Stripe (idempotent — retrieves if already created)
   const stripe = getStripe()
   try {
@@ -194,7 +179,6 @@ async function getUpgradeDiscounts(
       name: 'Analyst Upgrade Credit ($4,999)',
       metadata: { purpose: 'analyst_to_strategist_upgrade' },
     })
-    console.log('[Checkout] Created upgrade coupon:', UPGRADE_COUPON_ID)
   }
 
   return [{ coupon: UPGRADE_COUPON_ID }]

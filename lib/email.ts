@@ -34,7 +34,6 @@ export async function sendVerificationEmail(email: string, token: string) {
     console.error('[Resend] Verification email failed:', error)
     throw new Error(`Email send failed: ${error.message}`)
   }
-  console.log('[Resend] Verification email sent:', data?.id)
 }
 
 export async function sendPasswordResetEmail(email: string, token: string) {
@@ -51,7 +50,6 @@ export async function sendPasswordResetEmail(email: string, token: string) {
     console.error('[Resend] Password reset email failed:', error)
     throw new Error(`Email send failed: ${error.message}`)
   }
-  console.log('[Resend] Password reset email sent:', data?.id)
 }
 
 export async function sendWelcomeEmail(
@@ -76,7 +74,6 @@ export async function sendWelcomeEmail(
     console.error('[Resend] Welcome email failed:', error)
     throw new Error(`Email send failed: ${error.message}`)
   }
-  console.log('[Resend] Welcome email sent:', data?.id)
 }
 
 export async function sendReceiptEmail(
@@ -117,7 +114,6 @@ export async function sendReceiptEmail(
     console.error('[Resend] Receipt email failed:', error)
     throw new Error(`Email send failed: ${error.message}`)
   }
-  console.log('[Resend] Receipt email sent:', data?.id)
 }
 
 export async function sendAdminPurchaseNotification(
@@ -145,7 +141,5 @@ export async function sendAdminPurchaseNotification(
 
   if (error) {
     console.error('[Resend] Admin notification failed:', error)
-  } else {
-    console.log('[Resend] Admin purchase notification sent:', data?.id)
   }
 }
