@@ -35,12 +35,8 @@ jobs:
 
       - name: Commit Changes
         run: |
-          git add data/*.csv
-          if ! git diff --quiet --cached; then
-            git commit -m "chore: sync airtable data"
-          else
-            echo "No changes to commit"
-          fi
+          git add .
+          git commit -m "chore: sync airtable data" || true
 
       - name: Retry Logic for Git Push
         run: |
