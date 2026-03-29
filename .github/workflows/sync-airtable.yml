@@ -1,43 +1,46 @@
-name: Sync Airtable CSVs
+# Workflow to Sync Airtable
+
+name: Sync Airtable
 
 on:
-  schedule:
-    - cron: '0 6 * * 1'  # Every Monday at 6am UTC
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
+      - name: Set Up Node.js
+        uses: actions/setup-node@v2
         with:
-          python-version: '3.12'
+          node-version: '14'
 
-      - name: Install dependencies
-        run: pip install requests
+      - name: Install Dependencies
+        run: npm install
 
-      - name: Fetch Airtable CSVs
-        env:
-          AIRTABLE_TOKEN: ${{ secrets.AIRTABLE_TOKEN }}
-          AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
-        run: python scripts/fetch_airtable_csv.py
-
-      - name: Commit and push if changed
+      - name: Retry Logic for Git Push
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/*.csv
-          git diff --staged --quiet || (
-            git commit -m "chore(data): auto-sync Airtable CSVs [skip ci]" &&
-            git pull origin main &&
-            git push origin main
-          )
+          attempts=0
+          max_attempts=3
+          delay=2
+          while [ $attempts -lt $max_attempts ]; do
+            git pull --rebase
+            if [ $? -eq 0 ]; then
+              echo "Rebase successful, pushing changes..."
+              git push
+              exit 0
+            else
+              echo "Rebase failed, retrying in $delay seconds..."
+              attempts=$((attempts + 1))
+              sleep $delay
+            fi
+          done
+          echo "Failed to rebase after $max_attempts attempts, please resolve conflicts manually.
+          exit 1
+
+      - name: Notify on Success
+        run: echo 'Sync completed successfully!'
