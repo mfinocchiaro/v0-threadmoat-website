@@ -1,13 +1,13 @@
 {
   "meta": {
     "title": "Relatorio do Estado do Mercado 1T2026 - Software de Engenharia e IA Industrial",
-    "description": "Mais de 150 paginas de pesquisa original cobrindo 632 startups, 31 fornecedores incumbentes e $16,2B em financiamento VC. Baseado em mais de 200 entrevistas com fundadores."
+    "description": "Mais de 150 paginas de pesquisa original cobrindo 600 startups, 31 fornecedores incumbentes e $15,6B em financiamento VC. Baseado em mais de 200 entrevistas com fundadores."
   },
   "hero": {
     "badge": "Relatorio do Estado do Mercado 1T2026",
     "title": "Software de Engenharia e IA Industrial",
     "subtitle": "Relatorio do Estado do Mercado -- 1T2026",
-    "description": "A analise mais abrangente do ecossistema de startups de software de engenharia. Mais de 150 paginas de pesquisa original cobrindo 632 startups, 31 fornecedores incumbentes e $16,2B em financiamento VC -- baseado em mais de 200 entrevistas com fundadores e dados proprietarios.",
+    "description": "A analise mais abrangente do ecossistema de startups de software de engenharia. Mais de 150 paginas de pesquisa original cobrindo 600 startups, 31 fornecedores incumbentes e $15,6B em financiamento VC -- baseado em mais de 200 entrevistas com fundadores e dados proprietarios.",
     "author": "ThreadMoat Research -- Michael Finocchiaro -- Marco 2026",
     "purchaseCta": "Comprar Relatorio -- $4.999",
     "sampleCta": "Amostra Gratuita (30 paginas)"
@@ -28,7 +28,7 @@
     "title": "Para Quem e Este Relatorio",
     "subtitle": "Inteligencia estrategica para qualquer pessoa navegando o mercado de software de engenharia de mais de $120B.",
     "vcTitle": "Firmas de VC e PE",
-    "vcDesc": "Identifique fluxo de negocios, valide teses, mapeie co-investidores e compare empresas do portfolio com 632 pares.",
+    "vcDesc": "Identifique fluxo de negocios, valide teses, mapeie co-investidores e compare empresas do portfolio com 600 pares.",
     "corpTitle": "Estrategia Corporativa / M&A",
     "corpDesc": "Encontre alvos de aquisicao, avalie construir vs. comprar e entenda as dinamicas competitivas em cada segmento.",
     "startupTitle": "Fundadores de Startups",
@@ -65,7 +65,7 @@
     "ch5": "Parte 3: Tendencias Estruturais",
     "ch5d": "Migracao para cloud, integracao de IA e disruptacao de precos",
     "ch6": "Parte 4: O Ecossistema de Startups",
-    "ch6d": "632 startups em 10 categorias de investimento",
+    "ch6d": "600 startups em 10 categorias de investimento",
     "ch7": "Parte 5: Adocao pelo Cliente",
     "ch7d": "Padroes de compra empresarial e sinais de implantacao",
     "ch8": "Parte 6: O Panorama dos Investidores",
@@ -87,7 +87,7 @@
     "ch16": "Parte 14: Compradores de Tecnologia",
     "ch16d": "O que isso significa para OEMs, ISVs e empresas de plataforma",
     "ch17": "Apendice A",
-    "ch17d": "Perfis de empresas -- todas as 632 startups perfiladas",
+    "ch17d": "Perfis de empresas -- todas as 600 startups perfiladas",
     "ch18": "Apendice B",
     "ch18d": "Diretorio de investidores -- 2.788 investidores e VCs"
   }

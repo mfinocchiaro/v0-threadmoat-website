@@ -85,7 +85,7 @@ export default async function AboutPage({ params }: Props) {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
               {[
                 { stat: "600+", label: t('about.startupsTracked') },
-                { stat: ">$16B", label: t('about.vcFunding') },
+                { stat: ">$15B", label: t('about.vcFunding') },
                 { stat: "43", label: t('about.countries') },
                 { stat: "10", label: t('about.marketSubsegments') },
               ].map(s => (

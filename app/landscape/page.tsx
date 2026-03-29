@@ -103,7 +103,7 @@ export default function PublicLandscapePage() {
           <p className="text-muted-foreground mt-3 text-base leading-relaxed">
             ThreadMoat maps the engineering software ecosystem across ten domains spanning design,
             simulation, manufacturing, operations, supply chain, AEC, robotics, and research systems.
-            Each of our 550+ tracked startups is categorized within one primary investment domain.
+            Each of our 600+ tracked startups is categorized within one primary investment domain.
           </p>
         </div>
 

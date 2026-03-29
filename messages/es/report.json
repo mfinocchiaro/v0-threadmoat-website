@@ -1,13 +1,13 @@
 {
   "meta": {
     "title": "Informe de mercado 1T2026 - Software de ingenier\u00eda e IA industrial",
-    "description": "150+ p\u00e1ginas de investigaci\u00f3n original cubriendo 632 startups, 31 proveedores incumbentes y $16.2B en financiamiento VC. Basado en 200+ entrevistas con fundadores."
+    "description": "150+ p\u00e1ginas de investigaci\u00f3n original cubriendo 600 startups, 31 proveedores incumbentes y $15.6B en financiamiento VC. Basado en 200+ entrevistas con fundadores."
   },
   "hero": {
     "badge": "Informe de estado del mercado 1T2026",
     "title": "Software de ingenier\u00eda e IA industrial",
     "subtitle": "Informe de estado del mercado \u2014 1T2026",
-    "description": "El an\u00e1lisis m\u00e1s completo del ecosistema de startups de software de ingenier\u00eda. 150+ p\u00e1ginas de investigaci\u00f3n original cubriendo 632 startups, 31 proveedores incumbentes y $16.2B en financiamiento VC \u2014 basado en 200+ entrevistas con fundadores y datos propietarios.",
+    "description": "El an\u00e1lisis m\u00e1s completo del ecosistema de startups de software de ingenier\u00eda. 150+ p\u00e1ginas de investigaci\u00f3n original cubriendo 600 startups, 31 proveedores incumbentes y $15.6B en financiamiento VC \u2014 basado en 200+ entrevistas con fundadores y datos propietarios.",
     "author": "ThreadMoat Research \u2014 Michael Finocchiaro \u2014 Marzo 2026",
     "purchaseCta": "Comprar informe \u2014 $4,999",
     "sampleCta": "Muestra gratuita (30 p\u00e1ginas)"
@@ -28,7 +28,7 @@
     "title": "Para qui\u00e9n es esto",
     "subtitle": "Inteligencia estrat\u00e9gica para cualquiera que navega el mercado de software de ingenier\u00eda de $120B+.",
     "vcTitle": "Firmas VC y PE",
-    "vcDesc": "Identifique deal flow, valide tesis, mapee co-inversores y compare empresas del cartera contra 632 pares.",
+    "vcDesc": "Identifique deal flow, valide tesis, mapee co-inversores y compare empresas del cartera contra 600 pares.",
     "corpTitle": "Estrategia corporativa / M&A",
     "corpDesc": "Encuentre objetivos de adquisici\u00f3n, eval\u00fae construir vs. comprar y comprenda las din\u00e1micas competitivas en cada segmento.",
     "startupTitle": "Fundadores de startups",
@@ -65,11 +65,11 @@
     "ch5": "Parte 3: Tendencias estructurales",
     "ch5d": "Migraci\u00f3n a la nube, integraci\u00f3n de IA y disrupci\u00f3n de precios",
     "ch6": "Parte 4: El ecosistema de startups",
-    "ch6d": "632 startups en 10 categor\u00edas de inversi\u00f3n",
+    "ch6d": "600 startups en 10 categor\u00edas de inversi\u00f3n",
     "ch7": "Parte 5: Adopci\u00f3n del cliente",
     "ch7d": "Patrones de compra empresarial y se\u00f1ales de despliegue",
     "ch8": "Parte 6: El panorama de inversores",
-    "ch8d": "2,788 inversores mapeados por etapa de financiamiento",
+    "ch8d": "2,400+ inversores mapeados por etapa de financiamiento",
     "ch9": "Parte 7: Dimensionamiento revisado del mercado",
     "ch9d": "Previsi\u00f3n de mercado de $120-140B hasta 2028",
     "ch10": "Parte 8: La se\u00f1al de consolidaci\u00f3n",
@@ -87,8 +87,8 @@
     "ch16": "Parte 14: Compradores de tecnolog\u00eda",
     "ch16d": "Lo que esto significa para OEMs, ISVs y empresas de plataforma",
     "ch17": "Ap\u00e9ndice A",
-    "ch17d": "Perfiles de empresas \u2014 las 632 startups perfiladas",
+    "ch17d": "Perfiles de empresas \u2014 las 600 startups perfiladas",
     "ch18": "Ap\u00e9ndice B",
-    "ch18d": "Directorio de inversores \u2014 2,788 inversores y VCs"
+    "ch18d": "Directorio de inversores \u2014 2,400+ inversores y VCs"
   }
 }

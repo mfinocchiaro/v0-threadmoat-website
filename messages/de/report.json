@@ -1,13 +1,13 @@
 {
   "meta": {
     "title": "Marktbericht 1Q2026 - Engineering-Software & Industrielle KI",
-    "description": "150+ Seiten Originalforschung zu 632 Startups, 31 Incumbent-Anbietern und $16,2B VC-Finanzierung. Basierend auf 200+ Gr\u00fcnderinterviews."
+    "description": "150+ Seiten Originalforschung zu 600 Startups, 31 Incumbent-Anbietern und $15,6B VC-Finanzierung. Basierend auf 200+ Gr\u00fcnderinterviews."
   },
   "hero": {
     "badge": "Marktstatusbericht 1Q2026",
     "title": "Engineering-Software & Industrielle KI",
     "subtitle": "Marktstatusbericht \u2014 1Q2026",
-    "description": "Die umfassendste Analyse des Engineering-Software-Startup-\u00d6kosystems. 150+ Seiten Originalforschung zu 632 Startups, 31 Incumbent-Anbietern und $16,2B VC-Finanzierung \u2014 basierend auf 200+ Gr\u00fcnderinterviews und propriet\u00e4ren Daten.",
+    "description": "Die umfassendste Analyse des Engineering-Software-Startup-\u00d6kosystems. 150+ Seiten Originalforschung zu 600 Startups, 31 Incumbent-Anbietern und $15,6B VC-Finanzierung \u2014 basierend auf 200+ Gr\u00fcnderinterviews und propriet\u00e4ren Daten.",
     "author": "ThreadMoat Research \u2014 Michael Finocchiaro \u2014 M\u00e4rz 2026",
     "purchaseCta": "Bericht kaufen \u2014 $4.999",
     "sampleCta": "Kostenloses Muster (30 Seiten)"
@@ -28,7 +28,7 @@
     "title": "F\u00fcr wen ist das",
     "subtitle": "Strategische Intelligenz f\u00fcr alle, die im $120B+ Engineering-Software-Markt navigieren.",
     "vcTitle": "VC- & PE-Firmen",
-    "vcDesc": "Identifizieren Sie Deal Flow, validieren Sie Thesen, kartieren Sie Co-Investoren und benchmarken Sie Portfoliounternehmen gegen 632 Peers.",
+    "vcDesc": "Identifizieren Sie Deal Flow, validieren Sie Thesen, kartieren Sie Co-Investoren und benchmarken Sie Portfoliounternehmen gegen 600 Peers.",
     "corpTitle": "Unternehmensstrategie / M&A",
     "corpDesc": "Finden Sie Akquisitionsziele, bewerten Sie Make vs. Buy und verstehen Sie die Wettbewerbsdynamiken in jedem Segment.",
     "startupTitle": "Startup-Gr\u00fcnder",
@@ -65,7 +65,7 @@
     "ch5": "Teil 3: Strukturelle Trends",
     "ch5d": "Cloud-Migration, KI-Integration und Preisdisruption",
     "ch6": "Teil 4: Das Startup-\u00d6kosystem",
-    "ch6d": "632 Startups in 10 Investmentkategorien",
+    "ch6d": "600 Startups in 10 Investmentkategorien",
     "ch7": "Teil 5: Kundenadoption",
     "ch7d": "Enterprise-Kaufmuster und Deployment-Signale",
     "ch8": "Teil 6: Die Investorenlandschaft",
@@ -87,7 +87,7 @@
     "ch16": "Teil 14: Technologie-Eink\u00e4ufer",
     "ch16d": "Was das f\u00fcr OEMs, ISVs und Plattformunternehmen bedeutet",
     "ch17": "Anhang A",
-    "ch17d": "Unternehmensprofile \u2014 alle 632 Startups profiliert",
+    "ch17d": "Unternehmensprofile \u2014 alle 600 Startups profiliert",
     "ch18": "Anhang B",
     "ch18d": "Investorenverzeichnis \u2014 2.788 Investoren und VCs"
   }

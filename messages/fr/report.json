@@ -1,13 +1,13 @@
 {
   "meta": {
     "title": "Rapport de march\u00e9 1T2026 - Logiciels d'ing\u00e9nierie et IA industrielle",
-    "description": "150+ pages de recherche originale couvrant 632 startups, 31 \u00e9diteurs historiques et 16,2 Md$ de financement VC. Bas\u00e9 sur 200+ entretiens avec des fondateurs."
+    "description": "150+ pages de recherche originale couvrant 600 startups, 31 \u00e9diteurs historiques et 15,6 Md$ de financement VC. Bas\u00e9 sur 200+ entretiens avec des fondateurs."
   },
   "hero": {
     "badge": "Rapport d'\u00e9tat du march\u00e9 1T2026",
     "title": "Logiciels d'ing\u00e9nierie et IA industrielle",
     "subtitle": "Rapport d'\u00e9tat du march\u00e9 \u2014 1T2026",
-    "description": "L'analyse la plus compl\u00e8te de l'\u00e9cosyst\u00e8me des startups en logiciels d'ing\u00e9nierie. 150+ pages de recherche originale couvrant 632 startups, 31 \u00e9diteurs historiques et 16,2 Md$ de financement VC \u2014 bas\u00e9 sur 200+ entretiens avec des fondateurs et des donn\u00e9es propri\u00e9taires.",
+    "description": "L'analyse la plus compl\u00e8te de l'\u00e9cosyst\u00e8me des startups en logiciels d'ing\u00e9nierie. 150+ pages de recherche originale couvrant 600 startups, 31 \u00e9diteurs historiques et 15,6 Md$ de financement VC \u2014 bas\u00e9 sur 200+ entretiens avec des fondateurs et des donn\u00e9es propri\u00e9taires.",
     "author": "ThreadMoat Research \u2014 Michael Finocchiaro \u2014 Mars 2026",
     "purchaseCta": "Acheter le rapport \u2014 4 999 $",
     "sampleCta": "\u00c9chantillon gratuit (30 pages)"
@@ -28,7 +28,7 @@
     "title": "\u00c0 qui s'adresse ce rapport",
     "subtitle": "Intelligence strat\u00e9gique pour tous les acteurs du march\u00e9 des logiciels d'ing\u00e9nierie de 120+ Md$.",
     "vcTitle": "Fonds VC et PE",
-    "vcDesc": "Identifiez le deal flow, validez vos th\u00e8ses, cartographiez les co-investisseurs et benchmarkez les entreprises du portefeuille par rapport \u00e0 632 pairs.",
+    "vcDesc": "Identifiez le deal flow, validez vos th\u00e8ses, cartographiez les co-investisseurs et benchmarkez les entreprises du portefeuille par rapport \u00e0 600 pairs.",
     "corpTitle": "Strat\u00e9gie d'entreprise / M&A",
     "corpDesc": "Trouvez des cibles d'acquisition, \u00e9valuez construire vs. acheter et comprenez les dynamiques concurrentielles dans chaque segment.",
     "startupTitle": "Fondateurs de startups",
@@ -65,7 +65,7 @@
     "ch5": "Partie 3 : Tendances structurelles",
     "ch5d": "Migration cloud, int\u00e9gration IA et disruption tarifaire",
     "ch6": "Partie 4 : L'\u00e9cosyst\u00e8me des startups",
-    "ch6d": "632 startups dans 10 cat\u00e9gories d'investissement",
+    "ch6d": "600 startups dans 10 cat\u00e9gories d'investissement",
     "ch7": "Partie 5 : Adoption client",
     "ch7d": "Mod\u00e8les d'achat entreprise et signaux de d\u00e9ploiement",
     "ch8": "Partie 6 : Le paysage des investisseurs",
@@ -87,7 +87,7 @@
     "ch16": "Partie 14 : Acheteurs de technologies",
     "ch16d": "Ce que cela signifie pour les OEM, ISV et plateformes",
     "ch17": "Annexe A",
-    "ch17d": "Profils d'entreprises \u2014 les 632 startups profil\u00e9es",
+    "ch17d": "Profils d'entreprises \u2014 les 600 startups profil\u00e9es",
     "ch18": "Annexe B",
     "ch18d": "R\u00e9pertoire des investisseurs \u2014 2 788 investisseurs et VCs"
   }

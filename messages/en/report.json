@@ -1,13 +1,13 @@
 {
   "meta": {
     "title": "Market State Report 1Q2026 - Engineering Software & Industrial AI",
-    "description": "150+ pages of original research covering 632 startups, 31 incumbent vendors, and $16.2B in VC funding. Based on 200+ founder interviews."
+    "description": "150+ pages of original research covering 600 startups, 31 incumbent vendors, and $15.6B in VC funding. Based on 200+ founder interviews."
   },
   "hero": {
     "badge": "1Q2026 Market State Report",
     "title": "Engineering Software & Industrial AI",
     "subtitle": "Market State Report — 1Q2026",
-    "description": "The most comprehensive analysis of the engineering software startup ecosystem. 150+ pages of original research covering 632 startups, 31 incumbent vendors, and $16.2B in VC funding — based on 200+ founder interviews and proprietary data.",
+    "description": "The most comprehensive analysis of the engineering software startup ecosystem. 150+ pages of original research covering 600 startups, 31 incumbent vendors, and $15.6B in VC funding — based on 200+ founder interviews and proprietary data.",
     "author": "ThreadMoat Research — Michael Finocchiaro — March 2026",
     "purchaseCta": "Purchase Report — $4,999",
     "sampleCta": "Free Sample (30 pages)"
@@ -28,7 +28,7 @@
     "title": "Who Is This For",
     "subtitle": "Strategic intelligence for anyone navigating the $120B+ engineering software market.",
     "vcTitle": "VC & PE Firms",
-    "vcDesc": "Identify deal flow, validate theses, map co-investors, and benchmark portfolio companies against 632 peers.",
+    "vcDesc": "Identify deal flow, validate theses, map co-investors, and benchmark portfolio companies against 600 peers.",
     "corpTitle": "Corporate Strategy / M&A",
     "corpDesc": "Find acquisition targets, evaluate build vs. buy, and understand the competitive dynamics in each segment.",
     "startupTitle": "Startup Founders",
@@ -65,11 +65,11 @@
     "ch5": "Part 3: Structural Trends",
     "ch5d": "Cloud migration, AI integration, and pricing disruption",
     "ch6": "Part 4: The Startup Ecosystem",
-    "ch6d": "632 startups across 10 investment categories",
+    "ch6d": "600 startups across 10 investment categories",
     "ch7": "Part 5: Customer Adoption",
     "ch7d": "Enterprise buying patterns and deployment signals",
     "ch8": "Part 6: The Investor Landscape",
-    "ch8d": "2,788 investors mapped across funding stages",
+    "ch8d": "2,400+ investors mapped across funding stages",
     "ch9": "Part 7: Revised Market Sizing",
     "ch9d": "$120-140B market forecast through 2028",
     "ch10": "Part 8: The Consolidation Signal",
@@ -87,8 +87,8 @@
     "ch16": "Part 14: Technology Buyers",
     "ch16d": "What this means for OEMs, ISVs, and platform companies",
     "ch17": "Appendix A",
-    "ch17d": "Company profiles — all 632 startups profiled",
+    "ch17d": "Company profiles — all 600 startups profiled",
     "ch18": "Appendix B",
-    "ch18d": "Investor directory — 2,788 investors and VCs"
+    "ch18d": "Investor directory — 2,400+ investors and VCs"
   }
 }
