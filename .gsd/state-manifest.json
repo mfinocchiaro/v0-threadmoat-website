@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exported_at": "2026-03-29T22:47:21.591Z",
+  "exported_at": "2026-03-30T15:42:22.851Z",
   "milestones": [
     {
       "id": "M001",
@@ -24,10 +24,10 @@
     {
       "id": "M002",
       "title": "",
-      "status": "queued",
+      "status": "complete",
       "depends_on": [],
       "created_at": "2026-03-29T19:39:54.205Z",
-      "completed_at": null,
+      "completed_at": "2026-03-30T15:42:21.837Z",
       "vision": "Fix the broken sign-up flow, remove deprecated code, surface unused pipeline data in charts, and visually verify every dashboard chart renders correctly with filtered data.",
       "success_criteria": [
         "A new user (like James) can complete the full sign-up → verify email → login → onboarding wizard flow without errors",
