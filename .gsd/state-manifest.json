@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exported_at": "2026-04-01T21:45:51.225Z",
+  "exported_at": "2026-04-01T21:57:26.866Z",
   "milestones": [
     {
       "id": "M001",
@@ -727,14 +727,14 @@
       "milestone_id": "M005",
       "id": "S01",
       "title": "Filter Workflow Onboarding",
-      "status": "pending",
+      "status": "complete",
       "risk": "low",
       "depends": [],
       "demo": "New user sees a brief tooltip or guide explaining the filter→chart workflow on first visit.",
       "created_at": "2026-04-01T21:29:32.503Z",
-      "completed_at": null,
-      "full_summary_md": "",
-      "full_uat_md": "",
+      "completed_at": "2026-04-01T21:47:31.222Z",
+      "full_summary_md": "---\nid: S01\nparent: M005\nmilestone: M005\nprovides:\n  - FilterOnboardingGuide component pattern for inline dismissable callouts in the dashboard\nrequires:\n  []\naffects:\n  []\nkey_files:\n  - components/dashboard/filter-onboarding-guide.tsx\n  - components/dashboard/filter-toolbar.tsx\nkey_decisions:\n  - SSR-safe localStorage: default to hidden, hydrate in useEffect to avoid hydration mismatch\n  - useRef to track previous activeFilterCount for 0→>0 auto-dismiss transition\npatterns_established:\n  - SSR-safe localStorage hydration pattern (default hidden → useEffect read → hydrated gate) for client-only persistence in Next.js dashboard components\nobservability_surfaces:\n  - none\ndrill_down_paths:\n  - .gsd/milestones/M005/slices/S01/tasks/T01-SUMMARY.md\nduration: \"\"\nverification_result: passed\ncompleted_at: 2026-04-01T21:47:31.223Z\nblocker_discovered: false\n---\n\n# S01: Filter Workflow Onboarding\n\n**Dismissable inline onboarding callout teaches new dashboard visitors that filters apply to all charts, with localStorage persistence and auto-dismiss on first filter use.**\n\n## What Happened\n\nBuilt a single FilterOnboardingGuide component that renders a compact info bar inside FilterToolbar's sticky container, above the filter chips row. The callout explains that filters apply to all charts simultaneously. It dismisses permanently via an X button or auto-dismisses when the user applies their first filter (activeFilterCount transitions from 0 to >0, tracked via useRef). Dismissal persists in localStorage under the key `filter-onboarding-dismissed`.\n\nThe component uses an SSR-safe hydration pattern: state defaults to hidden (dismissed=true), then reads localStorage in a useEffect after mount. A separate `hydrated` flag gates rendering to prevent flash. This avoids React hydration mismatches since localStorage is unavailable during server-side rendering.\n\nThe component was mounted in FilterToolbar between the sticky container top and the chips/no-filters row, so it appears inline with the toolbar and scrolls naturally with it.\n\n## Verification\n\nnpm run build passes cleanly (exit 0). grep confirms `filter-onboarding-dismissed` localStorage key present in filter-onboarding-guide.tsx. grep confirms `FilterOnboardingGuide` imported and rendered in filter-toolbar.tsx.\n\n## Requirements Advanced\n\nNone.\n\n## Requirements Validated\n\nNone.\n\n## New Requirements Surfaced\n\nNone.\n\n## Requirements Invalidated or Re-scoped\n\nNone.\n\n## Deviations\n\nNone.\n\n## Known Limitations\n\nNone. The callout is a simple one-shot component with no runtime dependencies beyond localStorage.\n\n## Follow-ups\n\nNone.\n\n## Files Created/Modified\n\n- `components/dashboard/filter-onboarding-guide.tsx` — New component: dismissable inline onboarding callout with localStorage persistence and auto-dismiss on first filter use\n- `components/dashboard/filter-toolbar.tsx` — Added FilterOnboardingGuide import and render inside sticky toolbar container above chips row\n",
+      "full_uat_md": "# S01: Filter Workflow Onboarding — UAT\n\n**Milestone:** M005\n**Written:** 2026-04-01T21:47:31.223Z\n\n# S01: Filter Workflow Onboarding — UAT\n\n**Milestone:** M005\n**Written:** 2026-04-01\n\n## UAT Type\n\n- UAT mode: human-experience\n- Why this mode is sufficient: This is a UI onboarding feature. The key behaviors (visibility, dismissal, persistence) require visual confirmation in a browser session with localStorage access.\n\n## Preconditions\n\n- Dev server running (`npm run dev`)\n- Browser localStorage cleared for the site (or `filter-onboarding-dismissed` key removed)\n- User logged in with dashboard access\n\n## Smoke Test\n\nNavigate to `/dashboard`. A blue info-icon callout should appear at the top of the filter toolbar saying filters apply to all charts. If it doesn't appear, check that `filter-onboarding-dismissed` is not already set in localStorage.\n\n## Test Cases\n\n### 1. Callout appears for new users\n\n1. Clear localStorage (DevTools → Application → Local Storage → clear all for this origin)\n2. Navigate to `/dashboard`\n3. **Expected:** A compact info bar appears at the top of the filter toolbar with a blue info icon, text about filters applying to all charts, and an X dismiss button.\n\n### 2. Dismiss via X button persists\n\n1. With the callout visible, click the X button\n2. **Expected:** Callout disappears immediately\n3. Refresh the page\n4. **Expected:** Callout does not reappear\n5. Check localStorage: `filter-onboarding-dismissed` should equal `\"true\"`\n\n### 3. Auto-dismiss on first filter application\n\n1. Clear localStorage and refresh to show the callout\n2. Apply any filter (e.g., select an Investment List from the filter dropdowns)\n3. **Expected:** Callout disappears automatically when the first filter is applied\n4. Refresh the page\n5. **Expected:** Callout does not reappear (localStorage key is set)\n\n### 4. Callout does not appear for returning users\n\n1. With `filter-onboarding-dismissed` = `\"true\"` in localStorage, navigate to `/dashboard`\n2. **Expected:** No callout visible. Filter toolbar shows chips or \"No filters active\" as normal.\n\n## Edge Cases\n\n### localStorage unavailable (private/incognito)\n\n1. Open the dashboard in a private/incognito window where localStorage may throw\n2. **Expected:** Callout stays hidden (fails safe to dismissed). No console errors.\n\n### Rapid filter toggle\n\n1. Clear localStorage, refresh to show callout\n2. Rapidly click a filter on and off\n3. **Expected:** Callout auto-dismisses on the first filter application and does not reappear even after removing the filter.\n\n## Failure Signals\n\n- Callout appears on every page load despite having been dismissed (localStorage not being read)\n- React hydration mismatch error in console (SSR rendering differs from client)\n- Callout flashes briefly then disappears on page load (hydration timing issue)\n- Console errors related to localStorage access\n\n## Not Proven By This UAT\n\n- That the callout message text is optimal for user comprehension (copy testing)\n- Behavior on non-dashboard pages (component only renders inside FilterToolbar)\n- Accessibility screen reader experience (component has role=\"status\" and aria-label on dismiss)\n\n## Notes for Tester\n\n- The callout is intentionally subtle — a thin bar, not a modal or dialog. It should feel like a gentle hint, not an interruption.\n- The auto-dismiss on first filter is the primary expected path — most users will interact with filters quickly.\n",
       "goal": "New dashboard visitors see a brief inline callout explaining that the filter toolbar applies to all charts simultaneously. The callout dismisses permanently on click or auto-dismisses after the user applies their first filter.",
       "success_criteria": "- Callout appears for new users (no `filter-onboarding-dismissed` key in localStorage)\n- Callout explains the filter→chart workflow in one sentence\n- Clicking the dismiss button hides the callout and sets `filter-onboarding-dismissed` in localStorage\n- Applying any filter auto-dismisses the callout and sets the localStorage key\n- Callout does not appear on subsequent visits after dismissal\n- `npm run build` passes with no type errors\n- No hydration mismatches (localStorage reads guarded with useEffect)",
       "proof_level": "Build verification — `npm run build` confirms type correctness and compilation. No runtime or UAT required for this low-risk UI hint.",
@@ -755,11 +755,11 @@
       "completed_at": null,
       "full_summary_md": "",
       "full_uat_md": "",
-      "goal": "Replace template-based narratives in the report generator with LLM-generated analysis. The AI acts as an expert analyst interpreting the data, producing sections like Insights, Surprises, Concerns, Conclusions, Considerations, Opportunities.",
-      "success_criteria": "Report includes AI-generated Insights, Concerns, Opportunities sections with specific company/data references. Narrative reads like expert analysis, not generic summary.",
-      "proof_level": "Generated report reviewed for quality",
-      "integration_closure": "LLM receives company data + filter context, returns structured narrative",
-      "observability_impact": "API cost tracking for LLM calls",
+      "goal": "Report generator produces AI-generated narrative sections (Impressions, Conclusions, Beware, Overlooked Opportunities) for selected companies using Claude via Vercel AI SDK streaming.",
+      "success_criteria": "## Must-Haves\n\n- Vercel AI SDK (`ai`, `@ai-sdk/anthropic`) installed and configured\n- Streaming API route at `/api/ai/narrative` with auth + rate limiting\n- Prompt includes all 7 score dimensions with justifications, strengths, weaknesses, financials, and industry context\n- AI narrative streams into the Intelligence Report tab below the existing template output\n- Four clearly labeled sections in output: Impressions, Conclusions, Beware, Overlooked Opportunities\n- Loading state with stop button while streaming\n- Graceful error handling: missing API key, rate limit exceeded, company not found, LLM timeout\n- `npm run build` passes with no type errors\n\n## Threat Surface\n\n- **Abuse**: Unauthenticated callers could generate expensive LLM completions. Mitigated by `auth()` check + aggressive rate limiting (10 requests/hour per user). Company ID parameter must be validated against loaded CSV — arbitrary strings cannot reach the LLM prompt.\n- **Data exposure**: Company data (scores, financials, justifications) is sent to Anthropic's API. This is acceptable for the product — it's the same data shown in the dashboard. No PII or user credentials are included in prompts. API keys must never appear in client-side code or responses.\n- **Input trust**: The `companyId` field from the POST body is the only user input. It is validated against the loaded CSV dataset — no raw user input reaches the LLM prompt template. The prompt itself is entirely server-constructed.\n\n## Requirement Impact\n\n- **Requirements touched**: None — MON-01 (Stripe coupon) is already validated. This slice introduces new capability, not modifications to existing requirements.\n- **Re-verify**: Existing report generation (template-based) must still work after UI changes.\n- **Decisions revisited**: None.\n\n## Proof Level\n\n- This slice proves: integration\n- Real runtime required: yes (LLM API call)\n- Human/UAT required: yes (narrative quality is subjective)\n\n## Verification\n\n- `npm run build` passes with no type errors\n- `test -f app/api/ai/narrative/route.ts` — API route exists\n- `grep -q \"streamText\" app/api/ai/narrative/route.ts` — uses streaming\n- `grep -q \"useCompletion\" components/charts/report-generator.tsx` — client streaming wired\n- `grep -q \"auth()\" app/api/ai/narrative/route.ts` — auth gate present\n- `grep -q \"rateLimit\" app/api/ai/narrative/route.ts` — rate limiting present\n- Manual verification: start dev server, navigate to Reports > Intelligence Reports, select company, click \"AI Analysis\" button, observe streaming narrative with four sections\n\n## Observability / Diagnostics\n\n- Runtime signals: Console error logs on API route failures (auth rejection, rate limit, LLM error) with structured context (userId, companyId, error type)\n- Inspection surfaces: Browser network tab shows `/api/ai/narrative` request status and streaming response. Rate limit headers in 429 responses.\n- Failure visibility: Client UI shows error message with specific cause (rate limited, API key missing, generation failed). Server logs include error type and timestamp.\n- Redaction constraints: ANTHROPIC_API_KEY must never appear in logs or client responses. Company data sent to Anthropic is product data, not PII.\n\n## Integration Closure\n\n- Upstream surfaces consumed: `lib/load-companies-server.ts` (CSV→Company), `lib/rate-limit.ts` (rate limiter), `auth.ts` (session auth), `lib/company-data.ts` (Company type)\n- New wiring introduced in this slice: `/api/ai/narrative` route + `useCompletion` hook in report-generator.tsx consuming that route\n- What remains before the milestone is truly usable end-to-end: S03 (Company Shortlist) and S04 (Custom Report Builder) — AI narratives work standalone but aren't yet integrated into the full report builder workflow",
+      "proof_level": "integration",
+      "integration_closure": "Upstream: lib/load-companies-server.ts, lib/rate-limit.ts, auth.ts, lib/company-data.ts. New wiring: /api/ai/narrative route + useCompletion in report-generator.tsx. Remaining: S03 shortlist + S04 report builder for full workflow.",
+      "observability_impact": "Console error logs on API failures with userId/companyId/error type. Client UI error states. Rate limit 429 responses with context.",
       "sequence": 0,
       "replan_triggered_at": null
     },
@@ -1792,6 +1792,91 @@
       "observability_impact": "",
       "full_plan_md": "",
       "sequence": 0
+    },
+    {
+      "milestone_id": "M005",
+      "slice_id": "S02",
+      "id": "T01",
+      "title": "Installed ai@6.0.142 + @ai-sdk/anthropic@3.0.64 and created authenticated, rate-limited streaming narrative endpoint at /api/ai/narrative",
+      "status": "complete",
+      "one_liner": "Installed ai@6.0.142 + @ai-sdk/anthropic@3.0.64 and created authenticated, rate-limited streaming narrative endpoint at /api/ai/narrative",
+      "narrative": "Installed Vercel AI SDK and Anthropic provider. Created POST route at app/api/ai/narrative/route.ts following the established auth → rate-limit → validate → load → respond pattern. Route accepts { companyId }, loads from CSV, builds a structured prompt with all 7 score dimensions, financials, tags, and competitive data, then streams via streamText() with anthropic('claude-sonnet-4-5'). System prompt establishes senior investment analyst persona producing four sections: Impressions, Conclusions, Beware, Overlooked Opportunities. Full error handling: 400/401/404/429/500 with structured JSON bodies. Rate limited to 10 req/hour/user. maxDuration=60 for Vercel timeout. Adapted to SDK v6 API differences: maxOutputTokens instead of maxTokens, toTextStreamResponse instead of toDataStreamResponse.",
+      "verification_result": "All 6 slice-level verification checks pass: npm run build (0 type errors, 97 pages), file exists, streamText/auth/rateLimit/maxDuration all present in route.",
+      "duration": "",
+      "completed_at": "2026-04-01T21:57:26.846Z",
+      "blocker_discovered": false,
+      "deviations": "Used maxOutputTokens instead of maxTokens (SDK v6 rename). Used toTextStreamResponse() instead of toDataStreamResponse() (doesn't exist in ai SDK v6). Both caught by TypeScript build.",
+      "known_issues": "None.",
+      "key_files": [
+        "app/api/ai/narrative/route.ts",
+        "package.json",
+        "package-lock.json"
+      ],
+      "key_decisions": [
+        "Used toTextStreamResponse() — toDataStreamResponse doesn't exist in ai SDK v6",
+        "Used maxOutputTokens — SDK v6 renamed from maxTokens",
+        "Model string: claude-sonnet-4-5 via @ai-sdk/anthropic v3"
+      ],
+      "full_summary_md": "---\nid: T01\nparent: S02\nmilestone: M005\nkey_files:\n  - app/api/ai/narrative/route.ts\n  - package.json\n  - package-lock.json\nkey_decisions:\n  - Used toTextStreamResponse() — toDataStreamResponse doesn't exist in ai SDK v6\n  - Used maxOutputTokens — SDK v6 renamed from maxTokens\n  - Model string: claude-sonnet-4-5 via @ai-sdk/anthropic v3\nduration: \"\"\nverification_result: passed\ncompleted_at: 2026-04-01T21:57:26.847Z\nblocker_discovered: false\n---\n\n# T01: Installed ai@6.0.142 + @ai-sdk/anthropic@3.0.64 and created authenticated, rate-limited streaming narrative endpoint at /api/ai/narrative\n\n**Installed ai@6.0.142 + @ai-sdk/anthropic@3.0.64 and created authenticated, rate-limited streaming narrative endpoint at /api/ai/narrative**\n\n## What Happened\n\nInstalled Vercel AI SDK and Anthropic provider. Created POST route at app/api/ai/narrative/route.ts following the established auth → rate-limit → validate → load → respond pattern. Route accepts { companyId }, loads from CSV, builds a structured prompt with all 7 score dimensions, financials, tags, and competitive data, then streams via streamText() with anthropic('claude-sonnet-4-5'). System prompt establishes senior investment analyst persona producing four sections: Impressions, Conclusions, Beware, Overlooked Opportunities. Full error handling: 400/401/404/429/500 with structured JSON bodies. Rate limited to 10 req/hour/user. maxDuration=60 for Vercel timeout. Adapted to SDK v6 API differences: maxOutputTokens instead of maxTokens, toTextStreamResponse instead of toDataStreamResponse.\n\n## Verification\n\nAll 6 slice-level verification checks pass: npm run build (0 type errors, 97 pages), file exists, streamText/auth/rateLimit/maxDuration all present in route.\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| 1 | `npm run build` | 0 | ✅ pass | 20600ms |\n| 2 | `test -f app/api/ai/narrative/route.ts` | 0 | ✅ pass | 100ms |\n| 3 | `grep -q 'streamText' app/api/ai/narrative/route.ts` | 0 | ✅ pass | 100ms |\n| 4 | `grep -q 'auth()' app/api/ai/narrative/route.ts` | 0 | ✅ pass | 100ms |\n| 5 | `grep -q 'rateLimit' app/api/ai/narrative/route.ts` | 0 | ✅ pass | 100ms |\n| 6 | `grep -q 'maxDuration' app/api/ai/narrative/route.ts` | 0 | ✅ pass | 100ms |\n\n\n## Deviations\n\nUsed maxOutputTokens instead of maxTokens (SDK v6 rename). Used toTextStreamResponse() instead of toDataStreamResponse() (doesn't exist in ai SDK v6). Both caught by TypeScript build.\n\n## Known Issues\n\nNone.\n\n## Files Created/Modified\n\n- `app/api/ai/narrative/route.ts`\n- `package.json`\n- `package-lock.json`\n",
+      "description": "## Description\n\nInstall `ai` and `@ai-sdk/anthropic` packages. Create a new streaming API route at `app/api/ai/narrative/route.ts` that:\n1. Authenticates the request via `auth()` from `@/auth`\n2. Rate-limits to 10 requests/hour per user via `rateLimit()` from `@/lib/rate-limit`\n3. Accepts `{ companyId: string }` in the POST body\n4. Loads all companies from CSV, finds the requested company by ID\n5. Constructs a domain-expert system prompt and a company-data user prompt with all 7 score dimensions (with justifications), strengths, weaknesses, financials, industry tags, differentiation tags, known customers, and competitive positioning\n6. Calls `streamText()` with `anthropic('claude-sonnet-4-5')` (or `claude-3-5-sonnet-20241022` if the latest model string isn't available) and returns `result.toUIMessageStreamResponse()`\n7. Sets `export const maxDuration = 60` for Vercel serverless timeout\n\nThe prompt must instruct the model to produce four clearly labeled markdown sections: **Impressions**, **Conclusions**, **Beware**, and **Overlooked Opportunities**. The system prompt should establish the persona of a senior investment analyst specializing in industrial technology startups.\n\n## Failure Modes\n\n| Dependency | On error | On timeout | On malformed response |\n|------------|----------|-----------|----------------------|\n| Anthropic API | Return 500 with `{ error: 'AI generation failed' }` + console.error with details | maxDuration=60 handles serverless timeout; streamText has no explicit timeout — Anthropic's own timeout applies | streamText handles protocol; if model returns unexpected format, client displays raw text (acceptable) |\n| CSV loading | Return 500 with `{ error: 'Failed to load company data' }` | File system read — effectively instant | Return 404 if company ID not found in loaded data |\n| Auth (NextAuth) | Return 401 `{ error: 'Unauthorized' }` | Session check is fast — no timeout concern | N/A |\n| Rate limiter (Upstash/memory) | Fail open (existing behavior in lib/rate-limit.ts) | Fail open | N/A |\n\n## Load Profile\n\n- **Shared resources**: Upstash Redis for rate limiting (shared across all API routes), Anthropic API (pay-per-token)\n- **Per-operation cost**: 1 Redis call (rate limit check) + 1 CSV file read (~3.5MB) + 1 Anthropic API call (~2K input tokens, ~1K output tokens, ~$0.01-0.03)\n- **10x breakpoint**: Anthropic API cost — 10 concurrent users generating narratives = ~$0.30/burst. Rate limit of 10/hour/user prevents runaway costs. CSV re-parse per request is acceptable at this scale.\n\n## Negative Tests\n\n- **Malformed inputs**: Missing companyId → 400 error. Non-existent companyId → 404. Empty string companyId → 400.\n- **Error paths**: No ANTHROPIC_API_KEY → 500 with clear error message. Rate limit exceeded → 429 with retryAfterMs.\n- **Boundary conditions**: Company with minimal data (empty strings for optional fields) → prompt still works with available data.\n\n## Steps\n\n1. Run `npm install ai @ai-sdk/anthropic` to add Vercel AI SDK dependencies\n2. Create `app/api/ai/narrative/route.ts` with the POST handler following the established pattern from `app/api/companies/route.ts` (auth → rate limit → business logic → response)\n3. Implement company lookup: load CSV via `loadCompaniesFromCSV()`, find by `companyId` matching `company.id`, return 404 if not found\n4. Build the system prompt: senior industrial-tech investment analyst persona, instructions to produce four markdown sections (## Impressions, ## Conclusions, ## Beware, ## Overlooked Opportunities)\n5. Build the user prompt: structured company data including name, location, founded, headcount, all 7 scores with justifications, strengths, weaknesses, financial data (funding, revenue, valuation), industry tags, differentiation tags, known customers, lifecycle phase, investment list\n6. Call `streamText({ model: anthropic('claude-sonnet-4-5'), system, prompt, maxTokens: 2000 })` and return `result.toUIMessageStreamResponse()`\n7. Add input validation: check companyId is a non-empty string, return 400 with descriptive error if invalid\n8. Verify: `npm run build` passes with no type errors\n\n## Must-Haves\n\n- [ ] `ai` and `@ai-sdk/anthropic` packages installed\n- [ ] POST route at `/api/ai/narrative` with auth + rate limiting\n- [ ] Company lookup from CSV by ID with 404 handling\n- [ ] Domain-expert prompt producing four labeled sections\n- [ ] Streaming response via `streamText` + `toUIMessageStreamResponse()`\n- [ ] `maxDuration = 60` export for Vercel timeout\n- [ ] Input validation returning 400/401/404/429 as appropriate\n- [ ] `npm run build` passes\n\n## Verification\n\n- `npm run build` passes with no type errors\n- `test -f app/api/ai/narrative/route.ts`\n- `grep -q 'streamText' app/api/ai/narrative/route.ts`\n- `grep -q 'auth()' app/api/ai/narrative/route.ts`\n- `grep -q 'rateLimit' app/api/ai/narrative/route.ts`\n- `grep -q 'maxDuration' app/api/ai/narrative/route.ts`\n\n## Observability Impact\n\n- Signals added: `console.error` with structured context on auth rejection, rate limit hit, company-not-found, and LLM generation failure\n- How a future agent inspects this: Server logs show `[ai/narrative]` prefixed errors with userId, companyId, and error type\n- Failure state exposed: HTTP status codes (400/401/404/429/500) with JSON error bodies describing the specific failure",
+      "estimate": "45m",
+      "files": [
+        "package.json",
+        "app/api/ai/narrative/route.ts",
+        "lib/load-companies-server.ts",
+        "lib/rate-limit.ts",
+        "auth.ts",
+        "lib/company-data.ts"
+      ],
+      "verify": "npm run build && test -f app/api/ai/narrative/route.ts && grep -q 'streamText' app/api/ai/narrative/route.ts && grep -q 'auth()' app/api/ai/narrative/route.ts && grep -q 'rateLimit' app/api/ai/narrative/route.ts",
+      "inputs": [
+        "`lib/load-companies-server.ts` — CSV company loader to find company by ID",
+        "`lib/rate-limit.ts` — rate limiter for aggressive AI call limits",
+        "`auth.ts` — NextAuth session auth for API route protection",
+        "`lib/company-data.ts` — Company interface with all score/financial/tag fields",
+        "`app/api/companies/route.ts` — reference pattern for authenticated API routes"
+      ],
+      "expected_output": [
+        "`package.json` — updated with ai and @ai-sdk/anthropic dependencies",
+        "`app/api/ai/narrative/route.ts` — streaming AI narrative endpoint with auth, rate limiting, prompt construction"
+      ],
+      "observability_impact": "",
+      "full_plan_md": "",
+      "sequence": 0
+    },
+    {
+      "milestone_id": "M005",
+      "slice_id": "S02",
+      "id": "T02",
+      "title": "Wire streaming AI narrative UI into report generator",
+      "status": "pending",
+      "one_liner": "",
+      "narrative": "",
+      "verification_result": "",
+      "duration": "",
+      "completed_at": null,
+      "blocker_discovered": false,
+      "deviations": "",
+      "known_issues": "",
+      "key_files": [],
+      "key_decisions": [],
+      "full_summary_md": "",
+      "description": "## Description\n\nIntegrate the `/api/ai/narrative` streaming endpoint into the existing `IntelligenceReportTab` component in `components/charts/report-generator.tsx`. Add a new 'AI Analysis' button next to the existing 'Generate Intelligence' button. When clicked with a company selected, it calls the AI endpoint via `useCompletion` from `@ai-sdk/react` and streams the narrative into a new styled section below the existing template report output.\n\nThe AI narrative section should:\n- Show a loading/streaming indicator while generating\n- Render the streamed markdown with proper heading formatting (the four sections: Impressions, Conclusions, Beware, Overlooked Opportunities)\n- Include a Stop button to abort generation mid-stream\n- Show error messages for rate limiting, auth failures, and generation errors\n- Be clearly visually distinct from the template report (different background, \"AI Analysis\" header with Sparkles icon)\n- Include a Copy button for the completed narrative\n- Not replace or interfere with the existing template report functionality\n\nUse `useCompletion` from `@ai-sdk/react` with `api: '/api/ai/narrative'` and programmatic `complete()` call (not form-based). The `body` option passes `{ companyId }`. The `completion` string contains the accumulated streamed text. Use `status` to detect streaming state and `stop()` to abort.\n\n## Failure Modes\n\n| Dependency | On error | On timeout | On malformed response |\n|------------|----------|-----------|----------------------|\n| /api/ai/narrative | Display error message from response body. useCompletion's `onError` callback handles this. | Streaming timeout handled by server's maxDuration. Client shows 'Generation timed out' if fetch fails. | Raw text displayed as-is — markdown parsing is best-effort |\n\n## Negative Tests\n\n- **Error paths**: Rate limit 429 → shows 'Rate limit exceeded, try again later' message. Auth failure 401 → shows 'Please sign in'. No company selected → button disabled.\n- **Boundary conditions**: Very long narrative → scrollable container. Empty narrative (model returns nothing) → shows 'No analysis generated' message.\n\n## Steps\n\n1. Add `import { useCompletion } from '@ai-sdk/react'` to report-generator.tsx\n2. In `IntelligenceReportTab`, add `useCompletion` hook configured with `api: '/api/ai/narrative'` and `onError` handler that parses the error response\n3. Add state for `aiError` to display error messages\n4. Add an 'AI Analysis' button (with Sparkles icon and distinct styling, e.g. violet/purple gradient) next to the existing 'Generate Intelligence' button. Disabled when no company selected or when streaming.\n5. Wire button onClick to call `complete('', { body: { companyId: selectedCompany.id } })` — the prompt content is server-side, so client sends empty prompt with companyId in body\n6. Add AI narrative output section below the existing template report output: a styled card with 'AI Analysis' header, the streamed `completion` text rendered with basic markdown formatting (split on `## ` for section headers), a Copy button, and a Stop button visible during streaming\n7. Add loading state: while `status === 'submitted' || status === 'streaming'`, show a pulsing indicator and the Stop button\n8. Ensure existing 'Generate Intelligence' template report still works unchanged\n9. Verify: `npm run build` passes with no type errors\n\n## Must-Haves\n\n- [ ] `useCompletion` hook wired to `/api/ai/narrative`\n- [ ] AI Analysis button with distinct styling, disabled when no company selected\n- [ ] Streaming narrative display with basic markdown section formatting\n- [ ] Stop button during streaming\n- [ ] Error display for rate limit, auth, and generation failures\n- [ ] Copy button for completed narrative\n- [ ] Existing template reports unaffected\n- [ ] `npm run build` passes\n\n## Verification\n\n- `npm run build` passes with no type errors\n- `grep -q 'useCompletion' components/charts/report-generator.tsx`\n- `grep -q 'ai/narrative' components/charts/report-generator.tsx`\n- `grep -q 'AI Analysis' components/charts/report-generator.tsx`\n- `grep -q 'stop()' components/charts/report-generator.tsx`\n\n## Inputs\n\n- `app/api/ai/narrative/route.ts` — the streaming endpoint created in T01\n- `components/charts/report-generator.tsx` — existing report generator component to augment\n\n## Expected Output\n\n- `components/charts/report-generator.tsx` — updated with useCompletion hook, AI Analysis button, streaming display, error handling, and stop functionality",
+      "estimate": "45m",
+      "files": [
+        "components/charts/report-generator.tsx"
+      ],
+      "verify": "npm run build && grep -q 'useCompletion' components/charts/report-generator.tsx && grep -q 'ai/narrative' components/charts/report-generator.tsx",
+      "inputs": [
+        "`app/api/ai/narrative/route.ts` — streaming endpoint created in T01",
+        "`components/charts/report-generator.tsx` — existing report generator component (~978 lines) with IntelligenceReportTab sub-component"
+      ],
+      "expected_output": [
+        "`components/charts/report-generator.tsx` — updated with useCompletion hook, AI Analysis button, streaming narrative display, error handling, stop functionality"
+      ],
+      "observability_impact": "",
+      "full_plan_md": "",
+      "sequence": 0
     }
   ],
   "decisions": [
@@ -2248,6 +2333,72 @@
       "verdict": "✅ pass",
       "duration_ms": 50,
       "created_at": "2026-04-01T21:45:51.217Z"
+    },
+    {
+      "id": 41,
+      "task_id": "T01",
+      "slice_id": "S02",
+      "milestone_id": "M005",
+      "command": "npm run build",
+      "exit_code": 0,
+      "verdict": "✅ pass",
+      "duration_ms": 20600,
+      "created_at": "2026-04-01T21:57:26.846Z"
+    },
+    {
+      "id": 42,
+      "task_id": "T01",
+      "slice_id": "S02",
+      "milestone_id": "M005",
+      "command": "test -f app/api/ai/narrative/route.ts",
+      "exit_code": 0,
+      "verdict": "✅ pass",
+      "duration_ms": 100,
+      "created_at": "2026-04-01T21:57:26.846Z"
+    },
+    {
+      "id": 43,
+      "task_id": "T01",
+      "slice_id": "S02",
+      "milestone_id": "M005",
+      "command": "grep -q 'streamText' app/api/ai/narrative/route.ts",
+      "exit_code": 0,
+      "verdict": "✅ pass",
+      "duration_ms": 100,
+      "created_at": "2026-04-01T21:57:26.846Z"
+    },
+    {
+      "id": 44,
+      "task_id": "T01",
+      "slice_id": "S02",
+      "milestone_id": "M005",
+      "command": "grep -q 'auth()' app/api/ai/narrative/route.ts",
+      "exit_code": 0,
+      "verdict": "✅ pass",
+      "duration_ms": 100,
+      "created_at": "2026-04-01T21:57:26.846Z"
+    },
+    {
+      "id": 45,
+      "task_id": "T01",
+      "slice_id": "S02",
+      "milestone_id": "M005",
+      "command": "grep -q 'rateLimit' app/api/ai/narrative/route.ts",
+      "exit_code": 0,
+      "verdict": "✅ pass",
+      "duration_ms": 100,
+      "created_at": "2026-04-01T21:57:26.846Z"
+    },
+    {
+      "id": 46,
+      "task_id": "T01",
+      "slice_id": "S02",
+      "milestone_id": "M005",
+      "command": "grep -q 'maxDuration' app/api/ai/narrative/route.ts",
+      "exit_code": 0,
+      "verdict": "✅ pass",
+      "duration_ms": 100,
+      "created_at": "2026-04-01T21:57:26.846Z"
     }
   ]
 }

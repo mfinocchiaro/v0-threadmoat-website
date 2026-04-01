@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "taskId": "T01",
+  "unitId": "M005/S01/T01",
+  "timestamp": 1775079954510,
+  "passed": true,
+  "discoverySource": "task-plan",
+  "checks": [
+    {
+      "command": "npm run build",
+      "exitCode": 0,
+      "durationMs": 18175,
+      "verdict": "pass"
+    },
+    {
+      "command": "grep -q 'filter-onboarding-dismissed' components/dashboard/filter-onboarding-guide.tsx",
+      "exitCode": 0,
+      "durationMs": 14,
+      "verdict": "pass"
+    },
+    {
+      "command": "grep -q 'FilterOnboardingGuide' components/dashboard/filter-toolbar.tsx",
+      "exitCode": 0,
+      "durationMs": 6,
+      "verdict": "pass"
+    }
+  ]
+}
