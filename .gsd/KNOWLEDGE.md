@@ -62,3 +62,36 @@ if (dismissed || !hydrated) return null
 **Pattern:** When adding cross-cutting features to chart components (like shortlist highlighting), use an optional prop (`shortlistedIds?: Set<string>`) rather than requiring it. Inside the chart, guard all highlight logic with `shortlistedIds?.has(id)`. This keeps charts backwards compatible — existing renders without the prop continue working, and new features can be threaded through incrementally.
 
 **Why it matters:** The dashboard has 4+ chart types rendered from 6+ page files. Making the prop required would force simultaneous updates everywhere. Optional props let you thread features through one chart at a time during development.
+
+---
+
+## K006 — Offscreen chart capture for PDF export via html-to-image
+
+**Context:** M005/S04 Custom Report Builder PDF export
+**Pattern:** To capture D3/Recharts charts as PNG for PDF embedding, mount them in a hidden container with `position: fixed; left: -9999px; visibility: hidden; width: 800px; height: 500px`. Do NOT use `display: none` — charts need real dimensions for D3 useEffect to compute layouts and render SVG paths. Use `toPng()` from `html-to-image` with `pixelRatio: 2` for crisp output. Add a ~500ms delay between mounting and capture to let D3 effects run.
+
+```tsx
+<div ref={chartContainerRef} style={{ position: 'fixed', left: '-9999px', visibility: 'hidden', width: '800px', height: '500px' }}>
+  {enabledCharts.map(chart => <ChartComponent key={chart.id} data={selectedCompanies} />)}
+</div>
+```
+
+**Why it matters:** `display: none` produces zero-dimension containers and D3/Recharts render nothing. `visibility: hidden` preserves layout computation while keeping content off-screen. This pattern applies to any "render-to-image" scenario with layout-dependent chart libraries.
+
+---
+
+## K007 — jsPDF text wrapping and page break management
+
+**Context:** M005/S04 Custom Report Builder PDF export
+**Pattern:** Use `doc.splitTextToSize(text, maxWidth)` for line wrapping in jsPDF. Track Y position manually and call `doc.addPage()` when approaching page bottom. A lightweight markdown-to-jsPDF renderer can handle `## ` headings (larger bold font), `**bold**` (toggle font style), `- ` bullets (indented with bullet char), and `---` horizontal rules. Strip other markdown syntax. Always check `if (y > pageHeight - margin) doc.addPage()` before writing each block.
+
+**Why it matters:** jsPDF has no built-in markdown renderer or automatic page breaks. Without explicit Y tracking, content overflows the page silently. This pattern produces readable multi-page PDFs from markdown without pulling in heavy HTML-to-PDF libraries.
+
+---
+
+## K008 — Register requirement IDs in REQUIREMENTS.md before referencing them in planning
+
+**Context:** M005 milestone validation
+**Pattern:** When milestone planning references requirement IDs (e.g., UX-10, RPT-01), those IDs must be formally registered in REQUIREMENTS.md before the milestone starts. M005 planning referenced 4 requirement IDs that were never registered, creating a traceability gap during validation — the features were delivered but couldn't be traced back to formal requirements.
+
+**Why it matters:** The validation step checks requirement coverage. Informal requirement IDs that don't exist in REQUIREMENTS.md can't have their status tracked or transitioned. Register requirements upfront, even if briefly described, so the validation loop closes cleanly.

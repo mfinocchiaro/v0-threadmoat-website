@@ -24,16 +24,15 @@ Converting visitors into paying dashboard subscribers through compelling market 
 - ✓ AI-powered narrative analysis for company reports (Impressions, Conclusions, Beware, Overlooked Opportunities) — v1.1
 - ✓ Subscriber onboarding wizard (tier-aware, 3 steps) — v1.0
 - ✓ Company shortlist / workspace (click companies across charts, amber highlight, toolbar panel) — v1.1
+- ✓ Custom report builder (company selection + section toggles + AI narrative + chart capture → PDF/markdown) — v1.1
 
 ### Active
 
-- [ ] Custom report builder (filter + company + chart + AI narrative → PDF)
-- [ ] Compact sticky filter toolbar replacing dialog overlay (filters all charts)
-- [ ] Stripe upgrade coupon ($4,999 credit for report→subscription upgrades)
-- [ ] French translation careful review pass
-- [ ] CSV data refresh from corrected dataset (when available from other GSD project)
-- [ ] Verified funding & valuation data integration from agentic pipeline
-- [ ] SWOT comparative claims drill-down to specific company lists
+- [ ] CSV re-parse caching for /api/ai/narrative at higher load
+- [ ] PDF markdown renderer: tables, nested lists, code blocks
+- [ ] Human quality review of AI narrative output against SME expectations
+- [ ] LLM API cost measurement and budget benchmarking
+- [ ] UAT manual execution of test scripts for M005 features
 
 ### Out of Scope
 
@@ -49,10 +48,11 @@ Converting visitors into paying dashboard subscribers through compelling market 
 - **Tech stack:** Next.js 16, NextAuth, Stripe (live), Resend, React Email, D3, Recharts, Tailwind CSS, shadcn/ui, next-intl, Vercel AI SDK (ai + @ai-sdk/anthropic)
 - **Database:** Neon (Postgres)
 - **Data:** 500+ startups, investors from CSV files, market reports
-- **Scale:** 281 TypeScript files, 38.5K lines, 251 commits
-- **Current state:** v1.0 shipped — live at threadmoat.com with real payments
+- **Scale:** 281 TypeScript files, 38.5K+ lines, 260+ commits
+- **Current state:** v1.1 shipped — intelligence workbench features (AI narratives, shortlist, custom reports) added on top of v1.0 dashboard
 - **Hosting:** Vercel
 - **Tiers:** Recon (free) → Analyst ($4,999 one-time) → Strategist (€18,999/yr) → Advisory (custom)
+- **M005 complete:** Filter onboarding, AI narrative engine (Claude Sonnet 4.5 via Vercel AI SDK), company shortlist with amber highlights, custom report builder with PDF export
 
 ## Constraints
 
@@ -91,4 +91,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-01 after M005/S03 shortlist slice*
+*Last updated: 2026-04-02 after M005 milestone completion (Intelligence Workbench)*
