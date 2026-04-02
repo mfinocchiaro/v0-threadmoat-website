@@ -57,7 +57,7 @@ Create the `CustomReportTab` component in a new file (`components/charts/custom-
   - Estimate: 1h
   - Files: components/charts/custom-report-tab.tsx, components/charts/report-generator.tsx
   - Verify: npm run build && test -f components/charts/custom-report-tab.tsx && grep -q 'custom-report' components/charts/report-generator.tsx && grep -q 'useShortlist' components/charts/custom-report-tab.tsx
-- [ ] **T02: Build report composition engine with AI narratives and markdown preview** — ## Description
+- [x] **T02: Built report composition engine with sequential AI narrative fetching, streaming preview, per-company status badges, rate-limit circuit breaker, narrative caching, and copy-to-clipboard** — ## Description
 
 Add report content composition to `CustomReportTab`. When the user clicks Generate, the component: (1) composes company profile sections from the Company data (reusing the text generation patterns from `generateReport()` in `report-generator.tsx`), (2) fetches AI narratives per-company sequentially via `/api/ai/narrative` (raw fetch, not useCompletion — need multiple sequential requests), (3) renders everything in a scrollable markdown preview pane, (4) provides copy-to-clipboard for the full composed report. The AI narrative fetch should show per-company progress (loading/complete/error) and cache results in component state so re-generating doesn't re-call the API.
 

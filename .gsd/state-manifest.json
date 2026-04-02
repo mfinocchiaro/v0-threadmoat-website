@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exported_at": "2026-04-02T05:52:33.563Z",
+  "exported_at": "2026-04-02T05:56:37.419Z",
   "milestones": [
     {
       "id": "M001",
@@ -2084,19 +2084,26 @@
       "milestone_id": "M005",
       "slice_id": "S04",
       "id": "T02",
-      "title": "Build report composition engine with AI narratives and markdown preview",
-      "status": "pending",
-      "one_liner": "",
-      "narrative": "",
-      "verification_result": "",
+      "title": "Built report composition engine with sequential AI narrative fetching, streaming preview, per-company status badges, rate-limit circuit breaker, narrative caching, and copy-to-clipboard",
+      "status": "complete",
+      "one_liner": "Built report composition engine with sequential AI narrative fetching, streaming preview, per-company status badges, rate-limit circuit breaker, narrative caching, and copy-to-clipboard",
+      "narrative": "Extended custom-report-tab.tsx with full report composition engine. Added composeCompanyProfile, composeScoreBreakdown, and composeReport pure functions building markdown from Company data. Implemented sequential AI narrative fetching via raw fetch to /api/ai/narrative with ReadableStream reader for progressive streaming updates. Results cached in Map keyed by company ID — re-generate reuses completed narratives. On 429 rate limit, circuit breaker marks current and remaining companies as rate-limited and stops. Preview mode renders rich formatted view with company headers, strengths/risks panels, financial metrics grid, score breakdown with justifications, and AI analysis sections using ## heading split pattern. Per-company status badges show loading/complete/error/rate-limited states. Rate-limit confirmation modal for more than 5 AI generations. Copy-to-clipboard button copies full composed markdown.",
+      "verification_result": "All 8 verification checks pass: npm run build exits 0, grep confirms ai/narrative, clipboard, composeReport in custom-report-tab.tsx, file exists, report-generator.tsx has custom-report and CustomReportTab, useShortlist present.",
       "duration": "",
-      "completed_at": null,
+      "completed_at": "2026-04-02T05:56:37.408Z",
       "blocker_discovered": false,
-      "deviations": "",
-      "known_issues": "",
-      "key_files": [],
-      "key_decisions": [],
-      "full_summary_md": "",
+      "deviations": "None.",
+      "known_issues": "None.",
+      "key_files": [
+        "components/charts/custom-report-tab.tsx"
+      ],
+      "key_decisions": [
+        "Sequential AI fetch with rate-limit circuit breaker — 429 marks current and remaining companies as rate-limited",
+        "Cache AI narratives in component state Map keyed by company ID",
+        "Rate limit confirmation modal when AI count > 5",
+        "Streamed response via ReadableStream reader with progressive UI updates"
+      ],
+      "full_summary_md": "---\nid: T02\nparent: S04\nmilestone: M005\nkey_files:\n  - components/charts/custom-report-tab.tsx\nkey_decisions:\n  - Sequential AI fetch with rate-limit circuit breaker — 429 marks current and remaining companies as rate-limited\n  - Cache AI narratives in component state Map keyed by company ID\n  - Rate limit confirmation modal when AI count > 5\n  - Streamed response via ReadableStream reader with progressive UI updates\nduration: \"\"\nverification_result: passed\ncompleted_at: 2026-04-02T05:56:37.408Z\nblocker_discovered: false\n---\n\n# T02: Built report composition engine with sequential AI narrative fetching, streaming preview, per-company status badges, rate-limit circuit breaker, narrative caching, and copy-to-clipboard\n\n**Built report composition engine with sequential AI narrative fetching, streaming preview, per-company status badges, rate-limit circuit breaker, narrative caching, and copy-to-clipboard**\n\n## What Happened\n\nExtended custom-report-tab.tsx with full report composition engine. Added composeCompanyProfile, composeScoreBreakdown, and composeReport pure functions building markdown from Company data. Implemented sequential AI narrative fetching via raw fetch to /api/ai/narrative with ReadableStream reader for progressive streaming updates. Results cached in Map keyed by company ID — re-generate reuses completed narratives. On 429 rate limit, circuit breaker marks current and remaining companies as rate-limited and stops. Preview mode renders rich formatted view with company headers, strengths/risks panels, financial metrics grid, score breakdown with justifications, and AI analysis sections using ## heading split pattern. Per-company status badges show loading/complete/error/rate-limited states. Rate-limit confirmation modal for more than 5 AI generations. Copy-to-clipboard button copies full composed markdown.\n\n## Verification\n\nAll 8 verification checks pass: npm run build exits 0, grep confirms ai/narrative, clipboard, composeReport in custom-report-tab.tsx, file exists, report-generator.tsx has custom-report and CustomReportTab, useShortlist present.\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| 1 | `npm run build` | 0 | ✅ pass | 15400ms |\n| 2 | `grep -q 'ai/narrative' components/charts/custom-report-tab.tsx` | 0 | ✅ pass | 10ms |\n| 3 | `grep -q 'clipboard' components/charts/custom-report-tab.tsx` | 0 | ✅ pass | 10ms |\n| 4 | `grep -q 'composeReport' components/charts/custom-report-tab.tsx` | 0 | ✅ pass | 10ms |\n| 5 | `test -f components/charts/custom-report-tab.tsx` | 0 | ✅ pass | 10ms |\n| 6 | `grep -q 'custom-report' components/charts/report-generator.tsx` | 0 | ✅ pass | 10ms |\n| 7 | `grep -q 'CustomReportTab' components/charts/report-generator.tsx` | 0 | ✅ pass | 10ms |\n| 8 | `grep -q 'useShortlist' components/charts/custom-report-tab.tsx` | 0 | ✅ pass | 10ms |\n\n\n## Deviations\n\nNone.\n\n## Known Issues\n\nNone.\n\n## Files Created/Modified\n\n- `components/charts/custom-report-tab.tsx`\n",
       "description": "## Description\n\nAdd report content composition to `CustomReportTab`. When the user clicks Generate, the component: (1) composes company profile sections from the Company data (reusing the text generation patterns from `generateReport()` in `report-generator.tsx`), (2) fetches AI narratives per-company sequentially via `/api/ai/narrative` (raw fetch, not useCompletion — need multiple sequential requests), (3) renders everything in a scrollable markdown preview pane, (4) provides copy-to-clipboard for the full composed report. The AI narrative fetch should show per-company progress (loading/complete/error) and cache results in component state so re-generating doesn't re-call the API.\n\n## Failure Modes\n\n| Dependency | On error | On timeout | On malformed response |\n|------------|----------|-----------|----------------------|\n| `/api/ai/narrative` | Show error badge per company, continue with remaining companies | 60s timeout per request (matches maxDuration), mark as error | Show raw text or \"AI analysis unavailable\" fallback |\n\n## Negative Tests\n\n- **Error paths**: AI endpoint returns 429 (rate limit) — show \"Rate limit reached\" per-company, skip remaining AI fetches\n- **Boundary conditions**: 0 companies selected (Generate disabled from T01), 1 company (no multi-company edge cases), AI Analysis unchecked (skip all narrative fetches entirely)\n\n## Steps\n\n1. In `custom-report-tab.tsx`, add a `composeReport()` function that builds a markdown string from selected companies and enabled sections:\n   - For each company, include enabled sections: Company Profile header (name, location, founded, lifecycle phase, funding), Score Breakdown (7 score dimensions with justifications), AI Analysis placeholder\n   - Use the same data formatting patterns as `generateReport()` in report-generator.tsx (reference its structure for consistency)\n2. Add AI narrative fetching: when AI Analysis is enabled, iterate selected companies sequentially. For each, POST to `/api/ai/narrative` with `{ companyId: company.id }`, collect the streamed text via a ReadableStream reader. Store results in a `Map<string, { status: 'loading' | 'complete' | 'error', text: string }>` state. Cache completed results — if composeReport is called again with the same company, reuse cached narrative.\n3. Show rate limit warning before generation starts: \"This will use N of your 10 AI generations per hour\" (where N = number of companies with AI Analysis enabled). Require confirmation if N > 5.\n4. Build the preview pane: scrollable div rendering the composed markdown. Use the existing `AINarrativeSection` component pattern (split on `##` headings) for rendering AI sections. Show per-company status badges (spinner for loading, checkmark for complete, error icon for failed).\n5. Add a Copy button that copies the full composed markdown to clipboard via `navigator.clipboard.writeText()`.\n6. Verify `npm run build` passes.\n\n## Must-Haves\n\n- [ ] Report composition produces markdown with company profiles and score breakdowns\n- [ ] AI narratives fetched sequentially per-company via raw fetch to `/api/ai/narrative`\n- [ ] Per-company fetch status visible in UI (loading/complete/error)\n- [ ] Rate limit warning shown before generation when AI Analysis enabled\n- [ ] Results cached in component state — no re-fetch on re-generate\n- [ ] Copy-to-clipboard button for full report markdown\n- [ ] Build passes with zero type errors\n\n## Verification\n\n- `npm run build` exits 0\n- `grep -q 'ai/narrative' components/charts/custom-report-tab.tsx`\n- `grep -q 'clipboard' components/charts/custom-report-tab.tsx`\n- `grep -q 'composeReport\\|compose' components/charts/custom-report-tab.tsx`\n\n## Observability Impact\n\n- Signals added: Per-company AI fetch status (loading/complete/error) in component state, console.error for failed narrative fetches with company ID context\n- Failure state exposed: Error badge per company in preview, rate-limit-exceeded state halts further fetches\n\n## Inputs\n\n- `components/charts/custom-report-tab.tsx` — T01 output, the tab UI to extend with composition logic\n- `components/charts/report-generator.tsx` — reference for `generateReport()` text patterns and `AINarrativeSection` rendering\n- `app/api/ai/narrative/route.ts` — the endpoint contract (POST with `{ companyId }`, streams text)\n- `lib/company-data.ts` — Company type and `formatCurrency()`\n\n## Expected Output\n\n- `components/charts/custom-report-tab.tsx` — extended with report composition engine, AI fetching, markdown preview, and copy button",
       "estimate": "1.5h",
       "files": [
@@ -3088,6 +3095,94 @@
       "verdict": "✅ pass",
       "duration_ms": 10,
       "created_at": "2026-04-02T05:52:33.553Z"
+    },
+    {
+      "id": 82,
+      "task_id": "T02",
+      "slice_id": "S04",
+      "milestone_id": "M005",
+      "command": "npm run build",
+      "exit_code": 0,
+      "verdict": "✅ pass",
+      "duration_ms": 15400,
+      "created_at": "2026-04-02T05:56:37.408Z"
+    },
+    {
+      "id": 83,
+      "task_id": "T02",
+      "slice_id": "S04",
+      "milestone_id": "M005",
+      "command": "grep -q 'ai/narrative' components/charts/custom-report-tab.tsx",
+      "exit_code": 0,
+      "verdict": "✅ pass",
+      "duration_ms": 10,
+      "created_at": "2026-04-02T05:56:37.408Z"
+    },
+    {
+      "id": 84,
+      "task_id": "T02",
+      "slice_id": "S04",
+      "milestone_id": "M005",
+      "command": "grep -q 'clipboard' components/charts/custom-report-tab.tsx",
+      "exit_code": 0,
+      "verdict": "✅ pass",
+      "duration_ms": 10,
+      "created_at": "2026-04-02T05:56:37.408Z"
+    },
+    {
+      "id": 85,
+      "task_id": "T02",
+      "slice_id": "S04",
+      "milestone_id": "M005",
+      "command": "grep -q 'composeReport' components/charts/custom-report-tab.tsx",
+      "exit_code": 0,
+      "verdict": "✅ pass",
+      "duration_ms": 10,
+      "created_at": "2026-04-02T05:56:37.408Z"
+    },
+    {
+      "id": 86,
+      "task_id": "T02",
+      "slice_id": "S04",
+      "milestone_id": "M005",
+      "command": "test -f components/charts/custom-report-tab.tsx",
+      "exit_code": 0,
+      "verdict": "✅ pass",
+      "duration_ms": 10,
+      "created_at": "2026-04-02T05:56:37.408Z"
+    },
+    {
+      "id": 87,
+      "task_id": "T02",
+      "slice_id": "S04",
+      "milestone_id": "M005",
+      "command": "grep -q 'custom-report' components/charts/report-generator.tsx",
+      "exit_code": 0,
+      "verdict": "✅ pass",
+      "duration_ms": 10,
+      "created_at": "2026-04-02T05:56:37.408Z"
+    },
+    {
+      "id": 88,
+      "task_id": "T02",
+      "slice_id": "S04",
+      "milestone_id": "M005",
+      "command": "grep -q 'CustomReportTab' components/charts/report-generator.tsx",
+      "exit_code": 0,
+      "verdict": "✅ pass",
+      "duration_ms": 10,
+      "created_at": "2026-04-02T05:56:37.408Z"
+    },
+    {
+      "id": 89,
+      "task_id": "T02",
+      "slice_id": "S04",
+      "milestone_id": "M005",
+      "command": "grep -q 'useShortlist' components/charts/custom-report-tab.tsx",
+      "exit_code": 0,
+      "verdict": "✅ pass",
+      "duration_ms": 10,
+      "created_at": "2026-04-02T05:56:37.408Z"
     }
   ]
 }
