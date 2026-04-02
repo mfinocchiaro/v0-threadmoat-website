@@ -155,6 +155,12 @@ export function CustomerNetwork({ data, className }: { data: Company[]; classNam
     svg.selectAll("*").remove()
     svg.attr("viewBox", `0 0 ${width} ${height}`)
 
+    // Theme-aware colors from CSS custom properties
+    const rootStyle = getComputedStyle(svgRef.current)
+    const mutedFg = rootStyle.getPropertyValue('--muted-foreground').trim() || '#94a3b8'
+    const bgHsl = rootStyle.getPropertyValue('--background').trim() || '#0f172a'
+    const cardBg = rootStyle.getPropertyValue('--card').trim() || '#1e293b'
+
     const g = svg.append("g")
 
     // Zoom
@@ -186,7 +192,7 @@ export function CustomerNetwork({ data, className }: { data: Company[]; classNam
       .selectAll("line")
       .data(simLinks)
       .join("line")
-      .attr("stroke", "#94a3b8")
+      .attr("stroke", `hsl(${mutedFg})`)
       .attr("stroke-opacity", 0.55)
       .attr("stroke-width", 1.5)
 
@@ -211,8 +217,8 @@ export function CustomerNetwork({ data, className }: { data: Company[]; classNam
 
     customerNodes.append("circle")
       .attr("r", d => rScale((d as CustomerNode).count))
-      .attr("fill", d => getCustomerLogoUrl(d.name) ? "#1e293b" : nameToColor(d.name))
-      .attr("stroke", d => getCustomerLogoUrl(d.name) ? "#94a3b8" : "#fff")
+      .attr("fill", d => getCustomerLogoUrl(d.name) ? `hsl(${cardBg})` : nameToColor(d.name))
+      .attr("stroke", d => getCustomerLogoUrl(d.name) ? `hsl(${mutedFg})` : "#fff")
       .attr("stroke-width", 2)
       .attr("stroke-opacity", 0.6)
 
@@ -470,9 +476,9 @@ export function CustomerNetwork({ data, className }: { data: Company[]; classNam
     const q = deferredQuery.trim().toLowerCase()
 
     if (!q) {
-      startupSel.attr("opacity", 1).attr("stroke", "#0f172a").attr("stroke-width", 1).attr("r", 5)
+      startupSel.attr("opacity", 1).attr("stroke", "hsl(var(--background))").attr("stroke-width", 1).attr("r", 5)
       customerSel.select("circle").attr("opacity", 1).attr("stroke-width", 2)
-      linkSel.attr("stroke-opacity", 0.55).attr("stroke", "#94a3b8").attr("stroke-width", 1.5)
+      linkSel.attr("stroke-opacity", 0.55).attr("stroke", "hsl(var(--muted-foreground))").attr("stroke-width", 1.5)
       return
     }
 
@@ -497,7 +503,7 @@ export function CustomerNetwork({ data, className }: { data: Company[]; classNam
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .attr("opacity", (d: any) => matchedIds.has(d.id) ? 1 : 0.07)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .attr("stroke", (d: any) => matchedIds.has(d.id) ? "#fbbf24" : "#0f172a")
+      .attr("stroke", (d: any) => matchedIds.has(d.id) ? "#fbbf24" : "hsl(var(--background))")
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .attr("stroke-width", (d: any) => matchedIds.has(d.id) ? 2.5 : 1)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -524,7 +530,7 @@ export function CustomerNetwork({ data, className }: { data: Company[]; classNam
         const s = (l.source as any).id ?? l.source
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const t = (l.target as any).id ?? l.target
-        return (matchedIds.has(s) || matchedIds.has(t)) ? "#fbbf24" : "#94a3b8"
+        return (matchedIds.has(s) || matchedIds.has(t)) ? "#fbbf24" : "hsl(var(--muted-foreground))"
       })
       .attr("stroke-width", 1.5)
   }, [deferredQuery, nodes])

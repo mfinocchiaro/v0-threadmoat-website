@@ -166,7 +166,7 @@ export function TreemapChart({ data, className, shortlistedIds }: TreemapChartPr
       })
       .attr("stroke", (d) => {
         const company = d.data as unknown as Company
-        return shortlistedIds?.has(company.id) ? "#f59e0b" : "#fff"
+        return shortlistedIds?.has(company.id) ? "#f59e0b" : "hsl(var(--background))"
       })
       .attr("stroke-width", (d) => {
         const company = d.data as unknown as Company
@@ -186,7 +186,7 @@ export function TreemapChart({ data, className, shortlistedIds }: TreemapChartPr
         tooltipRef.current.style.visibility = "visible"
         tooltipRef.current.style.top = `${event.pageY - 10}px`
         tooltipRef.current.style.left = `${event.pageX + 15}px`
-        tooltipRef.current.innerHTML = `<div style="font-weight:bold;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:4px;margin-bottom:4px;">${company.name}</div><div style="font-size:11px;color:#94a3b8;">${d.parent?.data.name}</div><div style="margin-top:4px;">${label}: <span style="color:#3b82f6;font-weight:bold;">${val}</span></div>${company.valuationConfidence ? `<div style="font-size:11px;margin-top:2px;color:#94a3b8;">Val. Confidence: <span style="color:#e2e8f0;">${company.valuationConfidence}</span></div>` : ""}${company.reportedValuation ? `<div style="font-size:11px;color:#94a3b8;">Reported: <span style="color:#e2e8f0;">${company.reportedValuation}${company.reportedValuationYear ? ` (${company.reportedValuationYear})` : ""}</span></div>` : ""}`
+        tooltipRef.current.innerHTML = `<div style="font-weight:bold;border-bottom:1px solid hsl(var(--border));padding-bottom:4px;margin-bottom:4px;">${company.name}</div><div style="font-size:11px;color:hsl(var(--muted-foreground));">${d.parent?.data.name}</div><div style="margin-top:4px;">${label}: <span style="color:hsl(var(--primary));font-weight:bold;">${val}</span></div>${company.valuationConfidence ? `<div style="font-size:11px;margin-top:2px;color:hsl(var(--muted-foreground));">Val. Confidence: <span style="color:hsl(var(--foreground));">${company.valuationConfidence}</span></div>` : ""}${company.reportedValuation ? `<div style="font-size:11px;color:hsl(var(--muted-foreground));">Reported: <span style="color:hsl(var(--foreground));">${company.reportedValuation}${company.reportedValuationYear ? ` (${company.reportedValuationYear})` : ""}</span></div>` : ""}`
       })
       .on("mousemove", (event) => {
         if (!tooltipRef.current) return
@@ -227,7 +227,7 @@ export function TreemapChart({ data, className, shortlistedIds }: TreemapChartPr
         .attr("width", (d) => d.x1 - d.x0)
         .attr("height", (d) => d.y1 - d.y0)
         .attr("fill", "rgba(255,255,255,0)")
-        .attr("stroke", "#fff")
+        .attr("stroke", "hsl(var(--background))")
         .attr("stroke-width", 2)
         .attr("stroke-dasharray", "4,4")
         .on("mouseover", function () {
@@ -255,7 +255,7 @@ export function TreemapChart({ data, className, shortlistedIds }: TreemapChartPr
         .text(currentView.name)
         .style("font-size", "14px")
         .style("font-weight", "bold")
-        .style("fill", "#3b82f6")
+        .style("fill", "hsl(var(--primary))")
 
       svg
         .selectAll<SVGTextElement, d3.HierarchyRectangularNode<TreeData>>("text.category-label")
@@ -318,12 +318,12 @@ export function TreemapChart({ data, className, shortlistedIds }: TreemapChartPr
           style={{
             position: "fixed",
             visibility: "hidden",
-            background: "#1e293b",
-            border: "1px solid #334155",
+            background: "hsl(var(--popover))",
+            border: "1px solid hsl(var(--border))",
             borderRadius: "6px",
             padding: "8px 12px",
             fontSize: "12px",
-            color: "#f1f5f9",
+            color: "hsl(var(--popover-foreground))",
             pointerEvents: "none",
             zIndex: 9999,
             maxWidth: "200px",

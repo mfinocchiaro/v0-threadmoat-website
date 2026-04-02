@@ -105,7 +105,7 @@ export function TimelineChart({ data, className }: TimelineChartProps) {
         tooltipRef.current.style.visibility = "visible"
         tooltipRef.current.style.top = `${event.pageY - 10}px`
         tooltipRef.current.style.left = `${event.pageX + 10}px`
-        tooltipRef.current.innerHTML = `<strong>Year:</strong> ${d.year}<br><strong>Companies:</strong> ${d.count}<br><em style="font-size:0.8em;color:#94a3b8;">Click for details</em>`
+        tooltipRef.current.innerHTML = `<strong>Year:</strong> ${d.year}<br><strong>Companies:</strong> ${d.count}<br><em style="font-size:0.8em;color:hsl(var(--muted-foreground));">Click for details</em>`
       })
       .on("mousemove", (event) => {
         if (!tooltipRef.current) return
@@ -137,7 +137,7 @@ export function TimelineChart({ data, className }: TimelineChartProps) {
         <svg ref={svgRef} className="w-full h-full" />
         <div
           ref={tooltipRef}
-          style={{ position: "fixed", visibility: "hidden", background: "#1e293b", border: "1px solid #334155", borderRadius: "6px", padding: "8px 12px", fontSize: "12px", color: "#f1f5f9", pointerEvents: "none", zIndex: 9999 }}
+          style={{ position: "fixed", visibility: "hidden", background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", borderRadius: "6px", padding: "8px 12px", fontSize: "12px", color: "hsl(var(--popover-foreground))", pointerEvents: "none", zIndex: 9999 }}
         />
       </div>
 

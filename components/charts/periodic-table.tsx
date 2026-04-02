@@ -509,7 +509,7 @@ export function PeriodicTable({ data, compact = false, preview = false, shortlis
                         </div>
                     </div>
                 ) : (
-                    <div className="p-4 bg-slate-500/5">
+                    <div className="p-4 bg-muted/30">
                         <h3 className="text-xs font-semibold uppercase mb-3 text-muted-foreground">Info</h3>
                         <div className="text-sm text-muted-foreground space-y-1">
                             <p>Total Companies: {data.length}</p>

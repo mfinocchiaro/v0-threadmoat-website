@@ -38,6 +38,12 @@ export function WordcloudChart({ data, className }: WordcloudChartProps) {
     svg.selectAll("*").remove()
     svg.attr("width", width).attr("height", height)
 
+    // Theme-aware colors from CSS custom properties
+    const rootStyle = getComputedStyle(svgRef.current)
+    const bgColor = rootStyle.getPropertyValue('--popover').trim() || '#0f172a'
+    const borderColor = rootStyle.getPropertyValue('--border').trim() || '#334155'
+    const fgColor = rootStyle.getPropertyValue('--popover-foreground').trim() || '#f1f5f9'
+
     // Count tags across all companies
     const tagCounts: Record<string, number> = {}
     data.forEach((company) => {
@@ -97,12 +103,12 @@ export function WordcloudChart({ data, className }: WordcloudChartProps) {
         .append("div")
         .attr("class", "wordcloud-tooltip")
         .style("position", "fixed")
-        .style("background", "rgba(15,23,42,0.95)")
-        .style("border", "1px solid #334155")
+        .style("background", `hsl(${bgColor})`)
+        .style("border", `1px solid hsl(${borderColor})`)
         .style("border-radius", "6px")
         .style("padding", "8px 12px")
         .style("font-size", "13px")
-        .style("color", "#f1f5f9")
+        .style("color", `hsl(${fgColor})`)
         .style("pointer-events", "none")
         .style("opacity", "0")
         .style("z-index", "9999")

@@ -31,13 +31,20 @@ export function ChordChart({ data, className }: ChordChartProps) {
     svg.selectAll("*").remove()
     svg.attr("width", width).attr("height", height)
 
+    // Theme-aware colors from CSS custom properties
+    const rootStyle = getComputedStyle(svgRef.current)
+    const labelColor = rootStyle.getPropertyValue('--foreground').trim() || '#f1f5f9'
+    const borderColor = rootStyle.getPropertyValue('--border').trim() || '#334155'
+    const bgColor = rootStyle.getPropertyValue('--popover').trim() || '#0f172a'
+    const fgColor = rootStyle.getPropertyValue('--popover-foreground').trim() || '#f1f5f9'
+
     // Create tooltip
     if (!tooltipRef.current) {
       tooltipRef.current = document.createElement("div")
-      tooltipRef.current.style.cssText =
-        "position:fixed;background:rgba(15,23,42,0.95);border:1px solid #334155;border-radius:6px;padding:8px 12px;font-size:13px;color:#f1f5f9;pointer-events:none;opacity:0;z-index:9999;transition:opacity 0.15s"
       document.body.appendChild(tooltipRef.current)
     }
+    tooltipRef.current.style.cssText =
+      `position:fixed;background:hsl(${bgColor});border:1px solid hsl(${borderColor});border-radius:6px;padding:8px 12px;font-size:13px;color:hsl(${fgColor});pointer-events:none;opacity:0;z-index:9999;transition:opacity 0.15s`
     const tooltip = tooltipRef.current
 
     const investmentLists = Array.from(
@@ -121,7 +128,7 @@ export function ChordChart({ data, className }: ChordChartProps) {
         const name = names[d.index]
         return name.length > 14 ? name.slice(0, 12) + "…" : name
       })
-      .style("fill", "#e2e8f0")
+      .style("fill", `hsl(${labelColor})`)
       .style("font-size", "10px")
       .style("pointer-events", "none")
 

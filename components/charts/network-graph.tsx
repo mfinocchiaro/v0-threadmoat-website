@@ -309,11 +309,17 @@ export function NetworkGraph({ data, className, preview = false, accessTier = 'e
       .range([1, 4])
       .clamp(true)
 
+    // Theme-aware colors from CSS custom properties
+    const rootStyle = getComputedStyle(svgRef.current)
+    const mutedFg = rootStyle.getPropertyValue('--muted-foreground').trim() || '#64748b'
+    const borderColorHsl = rootStyle.getPropertyValue('--border').trim() || '#334155'
+    const bgHsl = rootStyle.getPropertyValue('--background').trim() || '#0f172a'
+
     const getNodeColor = (d: Node) => {
       if (d.type === "company") {
-        return d.investmentList ? getInvestmentColor(d.investmentList) : "#64748b"
+        return d.investmentList ? getInvestmentColor(d.investmentList) : `hsl(${mutedFg})`
       }
-      return HUB_COLORS[d.type] ?? "#64748b"
+      return HUB_COLORS[d.type] ?? `hsl(${mutedFg})`
     }
 
     const simulation = d3.forceSimulation<Node>(graphData.nodes)
@@ -326,10 +332,8 @@ export function NetworkGraph({ data, className, preview = false, accessTier = 'e
         return 15
       }))
 
-    // Detect dark mode for link contrast
-    const isDark = document.documentElement.classList.contains("dark")
-    const primaryLinkColor = isDark ? "#94a3b8" : "#334155"
-    const secondaryLinkColor = isDark ? "#64748b" : "#64748b"
+    const primaryLinkColor = `hsl(${mutedFg})`
+    const secondaryLinkColor = `hsl(${borderColorHsl})`
 
     // Links — styled by kind (primary = solid thicker, secondary = dashed thinner)
     const link = g.append("g")
@@ -376,7 +380,7 @@ export function NetworkGraph({ data, className, preview = false, accessTier = 'e
     node.append("circle")
       .attr("r", getNodeRadius)
       .attr("fill", getNodeColor)
-      .attr("stroke", d => d.type === "incumbent" ? "#fff" : "#fff")
+      .attr("stroke", d => d.type === "incumbent" ? `hsl(${bgHsl})` : `hsl(${bgHsl})`)
       .attr("stroke-width", d => d.type === "company" ? moatScale(d.moat) : d.type === "incumbent" ? 3 : 1.5)
       .attr("stroke-opacity", d => d.type === "company" ? 0.9 : 1)
       .attr("fill-opacity", d => d.type === "incumbent" ? 0.75 : 1)
@@ -400,7 +404,7 @@ export function NetworkGraph({ data, className, preview = false, accessTier = 'e
       .on("mouseout", function (_, d) {
         if (!preview) {
           d3.select(this)
-            .attr("stroke", "#fff")
+            .attr("stroke", `hsl(${bgHsl})`)
             .attr("stroke-width", d.type === "company" ? moatScale(d.moat) : 1.5)
         }
       })
@@ -468,7 +472,7 @@ export function NetworkGraph({ data, className, preview = false, accessTier = 'e
       nodeSel.each(function (d) {
         const sel = d3.select(this)
         sel.select("circle")
-          .attr("stroke", "#fff")
+          .attr("stroke", "hsl(var(--background))")
           .attr("stroke-width", d.type === "company" ? moatStrokeScale(d.moat) : d.type === "incumbent" ? 3 : 1.5)
           .attr("opacity", 0.9)
         sel.select("text")
@@ -739,8 +743,8 @@ export function NetworkGraph({ data, className, preview = false, accessTier = 'e
             {/* Moat border */}
             <div className="flex items-center gap-1">
               <svg width="32" height="12">
-                <circle cx="6" cy="6" r="4.5" fill="#64748b" stroke="#fff" strokeWidth="1" />
-                <circle cx="20" cy="6" r="4.5" fill="#64748b" stroke="#fff" strokeWidth="3.5" />
+                <circle cx="6" cy="6" r="4.5" fill="hsl(var(--muted-foreground))" stroke="hsl(var(--background))" strokeWidth="1" />
+                <circle cx="20" cy="6" r="4.5" fill="hsl(var(--muted-foreground))" stroke="hsl(var(--background))" strokeWidth="3.5" />
               </svg>
               <span className="text-[9px] text-muted-foreground">Border = moat</span>
             </div>

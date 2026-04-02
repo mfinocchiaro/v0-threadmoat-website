@@ -4,7 +4,7 @@
 **Demo:** After this: All remaining charts including 3D/WebGL have legible text on both themes
 
 ## Tasks
-- [ ] **T01: Fix theme colors in 9 remaining D3/SVG charts** — Fix 9 remaining D3/SVG charts that don't need special 3D handling.
+- [x] **T01: Converted structural UI colors in 9 D3/SVG chart files from hardcoded hex to CSS custom properties for theme-aware rendering** — Fix 9 remaining D3/SVG charts that don't need special 3D handling.
 
 Files: chord-chart.tsx (2), customer-network.tsx (5), investor-network.tsx (6), investor-stats-chart.tsx (9), network-graph.tsx (7), periodic-table.tsx (1), timeline-chart.tsx (2), treemap-chart.tsx (4), wordcloud-chart.tsx (3)
 

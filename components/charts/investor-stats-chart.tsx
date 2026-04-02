@@ -82,6 +82,14 @@ export function InvestorStatsChart({ data, className }: InvestorStatsChartProps)
     svg.selectAll("*").remove()
     svg.attr("width", width).attr("height", height)
 
+    // Theme-aware colors from CSS custom properties
+    const rootStyle = getComputedStyle(svgRef.current)
+    const axisColor = rootStyle.getPropertyValue('--muted-foreground').trim() || '#94a3b8'
+    const labelColor = rootStyle.getPropertyValue('--foreground').trim() || '#cbd5e1'
+    const borderColor = rootStyle.getPropertyValue('--border').trim() || '#334155'
+    const bgColor = rootStyle.getPropertyValue('--popover').trim() || '#0f172a'
+    const fgColor = rootStyle.getPropertyValue('--popover-foreground').trim() || '#f1f5f9'
+
     const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`)
 
     const xMax = d3.max(entries, (d) => d.investorCount) ?? 1
@@ -101,12 +109,12 @@ export function InvestorStatsChart({ data, className }: InvestorStatsChartProps)
     const tooltip = d3.select("body").append("div")
       .attr("class", "investor-stats-tooltip")
       .style("position", "fixed")
-      .style("background", "rgba(15,23,42,0.95)")
-      .style("border", "1px solid #334155")
+      .style("background", `hsl(${bgColor})`)
+      .style("border", `1px solid hsl(${borderColor})`)
       .style("border-radius", "6px")
       .style("padding", "8px 12px")
       .style("font-size", "12px")
-      .style("color", "#f1f5f9")
+      .style("color", `hsl(${fgColor})`)
       .style("pointer-events", "none")
       .style("opacity", "0")
       .style("z-index", "9999")
@@ -117,10 +125,10 @@ export function InvestorStatsChart({ data, className }: InvestorStatsChartProps)
       .attr("transform", `translate(0,${innerHeight})`)
       .call(d3.axisBottom(xScale).ticks(6).tickFormat(d => String(d)))
       .selectAll("text")
-      .attr("fill", "#cbd5e1")
+      .attr("fill", `hsl(${labelColor})`)
       .attr("font-size", 11)
 
-    g.selectAll(".domain, .tick line").attr("stroke", "#334155")
+    g.selectAll(".domain, .tick line").attr("stroke", `hsl(${borderColor})`)
 
     // Grid lines
     g.append("g")
@@ -128,7 +136,7 @@ export function InvestorStatsChart({ data, className }: InvestorStatsChartProps)
       .call(d3.axisBottom(xScale).ticks(6).tickSize(-innerHeight).tickFormat(() => ""))
       .attr("transform", `translate(0,${innerHeight})`)
       .selectAll("line")
-      .attr("stroke", "#334155")
+      .attr("stroke", `hsl(${borderColor})`)
       .attr("stroke-dasharray", "3,3")
     g.select(".grid .domain").remove()
 
@@ -137,7 +145,7 @@ export function InvestorStatsChart({ data, className }: InvestorStatsChartProps)
       .attr("x", innerWidth / 2)
       .attr("y", innerHeight + 35)
       .attr("text-anchor", "middle")
-      .attr("fill", "#94a3b8")
+      .attr("fill", `hsl(${axisColor})`)
       .attr("font-size", 11)
       .text("Unique Investors")
 
@@ -145,7 +153,7 @@ export function InvestorStatsChart({ data, className }: InvestorStatsChartProps)
     g.append("g")
       .call(d3.axisLeft(yScale).tickSize(0))
       .selectAll("text")
-      .attr("fill", "#cbd5e1")
+      .attr("fill", `hsl(${labelColor})`)
       .attr("font-size", 13)
       .attr("font-weight", "600")
       .each(function () {
@@ -200,7 +208,7 @@ export function InvestorStatsChart({ data, className }: InvestorStatsChartProps)
       .attr("y", (d) => (yScale(d.investmentList) ?? 0) + yScale.bandwidth() / 2)
       .attr("x", (d) => xScale(d.investorCount) + 6)
       .attr("dominant-baseline", "middle")
-      .attr("fill", "#cbd5e1")
+      .attr("fill", `hsl(${labelColor})`)
       .attr("font-size", 13)
       .attr("font-weight", "600")
       .text((d) => `${d.investorCount}`)
@@ -213,7 +221,7 @@ export function InvestorStatsChart({ data, className }: InvestorStatsChartProps)
       .attr("y", (d) => (yScale(d.investmentList) ?? 0) + yScale.bandwidth() / 2 + 1)
       .attr("x", (d) => xScale(d.investorCount) + 40)
       .attr("dominant-baseline", "middle")
-      .attr("fill", "#64748b")
+      .attr("fill", `hsl(${axisColor})`)
       .attr("font-size", 10)
       .text((d) => `(${d.companyCount} co.)`)
 

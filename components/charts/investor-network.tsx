@@ -178,6 +178,11 @@ export function InvestorNetwork({ className, filteredCompanyNames }: { className
     svg.selectAll("*").remove()
     svg.attr("viewBox", `0 0 ${width} ${height}`)
 
+    // Theme-aware colors from CSS custom properties
+    const rootStyle = getComputedStyle(svgRef.current)
+    const mutedFg = rootStyle.getPropertyValue('--muted-foreground').trim() || '#94a3b8'
+    const cardBg = rootStyle.getPropertyValue('--card').trim() || '#1e293b'
+
     const g = svg.append("g")
 
     const zoom = d3.zoom<SVGSVGElement, unknown>()
@@ -206,7 +211,7 @@ export function InvestorNetwork({ className, filteredCompanyNames }: { className
       .selectAll("line")
       .data(simLinks)
       .join("line")
-      .attr("stroke", "#94a3b8")
+      .attr("stroke", `hsl(${mutedFg})`)
       .attr("stroke-opacity", 0.45)
       .attr("stroke-width", 1)
 
@@ -231,8 +236,8 @@ export function InvestorNetwork({ className, filteredCompanyNames }: { className
 
     investorNodes.append("circle")
       .attr("r", d => rScale((d as unknown as InvestorNode).count))
-      .attr("fill", d => getInvestorLogoUrl(d.name) ? "#1e293b" : investorTypeColor((d as unknown as InvestorNode).investorType))
-      .attr("stroke", d => getInvestorLogoUrl(d.name) ? "#94a3b8" : "#1e293b")
+      .attr("fill", d => getInvestorLogoUrl(d.name) ? `hsl(${cardBg})` : investorTypeColor((d as unknown as InvestorNode).investorType))
+      .attr("stroke", d => getInvestorLogoUrl(d.name) ? `hsl(${mutedFg})` : `hsl(${cardBg})`)
       .attr("stroke-width", 2)
       .attr("fill-opacity", 0.92)
 
@@ -451,7 +456,7 @@ export function InvestorNetwork({ className, filteredCompanyNames }: { className
     if (!q) {
       startupSel.attr("opacity", 1).attr("stroke", "hsl(var(--background))").attr("stroke-width", 1).attr("r", 4.5)
       investorSel.select("circle").attr("opacity", 1).attr("stroke-width", 2)
-      linkSel.attr("stroke-opacity", 0.45).attr("stroke", "#94a3b8")
+      linkSel.attr("stroke-opacity", 0.45).attr("stroke", "hsl(var(--muted-foreground))")
       return
     }
 
@@ -501,7 +506,7 @@ export function InvestorNetwork({ className, filteredCompanyNames }: { className
       .attr("stroke", (l: any) => {
         const s = (l.source as any).id ?? l.source // eslint-disable-line @typescript-eslint/no-explicit-any
         const t = (l.target as any).id ?? l.target // eslint-disable-line @typescript-eslint/no-explicit-any
-        return (matchedIds.has(s) || matchedIds.has(t) || matchedInvestorIds.has(s)) ? "#fbbf24" : "#94a3b8"
+        return (matchedIds.has(s) || matchedIds.has(t) || matchedInvestorIds.has(s)) ? "#fbbf24" : "hsl(var(--muted-foreground))"
       })
   }, [deferredQuery, nodes])
 

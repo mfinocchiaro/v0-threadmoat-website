@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exported_at": "2026-04-02T22:39:50.364Z",
+  "exported_at": "2026-04-02T22:48:45.398Z",
   "milestones": [
     {
       "id": "M001",
@@ -950,14 +950,14 @@
       "milestone_id": "M007",
       "id": "S01",
       "title": "Theme-aware colors for D3 SVG charts (batch 1: 13 charts)",
-      "status": "pending",
+      "status": "complete",
       "risk": "low",
       "depends": [],
       "demo": "13 D3 charts have legible axes and tooltips on both light and dark themes",
       "created_at": "2026-04-02T22:25:27.797Z",
-      "completed_at": null,
-      "full_summary_md": "",
-      "full_uat_md": "",
+      "completed_at": "2026-04-02T22:41:25.591Z",
+      "full_summary_md": "---\nid: S01\nparent: M007\nmilestone: M007\nprovides:\n  - 13 D3 SVG charts with theme-aware axis/label/tooltip/grid colors\n  - Established getComputedStyle pattern for S02 to follow on remaining charts\nrequires:\n  []\naffects:\n  - S02\nkey_files:\n  - components/charts/box-plot-chart.tsx\n  - components/charts/correlation-matrix-chart.tsx\n  - components/charts/distribution-chart.tsx\n  - components/charts/financial-heatmap-chart.tsx\n  - components/charts/landscape-chart.tsx\n  - components/charts/map-chart.tsx\n  - components/charts/marimekko-chart.tsx\n  - components/charts/parallel-coords-chart.tsx\n  - components/charts/radar-chart.tsx\n  - components/charts/sankey-chart.tsx\n  - components/charts/slope-chart.tsx\n  - components/charts/spiral-timeline-chart.tsx\n  - components/charts/splom-chart.tsx\nkey_decisions:\n  - Used getComputedStyle pattern from patterns-chart.tsx as the standard D3 theme integration approach for all charts\n  - Data-semantic palette arrays preserved unchanged — only structural UI colors converted\n  - Body-appended D3 tooltips use interpolated CSS var hsl() since Tailwind classes are unavailable outside React render\n  - Ref-based tooltips converted to Tailwind semantic classes (bg-popover, text-popover-foreground)\n  - SPLOM histogram fill reclassified as structural and converted to hsl(var(--primary))\npatterns_established:\n  - getComputedStyle + getPropertyValue with hex fallback as the standard D3 SVG theme integration pattern\n  - Semantic Tailwind classes for ref-based tooltips vs interpolated CSS vars for D3-appended tooltips\n  - Data-semantic vs structural color classification policy for theme migration decisions\nobservability_surfaces:\n  - none\ndrill_down_paths:\n  - .gsd/milestones/M007/slices/S01/tasks/T01-SUMMARY.md\n  - .gsd/milestones/M007/slices/S01/tasks/T02-SUMMARY.md\nduration: \"\"\nverification_result: passed\ncompleted_at: 2026-04-02T22:41:25.592Z\nblocker_discovered: false\n---\n\n# S01: Theme-aware colors for D3 SVG charts (batch 1: 13 charts)\n\n**13 D3 SVG chart components now read CSS custom properties at render time for theme-aware axis, label, tooltip, and grid colors on both light and dark themes**\n\n## What Happened\n\nApplied the getComputedStyle pattern (established in patterns-chart.tsx) to all 13 D3 SVG chart components across two tasks.\n\n**T01 (7 charts):** box-plot, correlation-matrix, distribution, financial-heatmap, landscape, map, and marimekko. Each D3 SVG chart now reads --muted-foreground, --foreground, --border, --background, and --muted CSS custom properties at the top of its useEffect render block. Tooltips were converted to use semantic Tailwind classes (bg-popover, text-popover-foreground) for ref-based tooltips, or interpolated CSS var hsl() values for D3-appended body tooltips. Financial heatmap's HTML table converted slate-* Tailwind classes to semantic equivalents using var(--muted) CSS fallback pattern. Landscape chart was already theme-aware — no changes needed. Map chart JSX also converted from slate classes to semantic equivalents.\n\n**T02 (6 charts):** parallel-coords, radar, sankey, slope, spiral-timeline, and splom. Same getComputedStyle pattern applied. SPLOM histogram fill was converted from hardcoded #3b82f6 to hsl(var(--primary)) since histograms are structural, not category-encoded.\n\nAll data-semantic colors (category palettes, color scale endpoints) were intentionally preserved unchanged across both tasks — only structural UI colors (axes, labels, grids, tooltips, borders) were converted.\n\n## Verification\n\nnpm run build passed with exit code 0 — TypeScript compiled cleanly, all 101 routes generated successfully. Grep audit across all 13 chart files confirmed zero remaining hardcoded axis/label/tooltip hex colors. All grep matches are CSS var() fallback values (the || branch in getPropertyValue patterns) or data-semantic palette array entries — both are correct and intentional.\n\n## Requirements Advanced\n\nNone.\n\n## Requirements Validated\n\nNone.\n\n## New Requirements Surfaced\n\nNone.\n\n## Requirements Invalidated or Re-scoped\n\nNone.\n\n## Deviations\n\nLandscape chart required no changes (already theme-aware). Financial heatmap used var(--muted) CSS fallback pattern instead of getComputedStyle since it renders JSX, not D3 SVG. SPLOM histogram fill reclassified from data-semantic to structural and converted to hsl(var(--primary)).\n\n## Known Limitations\n\nCSS var fallback hex values remain as safety nets in getPropertyValue || patterns — these only activate if the CSS custom property is missing/empty, which shouldn't happen with the current theme setup but provides resilience.\n\n## Follow-ups\n\nNone.\n\n## Files Created/Modified\n\n- `components/charts/box-plot-chart.tsx` — Added getComputedStyle block, replaced hardcoded axis/label/border colors with CSS var lookups\n- `components/charts/correlation-matrix-chart.tsx` — Added getComputedStyle block, replaced 14 hardcoded colors with CSS var lookups\n- `components/charts/distribution-chart.tsx` — Added getComputedStyle block, replaced 11 hardcoded colors with CSS var lookups\n- `components/charts/financial-heatmap-chart.tsx` — Converted slate-* Tailwind classes to semantic equivalents, used var(--muted) CSS fallback\n- `components/charts/landscape-chart.tsx` — Already theme-aware, no changes needed\n- `components/charts/map-chart.tsx` — Added getComputedStyle block for D3 portions, converted JSX slate classes to semantic equivalents\n- `components/charts/marimekko-chart.tsx` — Added getComputedStyle block, replaced 12 hardcoded colors with CSS var lookups\n- `components/charts/parallel-coords-chart.tsx` — Added getComputedStyle block, replaced 8 hardcoded colors with CSS var lookups\n- `components/charts/radar-chart.tsx` — Converted 3 tooltip colors to semantic Tailwind classes\n- `components/charts/sankey-chart.tsx` — Converted 3 tooltip colors to semantic Tailwind classes\n- `components/charts/slope-chart.tsx` — Added getComputedStyle block, replaced 11 hardcoded colors with CSS var lookups\n- `components/charts/spiral-timeline-chart.tsx` — Added getComputedStyle block, replaced 8 hardcoded colors with CSS var lookups\n- `components/charts/splom-chart.tsx` — Added getComputedStyle block, replaced 5 hardcoded colors including histogram fill with hsl(var(--primary))\n",
+      "full_uat_md": "# S01: Theme-aware colors for D3 SVG charts (batch 1: 13 charts) — UAT\n\n**Milestone:** M007\n**Written:** 2026-04-02T22:41:25.592Z\n\n# S01: Theme-aware colors for D3 SVG charts (batch 1: 13 charts) — UAT\n\n**Milestone:** M007\n**Written:** 2026-04-02\n\n## UAT Type\n\n- UAT mode: human-experience\n- Why this mode is sufficient: Theme rendering must be visually confirmed in browser — automated tests can verify build passes but not visual legibility\n\n## Preconditions\n\n- Dev server running (`npm run dev`)\n- Browser open to dashboard at localhost:3000/dashboard\n- Both light and dark theme modes available (theme toggle in settings or system preference)\n\n## Smoke Test\n\nToggle between light and dark theme. Navigate to any chart page (e.g., /dashboard/box-plot). Axis labels, tick marks, and tooltips should be legible on both themes — no white-on-white or dark-on-dark text.\n\n## Test Cases\n\n### 1. Box Plot chart theme switching\n\n1. Navigate to /dashboard/box-plot\n2. Set theme to dark mode\n3. Observe axis labels, tick values, and grid lines\n4. Hover over a box to trigger tooltip\n5. Switch to light mode\n6. Repeat observations\n7. **Expected:** Axis text readable on both themes. Tooltip has appropriate background/text contrast. No hardcoded white or dark text visible on wrong background.\n\n### 2. Correlation Matrix readability\n\n1. Navigate to /dashboard/correlation\n2. In dark mode, check row/column labels along axes\n3. Hover over a cell to see tooltip with correlation value\n4. Switch to light mode, repeat\n5. **Expected:** Matrix labels legible. Tooltip background contrasts with page. Cell colors (data-semantic) remain the same across themes.\n\n### 3. Distribution chart axes\n\n1. Navigate to /dashboard/distribution\n2. Check X and Y axis labels and tick marks in both themes\n3. **Expected:** All axis text adapts to theme. Histogram bars retain their data colors.\n\n### 4. Financial Heatmap table borders\n\n1. Navigate to /dashboard/financial-heatmap\n2. In dark mode, check table borders and \"no data\" cells\n3. Switch to light mode\n4. **Expected:** Table borders visible on both themes. \"No data\" cells use muted background that contrasts appropriately.\n\n### 5. Map chart geography labels\n\n1. Navigate to /dashboard/map\n2. In both themes, check country/region labels and tooltip\n3. **Expected:** Geographic labels readable. Tooltip has proper contrast. Map features have visible borders.\n\n### 6. Parallel Coordinates axes and lines\n\n1. Navigate to /dashboard/parallel\n2. Check axis labels and grid lines in both themes\n3. Hover over a line to trigger tooltip\n4. **Expected:** All parallel axes and their labels are legible. Lines have visible contrast against background.\n\n### 7. Slope Chart labels\n\n1. Navigate to /dashboard/slope\n2. Check company labels on left and right axes in both themes\n3. **Expected:** Labels readable on both themes. Connecting lines visible.\n\n### 8. SPLOM histogram fill\n\n1. Navigate to /dashboard/splom\n2. Check diagonal histograms in both themes\n3. **Expected:** Histogram bars use primary color (adapts to theme), not hardcoded blue.\n\n## Edge Cases\n\n### Rapid theme toggling\n\n1. Navigate to /dashboard/spiral\n2. Toggle theme 5 times rapidly\n3. **Expected:** Chart re-renders correctly each time without stale colors or visual glitches.\n\n### First load on light theme\n\n1. Clear localStorage / set system to light mode\n2. Navigate to /dashboard/sankey\n3. **Expected:** Chart renders with light-appropriate colors on first paint — no flash of dark theme colors.\n\n## Failure Signals\n\n- White or very light text on white/light background\n- Dark text on dark background\n- Tooltip backgrounds that blend into the page\n- Axis labels disappearing on theme switch\n- Grid lines invisible on one theme\n- Data visualization colors (category palettes) changing between themes (they should NOT change)\n\n## Not Proven By This UAT\n\n- Batch 2 charts (S02) — remaining 13 charts not covered here\n- Print/PDF rendering of theme-aware charts\n- Accessibility contrast ratios meeting WCAG AA standards (visual check only, no computed ratio verification)\n- Performance impact of getComputedStyle calls\n\n## Notes for Tester\n\n- CSS var fallback hex values remain in code as safety nets — these are intentional and only activate if CSS custom properties are missing.\n- Data-semantic colors (category palettes in landscape, spiral-timeline) should NOT change between themes — they are intentionally preserved.\n- The landscape chart was already theme-aware before this slice, so it should look unchanged.\n",
       "goal": "Apply the established getPropertyValue pattern to 13 D3 SVG chart components",
       "success_criteria": "All 13 charts use CSS custom properties for axis colors, labels, tooltips, and empty cells. npm run build passes. Zero hardcoded dark-theme hex in these files for theme contexts.",
       "proof_level": "build + grep",
@@ -2399,19 +2399,33 @@
       "milestone_id": "M007",
       "slice_id": "S02",
       "id": "T01",
-      "title": "Fix theme colors in 9 remaining D3/SVG charts",
-      "status": "pending",
-      "one_liner": "",
-      "narrative": "",
-      "verification_result": "",
+      "title": "Converted structural UI colors in 9 D3/SVG chart files from hardcoded hex to CSS custom properties for theme-aware rendering",
+      "status": "complete",
+      "one_liner": "Converted structural UI colors in 9 D3/SVG chart files from hardcoded hex to CSS custom properties for theme-aware rendering",
+      "narrative": "Applied the getComputedStyle + getPropertyValue pattern (established in S01) to 9 remaining D3/SVG chart components: chord-chart, customer-network, investor-network, investor-stats-chart, network-graph, periodic-table, timeline-chart, treemap-chart, and wordcloud-chart. Converted tooltips (both body-appended and ref-based), axis/label/grid colors, link strokes, node circle fills/strokes, and search highlight reset colors from hardcoded dark-theme hex values to CSS custom property lookups. Preserved all data-semantic palette colors (investment colors, investor type colors, wordcloud palette) and intentional contrast colors (white text on colored treemap tiles). Removed isDark class-based detection in network-graph in favor of CSS var-based link colors.",
+      "verification_result": "npm run build passed (exit 0, 20.7s, all 101 routes). Grep audit across all 9 files confirmed zero remaining structural hardcoded hex colors — only data-semantic palette entries and intentional contrast text remain.",
       "duration": "",
-      "completed_at": null,
+      "completed_at": "2026-04-02T22:48:45.388Z",
       "blocker_discovered": false,
-      "deviations": "",
-      "known_issues": "",
-      "key_files": [],
-      "key_decisions": [],
-      "full_summary_md": "",
+      "deviations": "Periodic table only needed a Tailwind class fix (bg-slate → bg-muted), not getComputedStyle. Network graph isDark class check replaced entirely with CSS var approach. Treemap leaf/group text #fff preserved as intentional (always on colored backgrounds).",
+      "known_issues": "None.",
+      "key_files": [
+        "components/charts/chord-chart.tsx",
+        "components/charts/customer-network.tsx",
+        "components/charts/investor-network.tsx",
+        "components/charts/investor-stats-chart.tsx",
+        "components/charts/network-graph.tsx",
+        "components/charts/periodic-table.tsx",
+        "components/charts/timeline-chart.tsx",
+        "components/charts/treemap-chart.tsx",
+        "components/charts/wordcloud-chart.tsx"
+      ],
+      "key_decisions": [
+        "Body-appended D3 tooltips use getComputedStyle-resolved values in hsl() since getPropertyValue returns raw HSL channels",
+        "Network graph removed isDark class check in favor of CSS var-based link colors",
+        "Treemap leaf text kept as #fff since it always renders on colored tile backgrounds"
+      ],
+      "full_summary_md": "---\nid: T01\nparent: S02\nmilestone: M007\nkey_files:\n  - components/charts/chord-chart.tsx\n  - components/charts/customer-network.tsx\n  - components/charts/investor-network.tsx\n  - components/charts/investor-stats-chart.tsx\n  - components/charts/network-graph.tsx\n  - components/charts/periodic-table.tsx\n  - components/charts/timeline-chart.tsx\n  - components/charts/treemap-chart.tsx\n  - components/charts/wordcloud-chart.tsx\nkey_decisions:\n  - Body-appended D3 tooltips use getComputedStyle-resolved values in hsl() since getPropertyValue returns raw HSL channels\n  - Network graph removed isDark class check in favor of CSS var-based link colors\n  - Treemap leaf text kept as #fff since it always renders on colored tile backgrounds\nduration: \"\"\nverification_result: passed\ncompleted_at: 2026-04-02T22:48:45.388Z\nblocker_discovered: false\n---\n\n# T01: Converted structural UI colors in 9 D3/SVG chart files from hardcoded hex to CSS custom properties for theme-aware rendering\n\n**Converted structural UI colors in 9 D3/SVG chart files from hardcoded hex to CSS custom properties for theme-aware rendering**\n\n## What Happened\n\nApplied the getComputedStyle + getPropertyValue pattern (established in S01) to 9 remaining D3/SVG chart components: chord-chart, customer-network, investor-network, investor-stats-chart, network-graph, periodic-table, timeline-chart, treemap-chart, and wordcloud-chart. Converted tooltips (both body-appended and ref-based), axis/label/grid colors, link strokes, node circle fills/strokes, and search highlight reset colors from hardcoded dark-theme hex values to CSS custom property lookups. Preserved all data-semantic palette colors (investment colors, investor type colors, wordcloud palette) and intentional contrast colors (white text on colored treemap tiles). Removed isDark class-based detection in network-graph in favor of CSS var-based link colors.\n\n## Verification\n\nnpm run build passed (exit 0, 20.7s, all 101 routes). Grep audit across all 9 files confirmed zero remaining structural hardcoded hex colors — only data-semantic palette entries and intentional contrast text remain.\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| 1 | `npm run build` | 0 | ✅ pass | 20700ms |\n| 2 | `grep audit (structural hex colors across 9 files)` | 0 | ✅ pass | 500ms |\n\n\n## Deviations\n\nPeriodic table only needed a Tailwind class fix (bg-slate → bg-muted), not getComputedStyle. Network graph isDark class check replaced entirely with CSS var approach. Treemap leaf/group text #fff preserved as intentional (always on colored backgrounds).\n\n## Known Issues\n\nNone.\n\n## Files Created/Modified\n\n- `components/charts/chord-chart.tsx`\n- `components/charts/customer-network.tsx`\n- `components/charts/investor-network.tsx`\n- `components/charts/investor-stats-chart.tsx`\n- `components/charts/network-graph.tsx`\n- `components/charts/periodic-table.tsx`\n- `components/charts/timeline-chart.tsx`\n- `components/charts/treemap-chart.tsx`\n- `components/charts/wordcloud-chart.tsx`\n",
       "description": "Fix 9 remaining D3/SVG charts that don't need special 3D handling.\n\nFiles: chord-chart.tsx (2), customer-network.tsx (5), investor-network.tsx (6), investor-stats-chart.tsx (9), network-graph.tsx (7), periodic-table.tsx (1), timeline-chart.tsx (2), treemap-chart.tsx (4), wordcloud-chart.tsx (3)\n\nSame getPropertyValue pattern. For files with only 1-2 hardcoded colors, the fix is minimal.",
       "estimate": "25min",
       "files": [
@@ -3649,6 +3663,28 @@
       "verdict": "✅ pass",
       "duration_ms": 200,
       "created_at": "2026-04-02T22:39:50.355Z"
+    },
+    {
+      "id": 100,
+      "task_id": "T01",
+      "slice_id": "S02",
+      "milestone_id": "M007",
+      "command": "npm run build",
+      "exit_code": 0,
+      "verdict": "✅ pass",
+      "duration_ms": 20700,
+      "created_at": "2026-04-02T22:48:45.388Z"
+    },
+    {
+      "id": 101,
+      "task_id": "T01",
+      "slice_id": "S02",
+      "milestone_id": "M007",
+      "command": "grep audit (structural hex colors across 9 files)",
+      "exit_code": 0,
+      "verdict": "✅ pass",
+      "duration_ms": 500,
+      "created_at": "2026-04-02T22:48:45.388Z"
     }
   ]
 }
