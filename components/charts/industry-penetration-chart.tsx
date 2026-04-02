@@ -136,15 +136,13 @@ export function IndustryPenetrationChart({ data, className, shortlistedIds }: In
     if (!width) return
 
     // Theme-aware colors from CSS custom properties
+    // Values are already complete color functions (e.g. oklch(0.45 0.05 270))
     const rootStyle = getComputedStyle(containerRef.current)
-    const mutedFgRaw = rootStyle.getPropertyValue('--muted-foreground').trim()
-    const borderRaw = rootStyle.getPropertyValue('--border').trim()
-    const fgRaw = rootStyle.getPropertyValue('--foreground').trim()
-    const axisColor = mutedFgRaw ? `hsl(${mutedFgRaw})` : '#64748b'
-    const borderColor = borderRaw ? `hsl(${borderRaw})` : '#1e293b'
-    const fgColor = fgRaw ? `hsl(${fgRaw})` : '#f1f5f9'
-    const emptyBg = mutedFgRaw ? `hsla(${mutedFgRaw}, 0.08)` : 'rgba(128,128,128,0.08)'
-    const emptyStroke = mutedFgRaw ? `hsla(${mutedFgRaw}, 0.15)` : 'rgba(128,128,128,0.15)'
+    const axisColor = rootStyle.getPropertyValue('--muted-foreground').trim() || '#64748b'
+    const borderColor = rootStyle.getPropertyValue('--border').trim() || '#1e293b'
+    const fgColor = rootStyle.getPropertyValue('--foreground').trim() || '#f1f5f9'
+    const emptyBg = 'color-mix(in srgb, var(--muted-foreground) 8%, transparent)'
+    const emptyStroke = 'color-mix(in srgb, var(--muted-foreground) 15%, transparent)'
 
     const margin = { top: 10, right: 30, bottom: 140, left: 200 }
     const cellSize = Math.max(28, Math.min(40, (width - margin.left - margin.right) / industries.length))
@@ -216,7 +214,7 @@ export function IndustryPenetrationChart({ data, className, shortlistedIds }: In
               `Avg Score: ${cell.avgScore.toFixed(1)}`,
               `Avg Funding: ${fundingStr}`,
               shortlistedNames.length > 0 ? `<br><span style="color:#f59e0b">★ ${shortlistedNames.join(", ")}</span>` : "",
-              cell.count <= 8 ? `<br><span style="color:#94a3b8">${cell.companies.map(c => c.name).join(", ")}</span>` : "",
+              cell.count <= 8 ? `<br><span style="opacity:0.6">${cell.companies.map(c => c.name).join(", ")}</span>` : "",
             ].filter(Boolean).join("<br>")
           })
           .on("mousemove", (event) => {

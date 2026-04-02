@@ -39,11 +39,10 @@ export function HeatmapChart({ data, className }: HeatmapChartProps) {
     if (!width) return
 
     // Theme-aware colors from CSS custom properties
+    // Values are already complete color functions (e.g. oklch(0.45 0.05 270))
     const rootStyle = getComputedStyle(containerRef.current)
-    const mutedFgRaw = rootStyle.getPropertyValue('--muted-foreground').trim()
-    const borderRaw = rootStyle.getPropertyValue('--border').trim()
-    const axisColor = mutedFgRaw ? `hsl(${mutedFgRaw})` : '#64748b'
-    const borderColor = borderRaw ? `hsl(${borderRaw})` : '#1e293b'
+    const axisColor = rootStyle.getPropertyValue('--muted-foreground').trim() || '#64748b'
+    const borderColor = rootStyle.getPropertyValue('--border').trim() || '#1e293b'
 
     const margin = { top: 40, right: 30, bottom: 80, left: 160 }
 

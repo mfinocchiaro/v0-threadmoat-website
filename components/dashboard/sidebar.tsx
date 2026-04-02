@@ -129,7 +129,6 @@ export const TAB_GROUPS: TabGroup[] = [
     items: [
       { href: "/dashboard/radar",        icon: Radar,            label: "Radar Chart" },
       { href: "/dashboard/heatmap",      icon: Flame,            label: "Heatmap" },
-      { href: "/dashboard/industry-penetration", icon: Globe2,  label: "Industry Penetration" },
       { href: "/dashboard/parallel",     icon: SlidersHorizontal, label: "Parallel Coords" },
       { href: "/dashboard/box-plot",     icon: BoxSelect,        label: "Box Plot" },
       { href: "/dashboard/distribution", icon: Activity,         label: "Distribution" },
@@ -144,6 +143,7 @@ export const TAB_GROUPS: TabGroup[] = [
 const ADMIN_ITEMS = [
   { href: "/dashboard/investor-stats",    icon: Users,     label: "Investor Stats" },
   { href: "/dashboard/financial-heatmap", icon: Flame,     label: "Financial Heatmap" },
+  { href: "/dashboard/industry-penetration", icon: Globe2, label: "Industry Penetration" },
   { href: "/dashboard/correlation",       icon: GridIcon,  label: "Correlation Matrix" },
   { href: "/dashboard/reports",           icon: FileText,  label: "Report Generator" },
   { href: "/dashboard/investor-views",    icon: Eye,       label: "Investor Views" },
@@ -160,6 +160,7 @@ const BOTTOM_ITEMS = [
 const ADMIN_VIZ_HREFS = new Set([
   "/dashboard/investor-stats",
   "/dashboard/financial-heatmap",
+  "/dashboard/industry-penetration",
   "/dashboard/correlation",
   "/dashboard/reports",
   "/dashboard/investor-views",

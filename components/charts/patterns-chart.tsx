@@ -93,11 +93,10 @@ export function PatternsChart({ companies, className }: PatternsChartProps) {
     svg.selectAll("*").remove()
 
     // Theme-aware colors from CSS custom properties
+    // Values are already complete color functions (e.g. oklch(0.45 0.05 270))
     const rootStyle = getComputedStyle(svgRef.current)
-    const mutedFgRaw = rootStyle.getPropertyValue('--muted-foreground').trim()
-    const fgRaw = rootStyle.getPropertyValue('--foreground').trim()
-    const axisColor = mutedFgRaw ? `hsl(${mutedFgRaw})` : '#64748b'
-    const labelColor = fgRaw ? `hsl(${fgRaw})` : '#cbd5e1'
+    const axisColor = rootStyle.getPropertyValue('--muted-foreground').trim() || '#64748b'
+    const labelColor = rootStyle.getPropertyValue('--foreground').trim() || '#cbd5e1'
 
     const margin = { top: 40, right: 20, bottom: 90, left: 300 }
     const cellSize = 44
