@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exported_at": "2026-04-03T06:45:46.313Z",
+  "exported_at": "2026-04-03T06:47:39.086Z",
   "milestones": [
     {
       "id": "M001",
@@ -2469,19 +2469,22 @@
       "milestone_id": "M006",
       "slice_id": "S03",
       "id": "T02",
-      "title": "Wire customer-profile page route and sidebar navigation, verify build",
-      "status": "pending",
-      "one_liner": "",
-      "narrative": "",
-      "verification_result": "",
+      "title": "Wired customer-profile page route and sidebar navigation, build passes with zero errors",
+      "status": "complete",
+      "one_liner": "Wired customer-profile page route and sidebar navigation, build passes with zero errors",
+      "narrative": "Cloned the industry-penetration page pattern to create app/dashboard/customer-profile/page.tsx, importing TargetCustomerProfileChart from T01 and rendering it inside VizPageShell with useThesisGatedData for filtered data and shortlist IDs. Added the Customer Profile entry (UserCircle icon) to ADMIN_ITEMS after Market Momentum, and added /dashboard/customer-profile to ADMIN_VIZ_HREFS. Full npx next build passes cleanly — the route appears in the build output as a dynamic page.",
+      "verification_result": "Ran npx next build twice — first to verify zero type errors across all pages, second to confirm /dashboard/customer-profile appears in the route listing. Both passed.",
       "duration": "",
-      "completed_at": null,
+      "completed_at": "2026-04-03T06:47:39.075Z",
       "blocker_discovered": false,
-      "deviations": "",
-      "known_issues": "",
-      "key_files": [],
+      "deviations": "None.",
+      "known_issues": "None.",
+      "key_files": [
+        "app/dashboard/customer-profile/page.tsx",
+        "components/dashboard/sidebar.tsx"
+      ],
       "key_decisions": [],
-      "full_summary_md": "",
+      "full_summary_md": "---\nid: T02\nparent: S03\nmilestone: M006\nkey_files:\n  - app/dashboard/customer-profile/page.tsx\n  - components/dashboard/sidebar.tsx\nkey_decisions:\n  - (none)\nduration: \"\"\nverification_result: passed\ncompleted_at: 2026-04-03T06:47:39.076Z\nblocker_discovered: false\n---\n\n# T02: Wired customer-profile page route and sidebar navigation, build passes with zero errors\n\n**Wired customer-profile page route and sidebar navigation, build passes with zero errors**\n\n## What Happened\n\nCloned the industry-penetration page pattern to create app/dashboard/customer-profile/page.tsx, importing TargetCustomerProfileChart from T01 and rendering it inside VizPageShell with useThesisGatedData for filtered data and shortlist IDs. Added the Customer Profile entry (UserCircle icon) to ADMIN_ITEMS after Market Momentum, and added /dashboard/customer-profile to ADMIN_VIZ_HREFS. Full npx next build passes cleanly — the route appears in the build output as a dynamic page.\n\n## Verification\n\nRan npx next build twice — first to verify zero type errors across all pages, second to confirm /dashboard/customer-profile appears in the route listing. Both passed.\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| 1 | `npx next build 2>&1 | tail -30` | 0 | ✅ pass | 21000ms |\n| 2 | `npx next build 2>&1 | grep customer-profile` | 0 | ✅ pass | 21000ms |\n\n\n## Deviations\n\nNone.\n\n## Known Issues\n\nNone.\n\n## Files Created/Modified\n\n- `app/dashboard/customer-profile/page.tsx`\n- `components/dashboard/sidebar.tsx`\n",
       "description": "## Description\n\nCreate the Next.js page route for the customer profile heatmap and wire it into the dashboard sidebar navigation. Then verify the entire build passes.\n\n## Steps\n\n1. Create `app/dashboard/customer-profile/page.tsx` by cloning `app/dashboard/industry-penetration/page.tsx`\n2. Update the import to `TargetCustomerProfileChart` from `@/components/charts/target-customer-profile-chart`\n3. Update the page title to \"Target Customer Profile\" and description to explain the multi-dimensional customer profiling purpose\n4. Add sidebar entry to `ADMIN_ITEMS` array in `components/dashboard/sidebar.tsx`: `{ href: '/dashboard/customer-profile', icon: UserCircle, label: 'Customer Profile' }` — place it after the existing Market Momentum entry\n5. Add `'/dashboard/customer-profile'` to the `ADMIN_VIZ_HREFS` Set\n6. Run `npx next build` and verify zero type errors across all pages\n\n## Must-Haves\n\n- Page route at `/dashboard/customer-profile` using VizPageShell + useThesisGatedData\n- TargetCustomerProfileChart imported and rendered with filtered data and shortlistedIds\n- Sidebar shows 'Customer Profile' in admin items\n- ADMIN_VIZ_HREFS includes the new route\n- `npx next build` passes with zero type errors",
       "estimate": "30m",
       "files": [
@@ -4177,6 +4180,28 @@
       "verdict": "✅ pass",
       "duration_ms": 13700,
       "created_at": "2026-04-03T06:45:46.298Z"
+    },
+    {
+      "id": 126,
+      "task_id": "T02",
+      "slice_id": "S03",
+      "milestone_id": "M006",
+      "command": "npx next build 2>&1 | tail -30",
+      "exit_code": 0,
+      "verdict": "✅ pass",
+      "duration_ms": 21000,
+      "created_at": "2026-04-03T06:47:39.075Z"
+    },
+    {
+      "id": 127,
+      "task_id": "T02",
+      "slice_id": "S03",
+      "milestone_id": "M006",
+      "command": "npx next build 2>&1 | grep customer-profile",
+      "exit_code": 0,
+      "verdict": "✅ pass",
+      "duration_ms": 21000,
+      "created_at": "2026-04-03T06:47:39.075Z"
     }
   ]
 }

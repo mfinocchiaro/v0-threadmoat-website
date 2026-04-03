@@ -68,7 +68,7 @@ function getGeoRegion(country: string): string {
   - Estimate: 1h30m
   - Files: components/charts/target-customer-profile-chart.tsx, components/charts/industry-penetration-chart.tsx
   - Verify: test -f components/charts/target-customer-profile-chart.tsx && grep -q 'buyerPersona' components/charts/target-customer-profile-chart.tsx && grep -q 'getGeoRegion' components/charts/target-customer-profile-chart.tsx && grep -q 'shortlistedIds' components/charts/target-customer-profile-chart.tsx
-- [ ] **T02: Wire customer-profile page route and sidebar navigation, verify build** — ## Description
+- [x] **T02: Wired customer-profile page route and sidebar navigation, build passes with zero errors** — ## Description
 
 Create the Next.js page route for the customer profile heatmap and wire it into the dashboard sidebar navigation. Then verify the entire build passes.
 
