@@ -55,6 +55,15 @@ function nameToColor(name: string): string {
   return `hsl(${h % 360}, 55%, 42%)`
 }
 
+// Theme-aware color helper — CSS vars use oklch(), unusable inside hsl() for D3 inline SVG attrs
+function getThemeColors() {
+  const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
+  return {
+    bg: isDark ? '#0f172a' : '#f8fafc',
+    link: isDark ? '#94a3b8' : '#475569',
+  }
+}
+
 export function CustomerNetwork({ data, className }: { data: Company[]; className?: string }) {
   const svgRef = useRef<SVGSVGElement>(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
@@ -155,11 +164,13 @@ export function CustomerNetwork({ data, className }: { data: Company[]; classNam
     svg.selectAll("*").remove()
     svg.attr("viewBox", `0 0 ${width} ${height}`)
 
-    // Theme-aware colors from CSS custom properties
-    const rootStyle = getComputedStyle(svgRef.current)
-    const mutedFg = rootStyle.getPropertyValue('--muted-foreground').trim() || '#94a3b8'
-    const bgHsl = rootStyle.getPropertyValue('--background').trim() || '#0f172a'
-    const cardBg = rootStyle.getPropertyValue('--card').trim() || '#1e293b'
+    // Theme detection — check if we're in dark mode
+    const isDark = document.documentElement.classList.contains('dark')
+    // Hardcoded theme-aware colors for SVG attributes (CSS vars use oklch, not usable in D3 inline attrs)
+    const mutedFgColor = isDark ? '#94a3b8' : '#64748b' // slate-400 / slate-500
+    const bgColor = isDark ? '#0f172a' : '#f8fafc'       // slate-950 / slate-50
+    const cardBgColor = isDark ? '#1e293b' : '#ffffff'    // slate-800 / white
+    const linkColor = isDark ? '#94a3b8' : '#475569'      // slate-400 / slate-600 — high contrast
 
     const g = svg.append("g")
 
@@ -192,7 +203,7 @@ export function CustomerNetwork({ data, className }: { data: Company[]; classNam
       .selectAll("line")
       .data(simLinks)
       .join("line")
-      .attr("stroke", `hsl(${mutedFg})`)
+      .attr("stroke", linkColor)
       .attr("stroke-opacity", 0.55)
       .attr("stroke-width", 1.5)
 
@@ -217,8 +228,8 @@ export function CustomerNetwork({ data, className }: { data: Company[]; classNam
 
     customerNodes.append("circle")
       .attr("r", d => rScale((d as CustomerNode).count))
-      .attr("fill", d => getCustomerLogoUrl(d.name) ? `hsl(${cardBg})` : nameToColor(d.name))
-      .attr("stroke", d => getCustomerLogoUrl(d.name) ? `hsl(${mutedFg})` : "#fff")
+      .attr("fill", d => getCustomerLogoUrl(d.name) ? cardBgColor : nameToColor(d.name))
+      .attr("stroke", d => getCustomerLogoUrl(d.name) ? mutedFgColor : "#fff")
       .attr("stroke-width", 2)
       .attr("stroke-opacity", 0.6)
 
@@ -273,7 +284,7 @@ export function CustomerNetwork({ data, className }: { data: Company[]; classNam
       .join("circle")
       .attr("r", 5)
       .attr("fill", d => getInvestmentColor((d as StartupNode).investmentList))
-      .attr("stroke", "hsl(var(--background))")
+      .attr("stroke", bgColor)
       .attr("stroke-width", 1)
       .attr("cursor", "pointer")
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -475,10 +486,12 @@ export function CustomerNetwork({ data, className }: { data: Company[]; classNam
 
     const q = deferredQuery.trim().toLowerCase()
 
+    const tc = getThemeColors()
+
     if (!q) {
-      startupSel.attr("opacity", 1).attr("stroke", "hsl(var(--background))").attr("stroke-width", 1).attr("r", 5)
+      startupSel.attr("opacity", 1).attr("stroke", tc.bg).attr("stroke-width", 1).attr("r", 5)
       customerSel.select("circle").attr("opacity", 1).attr("stroke-width", 2)
-      linkSel.attr("stroke-opacity", 0.55).attr("stroke", "hsl(var(--muted-foreground))").attr("stroke-width", 1.5)
+      linkSel.attr("stroke-opacity", 0.55).attr("stroke", tc.link).attr("stroke-width", 1.5)
       return
     }
 
@@ -503,7 +516,7 @@ export function CustomerNetwork({ data, className }: { data: Company[]; classNam
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .attr("opacity", (d: any) => matchedIds.has(d.id) ? 1 : 0.07)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .attr("stroke", (d: any) => matchedIds.has(d.id) ? "#fbbf24" : "hsl(var(--background))")
+      .attr("stroke", (d: any) => matchedIds.has(d.id) ? "#fbbf24" : tc.bg)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .attr("stroke-width", (d: any) => matchedIds.has(d.id) ? 2.5 : 1)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -530,7 +543,7 @@ export function CustomerNetwork({ data, className }: { data: Company[]; classNam
         const s = (l.source as any).id ?? l.source
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const t = (l.target as any).id ?? l.target
-        return (matchedIds.has(s) || matchedIds.has(t)) ? "#fbbf24" : "hsl(var(--muted-foreground))"
+        return (matchedIds.has(s) || matchedIds.has(t)) ? "#fbbf24" : tc.link
       })
       .attr("stroke-width", 1.5)
   }, [deferredQuery, nodes])

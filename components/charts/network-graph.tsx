@@ -72,6 +72,17 @@ const HUB_LABELS: Record<string, string> = {
 // Stable moat stroke-width scale (module-level, no effect dependency needed)
 const moatStrokeScale = d3.scaleLinear().domain([0, 5]).range([1, 4]).clamp(true)
 
+// Theme-aware color helper — CSS vars use oklch(), unusable inside hsl() for D3 inline SVG attrs
+function getThemeColors() {
+  const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
+  return {
+    mutedFg: isDark ? '#94a3b8' : '#64748b',
+    bg: isDark ? '#0f172a' : '#f8fafc',
+    linkPrimary: isDark ? '#94a3b8' : '#475569',
+    linkSecondary: isDark ? '#64748b' : '#94a3b8',
+  }
+}
+
 // Normalize common manufacturing type variants
 function normalizeMfgType(raw: string): string {
   const trimmed = raw.trim()
@@ -309,17 +320,21 @@ export function NetworkGraph({ data, className, preview = false, accessTier = 'e
       .range([1, 4])
       .clamp(true)
 
-    // Theme-aware colors from CSS custom properties
-    const rootStyle = getComputedStyle(svgRef.current)
-    const mutedFg = rootStyle.getPropertyValue('--muted-foreground').trim() || '#64748b'
-    const borderColorHsl = rootStyle.getPropertyValue('--border').trim() || '#334155'
-    const bgHsl = rootStyle.getPropertyValue('--background').trim() || '#0f172a'
+    // Theme detection — check if we're in dark mode by inspecting the document
+    const isDark = document.documentElement.classList.contains('dark')
+    // Hardcoded theme-aware colors for SVG attributes (CSS custom properties use oklch
+    // which cannot be interpolated inside hsl() for D3 inline attrs)
+    const mutedFgColor = isDark ? '#94a3b8' : '#64748b' // slate-400 / slate-500
+    const borderColor = isDark ? '#334155' : '#cbd5e1'   // slate-700 / slate-300
+    const bgColor = isDark ? '#0f172a' : '#f8fafc'       // slate-950 / slate-50
+    const linkPrimaryColor = isDark ? '#94a3b8' : '#475569'  // slate-400 / slate-600 — high contrast
+    const linkSecondaryColor = isDark ? '#64748b' : '#94a3b8' // slate-500 / slate-400
 
     const getNodeColor = (d: Node) => {
       if (d.type === "company") {
-        return d.investmentList ? getInvestmentColor(d.investmentList) : `hsl(${mutedFg})`
+        return d.investmentList ? getInvestmentColor(d.investmentList) : mutedFgColor
       }
-      return HUB_COLORS[d.type] ?? `hsl(${mutedFg})`
+      return HUB_COLORS[d.type] ?? mutedFgColor
     }
 
     const simulation = d3.forceSimulation<Node>(graphData.nodes)
@@ -332,16 +347,13 @@ export function NetworkGraph({ data, className, preview = false, accessTier = 'e
         return 15
       }))
 
-    const primaryLinkColor = `hsl(${mutedFg})`
-    const secondaryLinkColor = `hsl(${borderColorHsl})`
-
     // Links — styled by kind (primary = solid thicker, secondary = dashed thinner)
     const link = g.append("g")
       .selectAll("line")
       .data(graphData.links)
       .join("line")
-      .attr("stroke", (d: Link) => d.kind === "primary" ? primaryLinkColor : secondaryLinkColor)
-      .attr("stroke-opacity", (d: Link) => d.kind === "primary" ? 0.5 : 0.3)
+      .attr("stroke", (d: Link) => d.kind === "primary" ? linkPrimaryColor : linkSecondaryColor)
+      .attr("stroke-opacity", (d: Link) => d.kind === "primary" ? 0.6 : 0.35)
       .attr("stroke-width", (d: Link) => d.kind === "primary" ? 2 : 1)
       .attr("stroke-dasharray", (d: Link) => d.kind === "secondary" ? "4,3" : "none")
 
@@ -380,7 +392,7 @@ export function NetworkGraph({ data, className, preview = false, accessTier = 'e
     node.append("circle")
       .attr("r", getNodeRadius)
       .attr("fill", getNodeColor)
-      .attr("stroke", d => d.type === "incumbent" ? `hsl(${bgHsl})` : `hsl(${bgHsl})`)
+      .attr("stroke", bgColor)
       .attr("stroke-width", d => d.type === "company" ? moatScale(d.moat) : d.type === "incumbent" ? 3 : 1.5)
       .attr("stroke-opacity", d => d.type === "company" ? 0.9 : 1)
       .attr("fill-opacity", d => d.type === "incumbent" ? 0.75 : 1)
@@ -404,7 +416,7 @@ export function NetworkGraph({ data, className, preview = false, accessTier = 'e
       .on("mouseout", function (_, d) {
         if (!preview) {
           d3.select(this)
-            .attr("stroke", `hsl(${bgHsl})`)
+            .attr("stroke", bgColor)
             .attr("stroke-width", d.type === "company" ? moatScale(d.moat) : 1.5)
         }
       })
@@ -468,11 +480,12 @@ export function NetworkGraph({ data, className, preview = false, accessTier = 'e
     const q = deferredQuery.trim().toLowerCase()
 
     // Reset all node styles first
+    const tc = getThemeColors()
     if (nodeSel) {
       nodeSel.each(function (d) {
         const sel = d3.select(this)
         sel.select("circle")
-          .attr("stroke", "hsl(var(--background))")
+          .attr("stroke", tc.bg)
           .attr("stroke-width", d.type === "company" ? moatStrokeScale(d.moat) : d.type === "incumbent" ? 3 : 1.5)
           .attr("opacity", 0.9)
         sel.select("text")
@@ -743,8 +756,8 @@ export function NetworkGraph({ data, className, preview = false, accessTier = 'e
             {/* Moat border */}
             <div className="flex items-center gap-1">
               <svg width="32" height="12">
-                <circle cx="6" cy="6" r="4.5" fill="hsl(var(--muted-foreground))" stroke="hsl(var(--background))" strokeWidth="1" />
-                <circle cx="20" cy="6" r="4.5" fill="hsl(var(--muted-foreground))" stroke="hsl(var(--background))" strokeWidth="3.5" />
+                <circle cx="6" cy="6" r="4.5" className="fill-muted-foreground stroke-background" strokeWidth="1" />
+                <circle cx="20" cy="6" r="4.5" className="fill-muted-foreground stroke-background" strokeWidth="3.5" />
               </svg>
               <span className="text-[9px] text-muted-foreground">Border = moat</span>
             </div>

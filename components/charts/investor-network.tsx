@@ -57,6 +57,15 @@ function nameToColor(name: string): string {
   return `hsl(${h % 360}, 55%, 42%)`
 }
 
+// Theme-aware color helper — CSS vars use oklch(), unusable inside hsl() for D3 inline SVG attrs
+function getThemeColors() {
+  const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
+  return {
+    bg: isDark ? '#0f172a' : '#f8fafc',
+    link: isDark ? '#94a3b8' : '#475569',
+  }
+}
+
 function investorTypeColor(type: string): string {
   if (type === "Institutional Investors") return "#3b82f6"
   if (type === "VC Fund") return "#10b981"
@@ -178,10 +187,13 @@ export function InvestorNetwork({ className, filteredCompanyNames }: { className
     svg.selectAll("*").remove()
     svg.attr("viewBox", `0 0 ${width} ${height}`)
 
-    // Theme-aware colors from CSS custom properties
-    const rootStyle = getComputedStyle(svgRef.current)
-    const mutedFg = rootStyle.getPropertyValue('--muted-foreground').trim() || '#94a3b8'
-    const cardBg = rootStyle.getPropertyValue('--card').trim() || '#1e293b'
+    // Theme detection — check if we're in dark mode
+    const isDark = document.documentElement.classList.contains('dark')
+    // Hardcoded theme-aware colors for SVG attributes (CSS vars use oklch, not usable in D3 inline attrs)
+    const mutedFgColor = isDark ? '#94a3b8' : '#64748b' // slate-400 / slate-500
+    const cardBgColor = isDark ? '#1e293b' : '#ffffff'    // slate-800 / white
+    const bgColor = isDark ? '#0f172a' : '#f8fafc'        // slate-950 / slate-50
+    const linkColor = isDark ? '#94a3b8' : '#475569'      // slate-400 / slate-600 — high contrast
 
     const g = svg.append("g")
 
@@ -211,8 +223,8 @@ export function InvestorNetwork({ className, filteredCompanyNames }: { className
       .selectAll("line")
       .data(simLinks)
       .join("line")
-      .attr("stroke", `hsl(${mutedFg})`)
-      .attr("stroke-opacity", 0.45)
+      .attr("stroke", linkColor)
+      .attr("stroke-opacity", 0.55)
       .attr("stroke-width", 1)
 
     // Investor nodes
@@ -236,8 +248,8 @@ export function InvestorNetwork({ className, filteredCompanyNames }: { className
 
     investorNodes.append("circle")
       .attr("r", d => rScale((d as unknown as InvestorNode).count))
-      .attr("fill", d => getInvestorLogoUrl(d.name) ? `hsl(${cardBg})` : investorTypeColor((d as unknown as InvestorNode).investorType))
-      .attr("stroke", d => getInvestorLogoUrl(d.name) ? `hsl(${mutedFg})` : `hsl(${cardBg})`)
+      .attr("fill", d => getInvestorLogoUrl(d.name) ? cardBgColor : investorTypeColor((d as unknown as InvestorNode).investorType))
+      .attr("stroke", d => getInvestorLogoUrl(d.name) ? mutedFgColor : cardBgColor)
       .attr("stroke-width", 2)
       .attr("fill-opacity", 0.92)
 
@@ -291,7 +303,7 @@ export function InvestorNetwork({ className, filteredCompanyNames }: { className
       .join("circle")
       .attr("r", 4.5)
       .attr("fill", d => getInvestmentColor((d as unknown as StartupNode).investmentList))
-      .attr("stroke", "hsl(var(--background))")
+      .attr("stroke", bgColor)
       .attr("stroke-width", 1)
       .attr("cursor", "pointer")
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -453,10 +465,12 @@ export function InvestorNetwork({ className, filteredCompanyNames }: { className
     if (!startupSel || !investorSel || !linkSel) return
 
     const q = deferredQuery.trim().toLowerCase()
+    const tc = getThemeColors()
+
     if (!q) {
-      startupSel.attr("opacity", 1).attr("stroke", "hsl(var(--background))").attr("stroke-width", 1).attr("r", 4.5)
+      startupSel.attr("opacity", 1).attr("stroke", tc.bg).attr("stroke-width", 1).attr("r", 4.5)
       investorSel.select("circle").attr("opacity", 1).attr("stroke-width", 2)
-      linkSel.attr("stroke-opacity", 0.45).attr("stroke", "hsl(var(--muted-foreground))")
+      linkSel.attr("stroke-opacity", 0.55).attr("stroke", tc.link)
       return
     }
 
@@ -483,7 +497,7 @@ export function InvestorNetwork({ className, filteredCompanyNames }: { className
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .attr("opacity", (d: any) => matchedIds.has(d.id) ? 1 : 0.07)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .attr("stroke", (d: any) => matchedIds.has(d.id) ? "#fbbf24" : "hsl(var(--background))")
+      .attr("stroke", (d: any) => matchedIds.has(d.id) ? "#fbbf24" : tc.bg)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .attr("stroke-width", (d: any) => matchedIds.has(d.id) ? 2.5 : 1)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -506,7 +520,7 @@ export function InvestorNetwork({ className, filteredCompanyNames }: { className
       .attr("stroke", (l: any) => {
         const s = (l.source as any).id ?? l.source // eslint-disable-line @typescript-eslint/no-explicit-any
         const t = (l.target as any).id ?? l.target // eslint-disable-line @typescript-eslint/no-explicit-any
-        return (matchedIds.has(s) || matchedIds.has(t) || matchedInvestorIds.has(s)) ? "#fbbf24" : "hsl(var(--muted-foreground))"
+        return (matchedIds.has(s) || matchedIds.has(t) || matchedInvestorIds.has(s)) ? "#fbbf24" : tc.link
       })
   }, [deferredQuery, nodes])
 
