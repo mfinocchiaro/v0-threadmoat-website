@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react"
 import * as d3 from "d3"
-import { cn } from "@/lib/utils"
+import { cn, contrastTextColor } from "@/lib/utils"
 import type { Company } from "@/lib/company-data"
 
 interface CorrelationMatrixChartProps {
@@ -149,7 +149,7 @@ export function CorrelationMatrixChart({ data, className }: CorrelationMatrixCha
       .attr("y", (d) => d.yi * cellSize + cellSize / 2)
       .attr("text-anchor", "middle")
       .attr("dominant-baseline", "middle")
-      .attr("fill", (d) => (Math.abs(d.value) > 0.55 ? bgColor : labelColor))
+      .attr("fill", (d) => contrastTextColor(colorScale(d.value)))
       .attr("font-size", Math.max(8, cellSize * 0.28))
       .attr("font-weight", "600")
       .attr("pointer-events", "none")

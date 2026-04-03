@@ -25,6 +25,7 @@ import {
   Download,
 } from "lucide-react"
 import { jsPDF } from "jspdf"
+import { autoTable } from "jspdf-autotable"
 import { toPng } from "html-to-image"
 import { BubbleChart } from "@/components/charts/bubble-chart"
 import { QuadrantChart } from "@/components/charts/quadrant-chart"
@@ -294,7 +295,11 @@ const CHART_LABELS: Record<ChartKey, string> = {
   treemap: "Treemap – Funding by Segment",
 }
 
-/** Lightweight markdown→jsPDF renderer. Handles ## headings, **bold**, - bullets, plain text. */
+/**
+ * Markdown→jsPDF renderer.
+ * Handles: # H1, ## H2, --- rules, - bullets (with nesting),
+ * **bold**, | tables |, ```code blocks```, and plain text.
+ */
 function renderMarkdownToPDF(
   doc: jsPDF,
   text: string,
@@ -306,20 +311,142 @@ function renderMarkdownToPDF(
   const lines = text.split("\n")
   const lineHeight = 5
 
-  for (const raw of lines) {
+  /** Helper: ensure Y is within page bounds, add page if needed */
+  function ensureSpace(needed: number = lineHeight): void {
+    if (y + needed > PDF_BOTTOM_LIMIT) {
+      doc.addPage()
+      y = PDF_MARGIN
+    }
+  }
+
+  /** Detect a markdown table row: starts with | and ends with | */
+  function isTableRow(line: string): boolean {
+    const trimmed = line.trim()
+    return trimmed.startsWith("|") && trimmed.endsWith("|")
+  }
+
+  /** Detect separator row: | --- | --- | or |:---|:---| */
+  function isSeparatorRow(line: string): boolean {
+    return isTableRow(line) && /^\|[\s:]*-{2,}[\s:]*(\|[\s:]*-{2,}[\s:]*)*\|$/.test(line.trim())
+  }
+
+  /** Parse a table row into cell strings */
+  function parseTableCells(line: string): string[] {
+    return line
+      .trim()
+      .replace(/^\|/, "")
+      .replace(/\|$/, "")
+      .split("|")
+      .map((cell) => cell.trim().replace(/\*\*(.*?)\*\*/g, "$1"))
+  }
+
+  let i = 0
+  while (i < lines.length) {
+    const raw = lines[i]
     const line = raw.trimEnd()
 
-    // Empty line — add small spacing
-    if (!line) {
-      y += lineHeight * 0.6
-      if (y > PDF_BOTTOM_LIMIT) {
-        doc.addPage()
-        y = PDF_MARGIN
+    // ─── Fenced code block: ``` ─────────────────────────────────────
+    if (line.trimStart().startsWith("```")) {
+      i++ // skip opening fence
+      const codeLines: string[] = []
+      while (i < lines.length && !lines[i].trimStart().startsWith("```")) {
+        codeLines.push(lines[i])
+        i++
       }
+      if (i < lines.length) i++ // skip closing fence
+
+      // Render code block with gray background and monospace font
+      doc.setFont("courier", "normal")
+      doc.setFontSize(8)
+      const codePadding = 3
+      const codeLineHeight = 4
+
+      // Calculate total height for background rect
+      const wrappedCodeLines: string[][] = codeLines.map((cl) =>
+        doc.splitTextToSize(cl || " ", maxWidth - codePadding * 2 - 4)
+      )
+      const totalCodeHeight =
+        wrappedCodeLines.reduce((sum, wl) => sum + wl.length * codeLineHeight, 0) +
+        codePadding * 2
+
+      ensureSpace(totalCodeHeight)
+
+      // Draw background rectangle
+      doc.setFillColor(240, 240, 240)
+      doc.setDrawColor(200, 200, 200)
+      doc.roundedRect(leftX, y - 1, maxWidth, totalCodeHeight, 1, 1, "FD")
+
+      y += codePadding
+      for (const wrappedGroup of wrappedCodeLines) {
+        for (const wl of wrappedGroup) {
+          doc.text(wl, leftX + codePadding + 2, y)
+          y += codeLineHeight
+        }
+      }
+      y += codePadding
+
+      // Restore normal font
+      doc.setFont("helvetica", "normal")
+      doc.setFontSize(10)
       continue
     }
 
-    // Heading: ## Title
+    // ─── Markdown table ─────────────────────────────────────────────
+    if (isTableRow(line)) {
+      const headerCells = parseTableCells(line)
+      const bodyRows: string[][] = []
+      i++ // move past header row
+
+      // Skip separator row if present
+      if (i < lines.length && isSeparatorRow(lines[i])) {
+        i++
+      }
+
+      // Collect body rows
+      while (i < lines.length && isTableRow(lines[i])) {
+        if (!isSeparatorRow(lines[i])) {
+          bodyRows.push(parseTableCells(lines[i]))
+        }
+        i++
+      }
+
+      // Render with autoTable
+      ensureSpace(20) // minimum space for table header
+      autoTable(doc, {
+        head: [headerCells],
+        body: bodyRows,
+        startY: y,
+        margin: { left: leftX, right: PDF_MARGIN },
+        styles: {
+          fontSize: 8,
+          cellPadding: 2,
+          overflow: "linebreak",
+        },
+        headStyles: {
+          fillColor: [80, 80, 80],
+          textColor: [255, 255, 255],
+          fontStyle: "bold",
+          fontSize: 8,
+        },
+        theme: "grid",
+      })
+
+      // Get final Y position after table
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      y = (doc as any).lastAutoTable?.finalY ?? y + 20
+      y += 4 // spacing after table
+      continue
+    }
+
+    // ─── Empty line ─────────────────────────────────────────────────
+    if (!line) {
+      y += lineHeight * 0.6
+      ensureSpace()
+      i++
+      continue
+    }
+
+    // ─── Heading: ## Title ──────────────────────────────────────────
     if (line.startsWith("## ")) {
       const heading = line.replace(/^## /, "")
       y += lineHeight * 0.5
@@ -327,19 +454,17 @@ function renderMarkdownToPDF(
       doc.setFontSize(12)
       const wrapped = doc.splitTextToSize(heading, maxWidth)
       for (const wl of wrapped) {
-        if (y > PDF_BOTTOM_LIMIT) {
-          doc.addPage()
-          y = PDF_MARGIN
-        }
+        ensureSpace(lineHeight + 1)
         doc.text(wl, leftX, y)
         y += lineHeight + 1
       }
       doc.setFont("helvetica", "normal")
       doc.setFontSize(10)
+      i++
       continue
     }
 
-    // H1: # Title
+    // ─── Heading: # Title ───────────────────────────────────────────
     if (line.startsWith("# ")) {
       const heading = line.replace(/^# /, "")
       y += lineHeight * 0.5
@@ -347,69 +472,81 @@ function renderMarkdownToPDF(
       doc.setFontSize(14)
       const wrapped = doc.splitTextToSize(heading, maxWidth)
       for (const wl of wrapped) {
-        if (y > PDF_BOTTOM_LIMIT) {
-          doc.addPage()
-          y = PDF_MARGIN
-        }
+        ensureSpace(lineHeight + 2)
         doc.text(wl, leftX, y)
         y += lineHeight + 2
       }
       doc.setFont("helvetica", "normal")
       doc.setFontSize(10)
+      i++
       continue
     }
 
-    // Horizontal rule
+    // ─── Horizontal rule ────────────────────────────────────────────
     if (line.startsWith("---")) {
       y += 2
-      if (y > PDF_BOTTOM_LIMIT) {
-        doc.addPage()
-        y = PDF_MARGIN
-      }
+      ensureSpace(4)
       doc.setDrawColor(180, 180, 180)
       doc.line(leftX, y, leftX + maxWidth, y)
       y += 4
+      i++
       continue
     }
 
-    // Bullet item: - text
+    // ─── Nested bullet: 2+ spaces then - text ──────────────────────
+    if (/^ {2,}- /.test(raw)) {
+      // Determine nesting depth: each 2 spaces = 1 level
+      const leadingSpaces = raw.match(/^( +)/)?.[1].length ?? 0
+      const depth = Math.min(Math.floor(leadingSpaces / 2), 3) // max 3 levels
+      const indent = 8 + depth * 6
+      const bulletText = raw.replace(/^ +- /, "")
+      const cleaned = bulletText.replace(/\*\*(.*?)\*\*/g, "$1")
+      const wrapped = doc.splitTextToSize(cleaned, maxWidth - indent)
+      for (let j = 0; j < wrapped.length; j++) {
+        ensureSpace()
+        if (j === 0) {
+          doc.text(depth === 1 ? "◦" : "▪", leftX + indent - 5, y)
+        }
+        doc.text(wrapped[j], leftX + indent, y)
+        y += lineHeight
+      }
+      i++
+      continue
+    }
+
+    // ─── Top-level bullet: - text ───────────────────────────────────
     if (line.startsWith("- ")) {
       const bulletText = line.slice(2)
       const cleaned = bulletText.replace(/\*\*(.*?)\*\*/g, "$1")
       const wrapped = doc.splitTextToSize(cleaned, maxWidth - 8)
-      for (let i = 0; i < wrapped.length; i++) {
-        if (y > PDF_BOTTOM_LIMIT) {
-          doc.addPage()
-          y = PDF_MARGIN
-        }
-        if (i === 0) {
+      for (let j = 0; j < wrapped.length; j++) {
+        ensureSpace()
+        if (j === 0) {
           doc.text("•", leftX + 2, y)
         }
-        doc.text(wrapped[i], leftX + 8, y)
+        doc.text(wrapped[j], leftX + 8, y)
         y += lineHeight
       }
+      i++
       continue
     }
 
-    // Plain or bold text — strip markdown bold markers for simplicity
+    // ─── Plain or bold text ─────────────────────────────────────────
     const cleaned = line.replace(/\*\*(.*?)\*\*/g, "$1")
-    // Check for bold prefix like **Strengths:**
     const hasBold = /^\*\*/.test(line)
     if (hasBold) {
       doc.setFont("helvetica", "bold")
     }
     const wrapped = doc.splitTextToSize(cleaned, maxWidth)
     for (const wl of wrapped) {
-      if (y > PDF_BOTTOM_LIMIT) {
-        doc.addPage()
-        y = PDF_MARGIN
-      }
+      ensureSpace()
       doc.text(wl, leftX, y)
       y += lineHeight
     }
     if (hasBold) {
       doc.setFont("helvetica", "normal")
     }
+    i++
   }
 
   return y

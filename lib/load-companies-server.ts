@@ -104,12 +104,46 @@ function normalizeHqLocation(raw: string): string {
   return raw
 }
 
+// ─── Module-level CSV parse cache ────────────────────────────────────────────
+// Persists across requests within the same serverless instance.
+// Invalidates when the CSV file's mtime changes (i.e. after a deploy or data sync).
+let _cachedCompanies: Company[] | null = null
+let _cachedMtimeMs: number = 0
+let _cachedEnrichMtimeMs: number = 0
+
 /**
  * Load companies from CSV on the server.
- * Used by both the API route and server components (homepage).
+ * Uses a module-level cache keyed on file mtime to avoid re-parsing the 1400+ row
+ * CSV on every request within the same serverless cold-start window.
  */
 export async function loadCompaniesFromCSV(): Promise<Company[]> {
   const csvPath = path.join(process.cwd(), 'data', 'Startups-Grid Full DB View.csv')
+
+  // Check if cache is still valid by comparing file mtimes
+  const enrichPath = path.join(process.cwd(), 'data', 'heatmap_enrichment.csv')
+  try {
+    const [csvStat, enrichStat] = await Promise.all([
+      fs.stat(csvPath),
+      fs.stat(enrichPath).catch(() => null),
+    ])
+    const csvMtime = csvStat.mtimeMs
+    const enrichMtime = enrichStat?.mtimeMs ?? 0
+
+    if (
+      _cachedCompanies &&
+      csvMtime === _cachedMtimeMs &&
+      enrichMtime === _cachedEnrichMtimeMs
+    ) {
+      return _cachedCompanies
+    }
+
+    // Store mtimes for next cache check (set before parse so even if parse
+    // throws, we don't re-stat on the next call with the same stale mtimes)
+    _cachedMtimeMs = csvMtime
+    _cachedEnrichMtimeMs = enrichMtime
+  } catch {
+    // If stat fails, proceed without caching
+  }
   let csvContent = await fs.readFile(csvPath, 'utf-8')
 
   // Strip BOM if present
@@ -121,7 +155,6 @@ export async function loadCompaniesFromCSV(): Promise<Company[]> {
   const rawData = parsed.data as Record<string, string>[]
 
   // Load heatmap enrichment data (semicolon-delimited sidecar file)
-  const enrichPath = path.join(process.cwd(), 'data', 'heatmap_enrichment.csv')
   let enrichMap = new Map<string, Record<string, string>>()
   try {
     let enrichContent = await fs.readFile(enrichPath, 'utf-8')
@@ -144,7 +177,7 @@ export async function loadCompaniesFromCSV(): Promise<Company[]> {
     return true
   })
 
-  return validData.map((row, i) => {
+  const companies = validData.map((row, i) => {
     const companyName = row['Company'] || ''
     const enrich = enrichMap.get(companyName.toLowerCase()) || {}
     return {
@@ -270,6 +303,10 @@ export async function loadCompaniesFromCSV(): Promise<Company[]> {
     growthMomentumTier: enrich['Growth Momentum Tier'] || 'Unknown',
     buyerPersona: enrich['Buyer Persona'] || 'Unknown',
   }})
+
+  // Store in module-level cache
+  _cachedCompanies = companies
+  return companies
 }
 
 /**

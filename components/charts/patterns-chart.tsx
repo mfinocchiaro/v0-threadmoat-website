@@ -4,6 +4,7 @@ import { useEffect, useRef, useMemo } from "react"
 import * as d3 from "d3"
 import { Company } from "@/lib/company-data"
 import { INVESTMENT_LIST_COLORS } from "@/lib/investment-colors"
+import { contrastTextColor } from "@/lib/utils"
 
 interface PatternsChartProps {
   companies: Company[]
@@ -177,7 +178,7 @@ export function PatternsChart({ companies, className }: PatternsChartProps) {
       .attr("dominant-baseline", "middle")
       .attr("font-size", 12)
       .attr("font-weight", "600")
-      .attr("fill", d => d.count >= maxCount * 0.7 ? "#0f172a" : "#e2e8f0")
+      .attr("fill", d => contrastTextColor(colorScale(d.count)))
       .attr("pointer-events", "none")
       .text(d => d.count)
 

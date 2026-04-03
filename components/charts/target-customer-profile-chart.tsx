@@ -5,7 +5,7 @@ import * as d3 from "d3"
 import { Company } from "@/lib/company-data"
 import { parseKnownCustomers } from "@/lib/customer-logos"
 import { Card } from "@/components/ui/card"
-import { cn } from "@/lib/utils"
+import { cn, contrastTextColor } from "@/lib/utils"
 
 // --- Axis types ---
 
@@ -320,7 +320,7 @@ export function TargetCustomerProfileChart({ data, className, shortlistedIds, on
             .attr("y", y + h / 2)
             .attr("text-anchor", "middle")
             .attr("dominant-baseline", "central")
-            .attr("fill", val > maxVal * 0.6 ? fgColor : axisColor)
+            .attr("fill", contrastTextColor(colorScale(val)))
             .attr("font-size", "10px")
             .attr("font-weight", "500")
             .attr("pointer-events", "none")

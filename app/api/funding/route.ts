@@ -155,6 +155,8 @@ export async function GET() {
           aiIntensity: row['AI Intensity'] || '',
           aiIntensityScore: parseNum(row['AI Intensity Score']),
           enhancedBurnRate: row['Enhanced HR+Cloud+AI Burn Rate'] || '',
+          valuationConfidence: row['Valuation Value Confidence'] || '',
+          reportedValuation: row['Reported Valuation'] || '',
         }
       })
 

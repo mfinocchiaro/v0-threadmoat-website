@@ -155,14 +155,34 @@ export async function POST(request: Request) {
     return Response.json({ error: 'AI generation failed' }, { status: 500 })
   }
 
-  // 6. Stream AI response
+  // 6. Stream AI response with token usage logging
   try {
+    const startMs = Date.now()
     const result = streamText({
       model: anthropic('claude-sonnet-4-5'),
       system: SYSTEM_PROMPT,
       prompt: buildUserPrompt(company),
       maxOutputTokens: 2000,
     })
+
+    // Fire-and-forget: log token usage after stream completes
+    // AI SDK v6: inputTokens, outputTokens, totalTokens (not promptTokens/completionTokens)
+    // PromiseLike has .then() but not .catch(), so use the rejection handler of .then()
+    result.usage.then(
+      (usage) => {
+        const durationMs = Date.now() - startMs
+        console.log(
+          `[ai/narrative] user=${session!.user!.id} company=${companyId}` +
+          ` inputTokens=${usage.inputTokens ?? 0}` +
+          ` outputTokens=${usage.outputTokens ?? 0}` +
+          ` totalTokens=${usage.totalTokens ?? 0}` +
+          ` durationMs=${durationMs}`
+        )
+      },
+      (err) => {
+        console.warn(`[ai/narrative] Failed to read token usage for company=${companyId}:`, err)
+      },
+    )
 
     return result.toTextStreamResponse()
   } catch (error) {

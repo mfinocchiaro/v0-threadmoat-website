@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useMemo } from "react"
 import { formatCurrency } from "@/lib/company-data"
 import { Card } from "@/components/ui/card"
-import { cn } from "@/lib/utils"
+import { cn, contrastTextColor } from "@/lib/utils"
 
 // ────────────────────────────────────────────────────────
 // Types
@@ -251,6 +251,10 @@ const FORMULAS: FormulaEntry[] = [
 // Helpers
 // ────────────────────────────────────────────────────────
 
+function contrastClass(bgColor: string): string {
+  return contrastTextColor(bgColor) === '#fff' ? 'text-white' : 'text-gray-900'
+}
+
 function getCellStyle(col: ColDef, rec: FundingRecord, numScales: Map<string, { min: number; max: number }>): { bg: string; text: string } {
   const noData = { bg: "var(--muted, #1e293b)", text: "text-muted-foreground" }
 
@@ -258,14 +262,16 @@ function getCellStyle(col: ColDef, rec: FundingRecord, numScales: Map<string, { 
     const val = (rec[col.key] as string) || ""
     const levelIdx = col.levels.indexOf(val)
     if (levelIdx < 0 || !val) return noData
-    return { bg: qualColor(levelIdx, col.levels.length), text: "text-white" }
+    const bg = qualColor(levelIdx, col.levels.length)
+    return { bg, text: contrastClass(bg) }
   }
 
   if (col.type === "desc") {
     const val = (rec[col.key] as string) || ""
     const levelIdx = col.levels.indexOf(val)
     if (levelIdx < 0 || !val) return noData
-    return { bg: descColor(levelIdx, col.levels.length), text: "text-white" }
+    const bg = descColor(levelIdx, col.levels.length)
+    return { bg, text: contrastClass(bg) }
   }
 
   // numeric
@@ -277,10 +283,12 @@ function getCellStyle(col: ColDef, rec: FundingRecord, numScales: Map<string, { 
   const norm = Math.max(0, Math.min(1, raw / scale.max))
 
   if (col.neutral) {
-    return { bg: neutralColor(norm), text: "text-white" }
+    const bg = neutralColor(norm)
+    return { bg, text: contrastClass(bg) }
   }
   const t = col.higherIsGood ? 1 - norm : norm
-  return { bg: rampColor(t), text: "text-white" }
+  const bg = rampColor(t)
+  return { bg, text: contrastClass(bg) }
 }
 
 function getCellText(col: ColDef, rec: FundingRecord): string {

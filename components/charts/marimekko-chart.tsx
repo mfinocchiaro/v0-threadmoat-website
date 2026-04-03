@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import * as d3 from "d3"
-import { cn } from "@/lib/utils"
+import { cn, contrastTextColor } from "@/lib/utils"
 import type { Company } from "@/lib/company-data"
 import { formatCurrency } from "@/lib/company-data"
 import {
@@ -225,7 +225,7 @@ export function MarimekkoChart({ data, className }: MarimekkoChartProps) {
       .attr("y", (c) => c.y + c.h / 2)
       .attr("text-anchor", "middle")
       .attr("dominant-baseline", "middle")
-      .attr("fill", labelColor)
+      .attr("fill", (c) => contrastTextColor(colorScale(c.value)))
       .attr("font-size", 10)
       .attr("font-weight", "600")
       .attr("pointer-events", "none")

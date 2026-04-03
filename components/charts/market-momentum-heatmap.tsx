@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState, useMemo } from "react"
 import * as d3 from "d3"
 import { Company } from "@/lib/company-data"
 import { Card } from "@/components/ui/card"
-import { cn } from "@/lib/utils"
+import { cn, contrastTextColor } from "@/lib/utils"
 
 interface MarketMomentumHeatmapProps {
   data: Company[]
@@ -204,7 +204,7 @@ export function MarketMomentumHeatmap({ data, className, shortlistedIds, onCellC
         if (w > 20 && h > 16) {
           g.append("text").attr("x", x + w / 2).attr("y", y + h / 2)
             .attr("text-anchor", "middle").attr("dominant-baseline", "central")
-            .attr("fill", cell.avgComposite > 0.55 ? fgColor : axisColor)
+            .attr("fill", contrastTextColor(colorScale(cell.avgComposite)))
             .attr("font-size", "10px").attr("font-weight", "500").attr("pointer-events", "none")
             .text(cell.avgComposite.toFixed(2))
         }
