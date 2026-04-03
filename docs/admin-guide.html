@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ThreadMoat Website — Administrator's Guide</title>
+<style>
+  @page { size: A4; margin: 2cm; }
+  body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1a1a1a; line-height: 1.6; font-size: 11pt; max-width: 100%; }
+  h1 { font-size: 24pt; color: #0d1b2a; border-bottom: 3px solid #1b263b; padding-bottom: 8px; margin-top: 0; }
+  h2 { font-size: 16pt; color: #1b263b; border-bottom: 1px solid #415a77; padding-bottom: 4px; margin-top: 28px; page-break-after: avoid; }
+  h3 { font-size: 13pt; color: #415a77; margin-top: 20px; page-break-after: avoid; }
+  h4 { font-size: 11pt; color: #778da9; margin-top: 14px; }
+  code { background: #f0f4f8; padding: 1px 5px; border-radius: 3px; font-size: 10pt; font-family: 'SF Mono', 'Fira Code', monospace; }
+  pre { background: #0d1b2a; color: #e0e1dd; padding: 12px 16px; border-radius: 6px; overflow-x: auto; font-size: 9.5pt; line-height: 1.5; page-break-inside: avoid; }
+  pre code { background: none; padding: 0; color: inherit; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 10pt; page-break-inside: avoid; }
+  th { background: #1b263b; color: white; padding: 8px 10px; text-align: left; }
+  td { border: 1px solid #d3d3d3; padding: 6px 10px; vertical-align: top; }
+  tr:nth-child(even) { background: #f8f9fa; }
+  .subtitle { font-size: 13pt; color: #778da9; margin-top: -10px; margin-bottom: 24px; }
+  .warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 10px 14px; margin: 12px 0; border-radius: 4px; }
+  .info { background: #d1ecf1; border-left: 4px solid #17a2b8; padding: 10px 14px; margin: 12px 0; border-radius: 4px; }
+  .danger { background: #f8d7da; border-left: 4px solid #dc3545; padding: 10px 14px; margin: 12px 0; border-radius: 4px; }
+  .toc a { text-decoration: none; color: #1b263b; }
+  .toc a:hover { text-decoration: underline; }
+  .toc li { margin: 4px 0; }
+  .cover { text-align: center; padding: 60px 0 40px 0; }
+  .cover h1 { font-size: 32pt; border: none; }
+  .version { font-size: 10pt; color: #999; margin-top: 30px; }
+  hr { border: none; border-top: 1px solid #ccc; margin: 30px 0; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <h1>ThreadMoat Website</h1>
+  <p class="subtitle">Administrator's Guide</p>
+  <p style="font-size: 12pt; color: #415a77;">B2B SaaS platform for industrial AI market intelligence</p>
+  <p class="version">Version 1.2 — April 2026</p>
+</div>
+
+<hr>
+
+<h2>Table of Contents</h2>
+<ol class="toc">
+  <li><a href="#overview">System Overview</a></li>
+  <li><a href="#architecture">Architecture &amp; File Layout</a></li>
+  <li><a href="#prereqs">Prerequisites &amp; Environment Setup</a></li>
+  <li><a href="#local-dev">Local Development</a></li>
+  <li><a href="#data-pipeline">Data Pipeline</a></li>
+  <li><a href="#auth">Authentication &amp; Access Control</a></li>
+  <li><a href="#i18n">Internationalization</a></li>
+  <li><a href="#dashboards">Dashboard Visualizations</a></li>
+  <li><a href="#ai-narrative">AI Narrative Engine</a></li>
+  <li><a href="#report-builder">Custom Report Builder</a></li>
+  <li><a href="#stripe">Stripe Integration</a></li>
+  <li><a href="#deployment">Deployment</a></li>
+  <li><a href="#data-update">Data Update Workflow</a></li>
+  <li><a href="#troubleshooting">Troubleshooting</a></li>
+  <li><a href="#quick-ref">Quick Reference</a></li>
+</ol>
+
+<hr>
+
+<h2 id="overview">1. System Overview</h2>
+
+<p>ThreadMoat Website is a B2B SaaS platform for engineering software and industrial AI market intelligence. It tracks <strong>600+ startups</strong> across the industrial software landscape and presents them through <strong>500+ interactive dashboard visualizations</strong> in <strong>6 languages</strong>. The platform converts visitors into paying subscribers through a tiered access model — from free limited views to enterprise advisory engagements.</p>
+
+<h3>What It Does</h3>
+<ul>
+  <li><strong>Market intelligence dashboards</strong> — 44+ visualization pages covering market, financial, geographic, network, and advanced analysis</li>
+  <li><strong>Multi-language marketing</strong> — full internationalization across English, French, Spanish, Italian, German, and Portuguese</li>
+  <li><strong>AI-powered analysis</strong> — Claude Sonnet 4.5 generates narrative assessments (Impressions, Conclusions, Beware, Overlooked Opportunities)</li>
+  <li><strong>Custom report builder</strong> — users select companies, toggle sections, include AI narrative, and export PDF/markdown reports</li>
+  <li><strong>Subscription commerce</strong> — Stripe-powered checkout with one-time and annual subscription products</li>
+</ul>
+
+<h3>Subscription Tiers</h3>
+<table>
+  <tr><th>Tier</th><th>Price</th><th>Access</th></tr>
+  <tr><td>Recon</td><td>Free</td><td>Limited dashboard views, masked company names</td></tr>
+  <tr><td>Analyst</td><td>$4,999 (one-time)</td><td>Single report purchase with full data access</td></tr>
+  <tr><td>Strategist</td><td>€18,999/yr</td><td>Full dashboard access, all reports, AI narratives</td></tr>
+  <tr><td>Advisory</td><td>Custom</td><td>Enterprise engagement with direct analyst support</td></tr>
+</table>
+
+<h3>Technology Stack</h3>
+<table>
+  <tr><th>Layer</th><th>Technology</th></tr>
+  <tr><td>Framework</td><td>Next.js 16 (App Router)</td></tr>
+  <tr><td>Auth</td><td>NextAuth</td></tr>
+  <tr><td>Payments</td><td>Stripe (live)</td></tr>
+  <tr><td>Email</td><td>Resend + React Email</td></tr>
+  <tr><td>Charts</td><td>D3, Recharts</td></tr>
+  <tr><td>Styling</td><td>Tailwind CSS, shadcn/ui</td></tr>
+  <tr><td>i18n</td><td>next-intl (6 languages)</td></tr>
+  <tr><td>AI</td><td>Vercel AI SDK + Claude Sonnet 4.5</td></tr>
+  <tr><td>Database</td><td>Neon Postgres</td></tr>
+  <tr><td>Hosting</td><td>Vercel</td></tr>
+</table>
+
+<h2 id="architecture">2. Architecture &amp; File Layout</h2>
+
+<h3>Directory Structure</h3>
+<pre><code>threadmoat-website/
+├── app/
+│   ├── [locale]/                  # Public marketing pages with i18n
+│   │   ├── page.tsx                 # Home
+│   │   ├── pricing/                 # Pricing page
+│   │   ├── about/                   # About page
+│   │   └── report/                  # Report landing page
+│   ├── auth/                      # Authentication flows
+│   │   ├── login/
+│   │   ├── sign-up/
+│   │   ├── forgot-password/
+│   │   ├── verify-email/
+│   │   └── reset-password/
+│   ├── dashboard/                 # 44+ visualization pages
+│   │   ├── analytics/
+│   │   ├── bar-chart/
+│   │   ├── box-plot/
+│   │   ├── bubbles/
+│   │   ├── buyer-persona/
+│   │   ├── candlestick/
+│   │   ├── chord/
+│   │   ├── compare/
+│   │   ├── correlation/
+│   │   ├── customer-profile/
+│   │   ├── customers/
+│   │   ├── distribution/
+│   │   ├── explore/
+│   │   ├── financial-heatmap/
+│   │   ├── growth-momentum/
+│   │   ├── heatmap/
+│   │   ├── industry-penetration/
+│   │   ├── investor-network/
+│   │   ├── investor-stats/
+│   │   ├── investor-views/
+│   │   ├── ip-dependency/
+│   │   ├── landscape/
+│   │   ├── landscape-intro/
+│   │   ├── map/
+│   │   ├── marimekko/
+│   │   ├── market-momentum/
+│   │   ├── maturity-matrix/
+│   │   ├── metros/
+│   │   ├── network/
+│   │   ├── parallel/
+│   │   ├── patterns/
+│   │   ├── periodic-table/
+│   │   ├── quadrant/
+│   │   ├── radar/
+│   │   ├── reports/
+│   │   ├── sankey/
+│   │   ├── settings/
+│   │   ├── slope/
+│   │   ├── spiral/
+│   │   ├── splom/
+│   │   ├── sunburst/
+│   │   ├── swot/
+│   │   ├── tab/
+│   │   │   ├── advanced/
+│   │   │   ├── financial/
+│   │   │   ├── geographic/
+│   │   │   ├── market/
+│   │   │   └── network/
+│   │   ├── tech-independence/
+│   │   ├── timeline/
+│   │   ├── treemap/
+│   │   └── wordcloud/
+│   └── api/                       # REST API endpoints
+│       ├── auth/
+│       ├── companies/
+│       ├── funding/
+│       ├── investors/
+│       ├── profile/
+│       │   ├── layout/
+│       │   ├── onboarding/
+│       │   ├── saved-theses/
+│       │   └── thesis/
+│       ├── admin/
+│       │   ├── coupons/
+│       │   └── crm-export/
+│       ├── ai/
+│       │   └── narrative/
+│       └── webhooks/
+│           └── stripe/
+├── components/                    # React components
+│   ├── charts/                      # Chart components (D3, Recharts)
+│   ├── checkout/                    # Stripe checkout UI
+│   ├── dashboard/                   # Dashboard layout & nav
+│   ├── dashboards/                  # Dashboard page wrappers
+│   ├── homepage/                    # Marketing page components
+│   ├── ui/                          # shadcn/ui primitives
+│   └── widgets/                     # Reusable dashboard widgets
+├── contexts/                      # React contexts
+│   ├── company-data/
+│   ├── filter/
+│   ├── layout/
+│   ├── plan/
+│   ├── scenario/
+│   ├── shortlist/
+│   └── thesis/
+├── lib/                           # Utilities
+│   ├── company-data.ts
+│   ├── load-companies-server.ts     # Server-side CSV loading
+│   ├── stripe.ts
+│   ├── subscription.ts
+│   ├── tiers.ts
+│   ├── db.ts                        # Neon Postgres client
+│   ├── email.ts                     # Resend integration
+│   ├── rate-limit.ts
+│   ├── name-masking.ts              # Non-subscriber name obfuscation
+│   └── products.ts
+├── data/                          # CSV data files
+│   ├── Startups-Grid view.csv
+│   ├── Startups-Financial Health.csv
+│   ├── Startups-Funding.csv
+│   ├── Investors-Grid view.csv
+│   ├── heatmap_enrichment.csv
+│   └── Startups-Software-only ThreadMoat.csv
+├── messages/                      # i18n translation files
+│   ├── en.json
+│   ├── fr.json
+│   ├── es.json
+│   ├── it.json
+│   ├── de.json
+│   └── pt.json
+├── scripts/                       # Python data scripts
+│   ├── fetch_airtable_csv.py
+│   ├── clean_tags.py
+│   ├── enrich_op_model.py
+│   ├── push_tags_to_airtable.py
+│   └── rebuild_tags.py
+├── hooks/                         # Custom React hooks
+├── migrations/                    # SQL migration files
+├── public/                        # Static assets (logos, reports, images)
+├── next.config.js
+├── tailwind.config.ts
+└── package.json
+</code></pre>
+
+<h3>Data Flow</h3>
+<pre><code>Airtable → scripts/fetch_airtable_csv.py → data/*.csv
+                                               ↓
+                              lib/load-companies-server.ts (server-side)
+                                               ↓
+                              contexts/ (client-side React contexts)
+                                               ↓
+                              components/charts/ → Dashboard pages
+                                               ↓
+                              Stripe checkout ← /api/webhooks/stripe
+</code></pre>
+
+<h2 id="prereqs">3. Prerequisites &amp; Environment Setup</h2>
+
+<h3>Required Software</h3>
+<table>
+  <tr><th>Software</th><th>Version</th><th>Purpose</th></tr>
+  <tr><td>Node.js</td><td>20+</td><td>Runtime</td></tr>
+  <tr><td>npm</td><td>10+</td><td>Package manager</td></tr>
+  <tr><td>Vercel CLI</td><td>Latest</td><td>Deployment (optional — git push also works)</td></tr>
+</table>
+
+<h3>Environment Variables</h3>
+
+<p>Create a <code>.env.local</code> file in the project root:</p>
+<pre><code># Authentication
+NEXTAUTH_SECRET=...                          # Random secret for session signing
+NEXTAUTH_URL=http://localhost:3000           # Canonical app URL
+
+# Database
+NEON_DATABASE_URL=postgres://...             # Neon Postgres connection string
+
+# Stripe (live keys)
+STRIPE_SECRET_KEY=sk_live_...                # Stripe secret key
+STRIPE_WEBHOOK_SECRET=whsec_...              # Stripe webhook signing secret
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_  # Stripe publishable key (client-side)
+
+# Email
+RESEND_API_KEY=re_...                        # Resend transactional email
+
+# Data source
+AIRTABLE_TOKEN=pat...                        # Airtable Personal Access Token
+AIRTABLE_BASE_ID=app...                      # Airtable base ID
+
+# AI
+ANTHROPIC_API_KEY=sk-ant-...                 # Claude API key for AI narratives
+</code></pre>
+
+<div class="danger">
+  <strong>Security:</strong> Never commit <code>.env.local</code> to git. The <code>.gitignore</code> already excludes it. For production, set all variables in the Vercel dashboard.
+</div>
+
+<h2 id="local-dev">4. Local Development</h2>
+
+<h3>First-Time Setup</h3>
+<pre><code># Install dependencies
+npm install
+
+# Start development server
+npm run dev
+</code></pre>
+<p>The app will be available at <a href="http://localhost:3000">http://localhost:3000</a>.</p>
+
+<h3>Common Commands</h3>
+<table>
+  <tr><th>Command</th><th>Purpose</th></tr>
+  <tr><td><code>npm run dev</code></td><td>Start development server (localhost:3000)</td></tr>
+  <tr><td><code>npm run build</code></td><td>Production build — catches TypeScript and build errors</td></tr>
+  <tr><td><code>npm run lint</code></td><td>Run ESLint across the project</td></tr>
+  <tr><td><code>npm start</code></td><td>Start production server (after build)</td></tr>
+</table>
+
+<div class="info">
+  <strong>Tip:</strong> Always run <code>npm run build</code> before pushing to catch TypeScript errors that the dev server may not surface.
+</div>
+
+<h2 id="data-pipeline">5. Data Pipeline</h2>
+
+<p>The website reads startup and investor data from CSV files stored in the <code>data/</code> directory. These CSVs are exported from the Airtable master database and loaded server-side via <code>lib/load-companies-server.ts</code>.</p>
+
+<h3>CSV Data Files</h3>
+<table>
+  <tr><th>File</th><th>Contents</th><th>Rows (approx)</th></tr>
+  <tr><td><code>Startups-Grid view.csv</code></td><td>Main startup data: name, description, URL, HQ, founded, employees, category, discipline, lifecycle phase</td><td>740</td></tr>
+  <tr><td><code>Startups-Financial Health.csv</code></td><td>Financial metrics: revenue estimates, burn rate, runway, valuation</td><td>740</td></tr>
+  <tr><td><code>Startups-Funding.csv</code></td><td>Funding history: rounds, amounts, investors, dates</td><td>740</td></tr>
+  <tr><td><code>Investors-Grid view.csv</code></td><td>Investor profiles: name, type, fund size, portfolio companies, focus areas</td><td>200+</td></tr>
+  <tr><td><code>heatmap_enrichment.csv</code></td><td>Derived heatmap columns from the Agentic Updates project</td><td>600</td></tr>
+  <tr><td><code>Startups-Software-only ThreadMoat.csv</code></td><td>Filtered view: software-only startups used for primary dashboard display</td><td>600</td></tr>
+</table>
+
+<h3>Heatmap Enrichment CSV</h3>
+<p>The <code>heatmap_enrichment.csv</code> is produced by the ThreadMoat Agentic Updates project. It contains 600 rows and 7 columns:</p>
+<table>
+  <tr><th>Column</th><th>Description</th></tr>
+  <tr><td>Name</td><td>Company name (join key)</td></tr>
+  <tr><td>Company URL</td><td>Primary URL</td></tr>
+  <tr><td>TIS</td><td>Technology Independence Score (0–100)</td></tr>
+  <tr><td>Ecosystem Dependencies</td><td>Vendor ecosystems the company depends on</td></tr>
+  <tr><td>Growth Momentum Tier</td><td>Accelerating / Steady / Decelerating / Early / Stalled</td></tr>
+  <tr><td>Buyer Persona</td><td>Primary buyer role (Design Engineering, Manufacturing/OT, etc.)</td></tr>
+  <tr><td>Data Completeness</td><td>N/4 quality flag for TIS reliability</td></tr>
+</table>
+
+<h3>Refreshing Data</h3>
+<pre><code># Pull fresh CSVs from Airtable
+python scripts/fetch_airtable_csv.py
+
+# Then redeploy (git push or vercel deploy)
+</code></pre>
+
+<div class="warning">
+  <strong>Note:</strong> The <code>fetch_airtable_csv.py</code> script requires <code>AIRTABLE_TOKEN</code> and <code>AIRTABLE_BASE_ID</code> environment variables. The heatmap_enrichment.csv must be copied separately from the Agentic Updates project output.
+</div>
+
+<h2 id="auth">6. Authentication &amp; Access Control</h2>
+
+<p>Authentication is handled by NextAuth backed by Neon Postgres for session and user storage.</p>
+
+<h3>Auth Flows</h3>
+<table>
+  <tr><th>Route</th><th>Purpose</th></tr>
+  <tr><td><code>/auth/sign-up</code></td><td>New user registration with email verification</td></tr>
+  <tr><td><code>/auth/login</code></td><td>Email/password login</td></tr>
+  <tr><td><code>/auth/forgot-password</code></td><td>Password reset request (sends email via Resend)</td></tr>
+  <tr><td><code>/auth/reset-password</code></td><td>Password reset form (from email link)</td></tr>
+  <tr><td><code>/auth/verify-email</code></td><td>Email verification callback</td></tr>
+</table>
+
+<h3>Tier Access Control</h3>
+<table>
+  <tr><th>Tier</th><th>Price</th><th>Dashboard Access</th><th>Company Names</th><th>AI Narrative</th><th>Reports</th></tr>
+  <tr><td>Recon (free)</td><td>$0</td><td>Limited views</td><td>Masked</td><td>No</td><td>No</td></tr>
+  <tr><td>Analyst</td><td>$4,999</td><td>Full (one-time)</td><td>Visible</td><td>Yes</td><td>1 report</td></tr>
+  <tr><td>Strategist</td><td>€18,999/yr</td><td>Full (subscription)</td><td>Visible</td><td>Yes</td><td>Unlimited</td></tr>
+  <tr><td>Advisory</td><td>Custom</td><td>Full + priority</td><td>Visible</td><td>Yes</td><td>Unlimited</td></tr>
+</table>
+
+<h3>Name Masking</h3>
+<p>Non-subscribers see obfuscated company names via <code>lib/name-masking.ts</code>. This masks company names, URLs, and other identifying details in dashboard views and API responses. Full data is only revealed after Stripe checkout completes and the user's tier is upgraded.</p>
+
+<h3>Coupon System</h3>
+<p>Partners and early adopters can receive coupons via the admin API (<code>/api/admin/coupons</code>). Coupons map to specific tier upgrades and can be one-time or multi-use.</p>
+
+<h3>Onboarding</h3>
+<p>New subscribers are guided through an onboarding wizard that collects their role, company type, and investment focus areas. This data powers the thesis context and personalized dashboard defaults.</p>
+
+<h2 id="i18n">7. Internationalization</h2>
+
+<p>The website uses <strong>next-intl</strong> for internationalization across 6 languages.</p>
+
+<h3>Supported Languages</h3>
+<table>
+  <tr><th>Code</th><th>Language</th><th>URL Prefix</th></tr>
+  <tr><td>en</td><td>English</td><td><code>/</code> (default, no prefix)</td></tr>
+  <tr><td>fr</td><td>French</td><td><code>/fr</code></td></tr>
+  <tr><td>es</td><td>Spanish</td><td><code>/es</code></td></tr>
+  <tr><td>it</td><td>Italian</td><td><code>/it</code></td></tr>
+  <tr><td>de</td><td>German</td><td><code>/de</code></td></tr>
+  <tr><td>pt</td><td>Portuguese</td><td><code>/pt</code></td></tr>
+</table>
+
+<h3>Configuration</h3>
+<ul>
+  <li><strong>Locale prefix:</strong> <code>as-needed</code> — English pages have no prefix (<code>/pricing</code>), other languages use their code (<code>/fr/pricing</code>)</li>
+  <li><strong>Translation files:</strong> stored in <code>messages/</code> as JSON files (one per language)</li>
+  <li><strong>Language switcher:</strong> uses flag emojis in the navigation bar</li>
+</ul>
+
+<div class="info">
+  <strong>Brand names are never translated.</strong> ThreadMoat, Digital Thread, Analyst, and Strategist remain in English across all locales. These terms are used as product/tier names and must be consistent.
+</div>
+
+<h3>Adding a Translation Key</h3>
+<ol>
+  <li>Add the key to <code>messages/en.json</code></li>
+  <li>Add translations to all other locale files (<code>fr.json</code>, <code>es.json</code>, <code>it.json</code>, <code>de.json</code>, <code>pt.json</code>)</li>
+  <li>Use <code>useTranslations('namespace')</code> in the component to access it</li>
+</ol>
+
+<h2 id="dashboards">8. Dashboard Visualizations</h2>
+
+<p>The dashboard contains <strong>44+ visualization pages</strong> organized into tab groups. All charts respond to the global filter context and thesis context for filtered views by investment thesis.</p>
+
+<h3>Tab Organization</h3>
+<table>
+  <tr><th>Tab</th><th>Route</th><th>Key Visualizations</th></tr>
+  <tr><td>Market</td><td><code>/dashboard/tab/market</code></td><td>Periodic Table, Landscape, Quadrant, SWOT, Distribution, Patterns</td></tr>
+  <tr><td>Financial</td><td><code>/dashboard/tab/financial</code></td><td>Financial Heatmap, Candlestick, Bar Chart, Box Plot, Slope</td></tr>
+  <tr><td>Geographic</td><td><code>/dashboard/tab/geographic</code></td><td>3D Globe Map, Metros, Treemap</td></tr>
+  <tr><td>Network</td><td><code>/dashboard/tab/network</code></td><td>Investor Network, Chord, Sankey, Sunburst</td></tr>
+  <tr><td>Advanced</td><td><code>/dashboard/tab/advanced</code></td><td>Tech Independence, Buyer Persona, Marimekko, Parallel, Spiral, SPLOM, Correlation</td></tr>
+</table>
+
+<h3>Key Visualizations</h3>
+<table>
+  <tr><th>Chart</th><th>Route</th><th>Description</th></tr>
+  <tr><td>Periodic Table</td><td><code>/dashboard/periodic-table</code></td><td>Interactive periodic-table–style grid of all startups by category</td></tr>
+  <tr><td>3D Globe Map</td><td><code>/dashboard/map</code></td><td>Globe visualization of startup HQ locations worldwide</td></tr>
+  <tr><td>Investor Network</td><td><code>/dashboard/investor-network</code></td><td>Force-directed graph showing co-investment relationships</td></tr>
+  <tr><td>Financial Heatmap</td><td><code>/dashboard/financial-heatmap</code></td><td>Heatmap of financial health metrics across startups</td></tr>
+  <tr><td>Market Momentum</td><td><code>/dashboard/market-momentum</code></td><td>Heatmap of growth momentum tiers across investment lists</td></tr>
+  <tr><td>Industry Penetration</td><td><code>/dashboard/industry-penetration</code></td><td>Heatmap showing startup penetration across industrial verticals</td></tr>
+  <tr><td>Customer Profile</td><td><code>/dashboard/customer-profile</code></td><td>Heatmap of target customer profiles by buyer persona</td></tr>
+  <tr><td>Tech Independence</td><td><code>/dashboard/tech-independence</code></td><td>TIS scores and vendor ecosystem dependency analysis</td></tr>
+  <tr><td>Buyer Persona</td><td><code>/dashboard/buyer-persona</code></td><td>Distribution of primary buyer roles across startups</td></tr>
+  <tr><td>Sankey</td><td><code>/dashboard/sankey</code></td><td>Funding flow diagram from investors to startups by category</td></tr>
+  <tr><td>Marimekko</td><td><code>/dashboard/marimekko</code></td><td>Proportional market share visualization by category and funding</td></tr>
+  <tr><td>Wordcloud</td><td><code>/dashboard/wordcloud</code></td><td>Tag frequency visualization from startup descriptions</td></tr>
+</table>
+
+<h3>Contexts</h3>
+<ul>
+  <li><strong>Filter context</strong> (<code>contexts/filter/</code>) — global filters (category, funding range, geography, lifecycle phase) that apply across all chart pages</li>
+  <li><strong>Thesis context</strong> (<code>contexts/thesis/</code>) — investment thesis–based filtering: users define a thesis and all views narrow to matching companies</li>
+  <li><strong>Company data context</strong> (<code>contexts/company-data/</code>) — loaded once from server, shared across all dashboard components</li>
+  <li><strong>Shortlist context</strong> (<code>contexts/shortlist/</code>) — user's saved list of companies for report generation</li>
+</ul>
+
+<h2 id="ai-narrative">9. AI Narrative Engine</h2>
+
+<p>The AI narrative endpoint generates analytical assessments of companies using Claude Sonnet 4.5 via the Vercel AI SDK.</p>
+
+<h3>Endpoint</h3>
+<pre><code>POST /api/ai/narrative</code></pre>
+
+<h3>Output Sections</h3>
+<table>
+  <tr><th>Section</th><th>Purpose</th></tr>
+  <tr><td>Impressions</td><td>First-look assessment of the company's market position and technology</td></tr>
+  <tr><td>Conclusions</td><td>Investment-grade conclusions based on financial and competitive data</td></tr>
+  <tr><td>Beware</td><td>Risk factors, red flags, and competitive threats to monitor</td></tr>
+  <tr><td>Overlooked Opportunities</td><td>Underappreciated strengths, adjacent markets, and strategic angles</td></tr>
+</table>
+
+<p>The endpoint receives a company's full data profile (from the loaded CSVs) and generates structured narrative sections. It is used by the custom report builder and is gated behind Analyst tier and above.</p>
+
+<div class="warning">
+  <strong>Cost:</strong> Each AI narrative call consumes Claude API tokens via the <code>ANTHROPIC_API_KEY</code>. Monitor usage in the Anthropic dashboard.
+</div>
+
+<h2 id="report-builder">10. Custom Report Builder</h2>
+
+<p>The report builder allows subscribers to create custom market intelligence reports.</p>
+
+<h3>Workflow</h3>
+<ol>
+  <li><strong>Select companies</strong> — choose from shortlist or search the full database</li>
+  <li><strong>Toggle report sections</strong> — include/exclude company overview, financials, competitive analysis, investor landscape</li>
+  <li><strong>Include AI narrative</strong> — optionally generate Claude-powered analysis for each selected company</li>
+  <li><strong>Capture chart screenshots</strong> — embed relevant dashboard visualizations in the report</li>
+  <li><strong>Export</strong> — generate PDF or markdown output</li>
+</ol>
+
+<p>Reports are available to Analyst (one report per purchase), Strategist (unlimited), and Advisory tier users.</p>
+
+<h2 id="stripe">11. Stripe Integration</h2>
+
+<p>The website uses <strong>Stripe in live mode</strong> for payment processing.</p>
+
+<h3>Products</h3>
+<table>
+  <tr><th>Product</th><th>Type</th><th>Price</th></tr>
+  <tr><td>Analyst Report</td><td>One-time payment</td><td>$4,999</td></tr>
+  <tr><td>Strategist Subscription</td><td>Annual recurring</td><td>€18,999/yr</td></tr>
+</table>
+
+<h3>Integration Points</h3>
+<table>
+  <tr><th>Component</th><th>Purpose</th></tr>
+  <tr><td><code>lib/stripe.ts</code></td><td>Stripe SDK initialization and helpers</td></tr>
+  <tr><td><code>lib/subscription.ts</code></td><td>Subscription status checking and tier resolution</td></tr>
+  <tr><td><code>lib/products.ts</code></td><td>Product/price ID mappings</td></tr>
+  <tr><td><code>components/checkout/</code></td><td>Checkout UI components</td></tr>
+  <tr><td><code>/api/webhooks/stripe</code></td><td>Webhook handler for payment events</td></tr>
+  <tr><td><code>/api/admin/coupons</code></td><td>Coupon management for partners</td></tr>
+</table>
+
+<h3>Webhook Events Handled</h3>
+<ul>
+  <li><code>checkout.session.completed</code> — upgrade user tier after successful payment</li>
+  <li><code>customer.subscription.updated</code> — handle plan changes</li>
+  <li><code>customer.subscription.deleted</code> — downgrade user to Recon on cancellation</li>
+  <li><code>invoice.payment_failed</code> — flag account for follow-up</li>
+</ul>
+
+<div class="danger">
+  <strong>Critical:</strong> The <code>STRIPE_WEBHOOK_SECRET</code> must match the webhook endpoint configured in the Stripe dashboard. A mismatch silently drops all payment events, breaking tier upgrades.
+</div>
+
+<h2 id="deployment">12. Deployment</h2>
+
+<p>The website is hosted on <strong>Vercel</strong> with automatic deployments on git push.</p>
+
+<h3>Deployment Methods</h3>
+<table>
+  <tr><th>Method</th><th>Command</th><th>When</th></tr>
+  <tr><td>Git push</td><td><code>git push origin main</code></td><td>Standard — push to main triggers auto-deploy</td></tr>
+  <tr><td>Vercel CLI</td><td><code>vercel --prod</code></td><td>Manual deploy from local machine</td></tr>
+  <tr><td>Preview</td><td>Push to any non-main branch</td><td>Preview deployment with unique URL</td></tr>
+</table>
+
+<h3>Environment Variables</h3>
+<p>All environment variables from Section 3 must be configured in the <strong>Vercel dashboard</strong> under Project Settings → Environment Variables. Set them for Production, Preview, and Development environments as appropriate.</p>
+
+<h3>Domain</h3>
+<p>Production domain: <strong>threadmoat.com</strong></p>
+
+<h2 id="data-update">13. Data Update Workflow</h2>
+
+<p>To refresh the startup data displayed on the website, follow this step-by-step process:</p>
+
+<h3>Step 1: Pull Fresh CSVs from Airtable</h3>
+<pre><code># From the threadmoat-website project root
+python scripts/fetch_airtable_csv.py</code></pre>
+<p>This downloads the latest Airtable views into <code>data/</code>.</p>
+
+<h3>Step 2: Copy Heatmap Enrichment Data</h3>
+<pre><code># Copy from the Agentic Updates project output
+cp ../ThreadMoat-Agentic-Updates/intake_output/heatmap_enrichment.csv data/heatmap_enrichment.csv</code></pre>
+
+<h3>Step 3: Commit Changes</h3>
+<pre><code>git add data/
+git commit -m "data: refresh CSVs from Airtable ($(date +%Y-%m-%d))"</code></pre>
+
+<h3>Step 4: Deploy</h3>
+<pre><code>git push origin main</code></pre>
+<p>Vercel auto-deploys within ~60 seconds of push.</p>
+
+<div class="info">
+  <strong>Frequency:</strong> Data updates are typically done weekly, coinciding with the Agentic Updates weekly sweep. The heatmap enrichment CSV is regenerated less frequently (bi-weekly or as needed).
+</div>
+
+<h2 id="troubleshooting">14. Troubleshooting</h2>
+
+<h3>Common Issues</h3>
+
+<h4>Build Failures</h4>
+<p>Run <code>npm run build</code> locally to reproduce the error. Most build failures are TypeScript errors — the error output will show the file, line, and type mismatch. Common causes:</p>
+<ul>
+  <li>Missing props on a component after a refactor</li>
+  <li>Importing a server-only module in a client component (<code>"use client"</code>)</li>
+  <li>Unused variables or imports (strict lint rules)</li>
+</ul>
+
+<h4>Stripe Webhook Not Firing</h4>
+<p>Symptoms: users complete checkout but their tier isn't upgraded.</p>
+<ul>
+  <li>Verify <code>STRIPE_WEBHOOK_SECRET</code> matches the secret in Stripe Dashboard → Webhooks</li>
+  <li>Check the webhook endpoint URL is <code>https://threadmoat.com/api/webhooks/stripe</code></li>
+  <li>Review Stripe Dashboard → Webhooks → Recent deliveries for error codes</li>
+  <li>For local testing, use <code>stripe listen --forward-to localhost:3000/api/webhooks/stripe</code></li>
+</ul>
+
+<h4>CSV Parse Errors</h4>
+<p>Symptoms: dashboard shows no data or crashes on load.</p>
+<ul>
+  <li>Check CSV files use UTF-8 encoding and comma delimiters</li>
+  <li>Open the CSV in a text editor — look for unescaped commas in text fields or broken line endings</li>
+  <li>Verify column headers match what <code>lib/load-companies-server.ts</code> expects</li>
+  <li>Re-export from Airtable if the file is corrupted</li>
+</ul>
+
+<h4>i18n Missing Key Warnings</h4>
+<p>Symptoms: console warnings like <code>Missing message: namespace.key for locale "fr"</code>.</p>
+<ul>
+  <li>Check that the key exists in all 6 files under <code>messages/</code></li>
+  <li>Keys must match exactly (case-sensitive, same nesting structure)</li>
+  <li>Add the missing translation — next-intl falls back to the default locale (English) but logs a warning</li>
+</ul>
+
+<h4>AI Narrative Errors</h4>
+<p>Symptoms: report builder shows "Failed to generate narrative" error.</p>
+<ul>
+  <li>Verify <code>ANTHROPIC_API_KEY</code> is set and valid</li>
+  <li>Check the Anthropic dashboard for rate limit or billing issues</li>
+  <li>The narrative endpoint has a 30-second timeout — very large company profiles may hit it</li>
+</ul>
+
+<h4>Name Masking Showing for Subscribers</h4>
+<p>Symptoms: paying users still see masked company names.</p>
+<ul>
+  <li>Check that the Stripe webhook processed the payment event (see webhook section)</li>
+  <li>Verify the user's tier in the database: <code>SELECT tier FROM users WHERE email = '...'</code></li>
+  <li>Clear the user's session (sign out / sign in) to refresh the tier from the database</li>
+</ul>
+
+<h2 id="quick-ref">15. Quick Reference</h2>
+
+<h3>Commands</h3>
+<table>
+  <tr><th>Task</th><th>Command</th></tr>
+  <tr><td>Install dependencies</td><td><code>npm install</code></td></tr>
+  <tr><td>Start dev server</td><td><code>npm run dev</code></td></tr>
+  <tr><td>Production build</td><td><code>npm run build</code></td></tr>
+  <tr><td>Lint</td><td><code>npm run lint</code></td></tr>
+  <tr><td>Pull fresh CSVs</td><td><code>python scripts/fetch_airtable_csv.py</code></td></tr>
+  <tr><td>Deploy to production</td><td><code>git push origin main</code></td></tr>
+  <tr><td>Manual deploy</td><td><code>vercel --prod</code></td></tr>
+  <tr><td>Stripe webhook testing</td><td><code>stripe listen --forward-to localhost:3000/api/webhooks/stripe</code></td></tr>
+</table>
+
+<h3>Key URLs</h3>
+<table>
+  <tr><th>URL</th><th>Purpose</th></tr>
+  <tr><td><code>https://threadmoat.com</code></td><td>Production website</td></tr>
+  <tr><td><code>http://localhost:3000</code></td><td>Local development</td></tr>
+  <tr><td><code>https://vercel.com/dashboard</code></td><td>Vercel deployment dashboard</td></tr>
+  <tr><td><code>https://dashboard.stripe.com</code></td><td>Stripe payment dashboard</td></tr>
+  <tr><td><code>https://neon.tech/console</code></td><td>Neon Postgres console</td></tr>
+  <tr><td><code>https://resend.com/dashboard</code></td><td>Resend email dashboard</td></tr>
+  <tr><td><code>https://console.anthropic.com</code></td><td>Anthropic API usage</td></tr>
+  <tr><td><code>https://airtable.com</code></td><td>Master startup database</td></tr>
+</table>
+
+<h3>Key Files</h3>
+<table>
+  <tr><th>File</th><th>Purpose</th></tr>
+  <tr><td><code>lib/load-companies-server.ts</code></td><td>Server-side CSV loading — entry point for all startup data</td></tr>
+  <tr><td><code>lib/name-masking.ts</code></td><td>Company name obfuscation for non-subscribers</td></tr>
+  <tr><td><code>lib/tiers.ts</code></td><td>Tier definitions and access control logic</td></tr>
+  <tr><td><code>lib/stripe.ts</code></td><td>Stripe SDK setup and checkout session creation</td></tr>
+  <tr><td><code>contexts/filter/</code></td><td>Global filter state shared across all dashboard pages</td></tr>
+  <tr><td><code>contexts/thesis/</code></td><td>Investment thesis context for filtered views</td></tr>
+  <tr><td><code>messages/en.json</code></td><td>Source-of-truth translation file (English)</td></tr>
+  <tr><td><code>data/heatmap_enrichment.csv</code></td><td>Heatmap columns from Agentic Updates project</td></tr>
+</table>
+
+<hr>
+<p class="version" style="text-align: center;">ThreadMoat Website — Administrator's Guide v1.2<br>Generated April 2026</p>
+
+</body>
+</html>
