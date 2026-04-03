@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "taskId": "T03",
+  "unitId": "M006/S04/T03",
+  "timestamp": 1775205886573,
+  "passed": true,
+  "discoverySource": "task-plan",
+  "checks": [
+    {
+      "command": "npm run build",
+      "exitCode": 0,
+      "durationMs": 22496,
+      "verdict": "pass"
+    },
+    {
+      "command": "grep -q 'ip-dependency' components/dashboard/sidebar.tsx",
+      "exitCode": 0,
+      "durationMs": 19,
+      "verdict": "pass"
+    },
+    {
+      "command": "grep -q 'ip-dependency' lib/widget-registry.ts",
+      "exitCode": 0,
+      "durationMs": 13,
+      "verdict": "pass"
+    }
+  ]
+}
