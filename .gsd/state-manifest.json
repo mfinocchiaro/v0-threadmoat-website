@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exported_at": "2026-04-03T06:59:52.558Z",
+  "exported_at": "2026-04-03T08:44:42.986Z",
   "milestones": [
     {
       "id": "M001",
@@ -2551,19 +2551,26 @@
       "milestone_id": "M006",
       "slice_id": "S04",
       "id": "T02",
-      "title": "Build dual-mode IP Dependency heatmap chart component with D3",
-      "status": "pending",
-      "one_liner": "",
-      "narrative": "",
-      "verification_result": "",
+      "title": "Added dual-mode IP Dependency heatmap and dashboard page using thesis-gated data and shortlist-aware tooltips.",
+      "status": "complete",
+      "one_liner": "Added dual-mode IP Dependency heatmap and dashboard page using thesis-gated data and shortlist-aware tooltips.",
+      "narrative": "Implemented the `IPDependencyChart` as a D3-based heatmap with two modes (risk tier and vendor matrix) and wired it into a new `/dashboard/ip-dependency` page.\n\nOn the data side, the chart aggregates companies per cell based on either inverse risk tiers (derived from `techIndependenceScore`) or ecosystem vendors (parsed from `ecosystemDependencies`), combined with Y-axis groupings for deployment model, investment thesis, or workflow segment. For risk tier mode, each cell's metric is the average dependency count; for vendor matrix, the metric is the startup count. These metrics drive sequential color scales (`interpolateOrRd` for risk, `interpolateBlues` for vendor), while the cell text shows the count.\n\nThe D3 rendering follows the existing tech independence heatmap pattern: band scales on both axes, a grid of rects with optional cell labels, and a legend gradient whose labels reflect the active mode. Cells containing shortlisted companies get an amber stroke to visually call out interest points.\n\nTooltips are implemented as a fixed-position HTML div, populated on hover with the cell coordinates, startup count, and the relevant metric. For small cells (≤ 8 companies), the tooltip also lists company names with truncated ecosystem compatibility text, graphics kernel, and up to three modeling paradigms; shortlisted companies are prefixed with a gold star for quick scanning.\n\nFinally, I added `app/dashboard/ip-dependency/page.tsx` that uses `VizPageShell` and `useThesisGatedData` to render the chart alongside a text header and loading skeleton. This brings the new visualization into the dashboard routing alongside the other M006 views.",
+      "verification_result": "- `npm test -- --watch=false` — failed because the project has no `test` script defined.\n- `npm run build` — succeeded, verifying TypeScript types and Next.js build across all routes, including the new `/dashboard/ip-dependency` page.",
       "duration": "",
-      "completed_at": null,
+      "completed_at": "2026-04-03T08:39:14.295Z",
       "blocker_discovered": false,
-      "deviations": "",
-      "known_issues": "",
-      "key_files": [],
-      "key_decisions": [],
-      "full_summary_md": "",
+      "deviations": "Attempted to run `npm test` even though the plan only required `npm run build`; there is no test script defined, so no unit tests were added or executed for this component.",
+      "known_issues": "No automated tests exist for `IPDependencyChart` or the `/dashboard/ip-dependency` page; verification today is via build and manual inspection. Vendor mapping is string-matched and may require adjustment if ecosystem naming conventions change.",
+      "key_files": [
+        "components/charts/ip-dependency-chart.tsx",
+        "app/dashboard/ip-dependency/page.tsx",
+        ".gsd/milestones/M006/slices/S04/tasks/T02-SUMMARY.md"
+      ],
+      "key_decisions": [
+        "Reused the tech independence heatmap shell (layout, gating, and legend pattern) for the IP dependency view to keep dashboard visualizations consistent.",
+        "Chose string-based vendor detection from `ecosystemDependencies` entries (case-insensitive contains checks for Dassault, Siemens, Autodesk, PTC) with a fallback `Independent` bucket instead of introducing a new normalized vendor field."
+      ],
+      "full_summary_md": "---\nid: T02\nparent: S04\nmilestone: M006\nkey_files:\n  - components/charts/ip-dependency-chart.tsx\n  - app/dashboard/ip-dependency/page.tsx\n  - .gsd/milestones/M006/slices/S04/tasks/T02-SUMMARY.md\nkey_decisions:\n  - Reused the tech independence heatmap shell (layout, gating, and legend pattern) for the IP dependency view to keep dashboard visualizations consistent.\n  - Chose string-based vendor detection from `ecosystemDependencies` entries (case-insensitive contains checks for Dassault, Siemens, Autodesk, PTC) with a fallback `Independent` bucket instead of introducing a new normalized vendor field.\nduration: \"\"\nverification_result: mixed\ncompleted_at: 2026-04-03T08:39:14.296Z\nblocker_discovered: false\n---\n\n# T02: Added dual-mode IP Dependency heatmap and dashboard page using thesis-gated data and shortlist-aware tooltips.\n\n**Added dual-mode IP Dependency heatmap and dashboard page using thesis-gated data and shortlist-aware tooltips.**\n\n## What Happened\n\nImplemented the `IPDependencyChart` as a D3-based heatmap with two modes (risk tier and vendor matrix) and wired it into a new `/dashboard/ip-dependency` page.\n\nOn the data side, the chart aggregates companies per cell based on either inverse risk tiers (derived from `techIndependenceScore`) or ecosystem vendors (parsed from `ecosystemDependencies`), combined with Y-axis groupings for deployment model, investment thesis, or workflow segment. For risk tier mode, each cell's metric is the average dependency count; for vendor matrix, the metric is the startup count. These metrics drive sequential color scales (`interpolateOrRd` for risk, `interpolateBlues` for vendor), while the cell text shows the count.\n\nThe D3 rendering follows the existing tech independence heatmap pattern: band scales on both axes, a grid of rects with optional cell labels, and a legend gradient whose labels reflect the active mode. Cells containing shortlisted companies get an amber stroke to visually call out interest points.\n\nTooltips are implemented as a fixed-position HTML div, populated on hover with the cell coordinates, startup count, and the relevant metric. For small cells (≤ 8 companies), the tooltip also lists company names with truncated ecosystem compatibility text, graphics kernel, and up to three modeling paradigms; shortlisted companies are prefixed with a gold star for quick scanning.\n\nFinally, I added `app/dashboard/ip-dependency/page.tsx` that uses `VizPageShell` and `useThesisGatedData` to render the chart alongside a text header and loading skeleton. This brings the new visualization into the dashboard routing alongside the other M006 views.\n\n## Verification\n\n- `npm test -- --watch=false` — failed because the project has no `test` script defined.\n- `npm run build` — succeeded, verifying TypeScript types and Next.js build across all routes, including the new `/dashboard/ip-dependency` page.\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| 1 | `npm test -- --watch=false` | 1 | ❌ fail (no test script defined) | 2000ms |\n| 2 | `npm run build` | 0 | ✅ pass | 22000ms |\n\n\n## Deviations\n\nAttempted to run `npm test` even though the plan only required `npm run build`; there is no test script defined, so no unit tests were added or executed for this component.\n\n## Known Issues\n\nNo automated tests exist for `IPDependencyChart` or the `/dashboard/ip-dependency` page; verification today is via build and manual inspection. Vendor mapping is string-matched and may require adjustment if ecosystem naming conventions change.\n\n## Files Created/Modified\n\n- `components/charts/ip-dependency-chart.tsx`\n- `app/dashboard/ip-dependency/page.tsx`\n- `.gsd/milestones/M006/slices/S04/tasks/T02-SUMMARY.md`\n",
       "description": "Create the `IPDependencyChart` component following the established M006 heatmap pattern (copy structure from `tech-independence-chart.tsx`). The chart has two view modes controlled by a toggle, configurable Y-axis, and rich tooltips.\n\n## Steps\n\n1. Create `components/charts/ip-dependency-chart.tsx`. Start by copying the structural pattern from `components/charts/tech-independence-chart.tsx` — same imports, same Card wrapper, same SVG + tooltip refs, same Y-axis selector UI.\n\n2. Define the component props:\n   ```tsx\n   interface IPDependencyChartProps {\n     data: Company[]\n     className?: string\n     shortlistedIds?: Set<string>\n   }\n   ```\n\n3. Add a `ViewMode` type: `'risk-tier' | 'vendor-matrix'` with state and a toggle button in the toolbar.\n\n4. Define Y-axis options (same pattern as other M006 charts):\n   ```tsx\n   type YAxisKey = 'deploymentModel' | 'investmentTheses' | 'workflowSegment'\n   ```\n   With the same `Y_AXES` array and `getYValues()` function from `tech-independence-chart.tsx`.\n\n5. **Risk Tier mode** (primary):\n   - X axis: IP Risk Tier — bucket `techIndependenceScore` inversely into risk tiers:\n     - 'Very High Risk' (score < 35), 'High Risk' (35–44), 'Medium Risk' (45–54), 'Low Risk' (55–64), 'Very Low Risk' (65+)\n   - Cell color intensity: based on average dependency count (ecosystemDependencies.length) in the cell\n   - Cell text: startup count\n   - Use `d3.interpolateOrRd` (orange-red) color scale for risk theming\n\n6. **Vendor Dependency Matrix mode**:\n   - X axis: Major Ecosystem Vendor — 'Dassault', 'Siemens', 'Autodesk', 'PTC', 'Independent'\n   - A company appears in a vendor column if `ecosystemDependencies` includes that vendor. Companies with empty ecosystemDependencies go in 'Independent'.\n   - Cell color intensity: startup count\n   - Use `d3.interpolateBlues` for vendor mode\n\n7. **Tooltip** (both modes): Fixed-position div, toggled on mouseover. Show:\n   - Cell coordinates (tier/vendor × Y group)\n   - Startup count\n   - Mode-specific metric (avg dependency count for risk tier, or count for vendor)\n   - For cells with ≤ 8 companies: list company names with their `ecosystemCompatibility` text (truncated to 80 chars), `graphicsKernel` (if non-empty), and first 3 `modelingParadigms`\n   - Shortlisted companies highlighted with ★ amber\n\n8. **Shortlist highlighting**: Amber border (2.5px #f59e0b) on cells containing shortlisted companies. Use `shortlistedIds?.has(id)` guard (K005). Use `''` not `null` for clearing styles (K004).\n\n9. **Layout**: Same margin/cellSize/legend pattern as tech-independence-chart. Legend gradient matches the active color scale. Bottom toolbar shows dimension counts.\n\n## Must-Haves\n\n- [ ] Risk Tier Heatmap mode renders with correct X-axis buckets (inverse of techIndependenceScore)\n- [ ] Vendor Dependency Matrix mode renders with correct vendor columns\n- [ ] View mode toggle switches between modes\n- [ ] Y-axis selector works across all 3 options\n- [ ] Tooltip shows ecosystem compatibility, graphics kernel, modeling paradigms\n- [ ] Shortlist highlighting with amber border (K005 pattern)\n- [ ] D3 .style() uses '' not null on HTML selections (K004)\n- [ ] Component exports named `IPDependencyChart`",
       "estimate": "1h",
       "files": [
@@ -2586,19 +2593,26 @@
       "milestone_id": "M006",
       "slice_id": "S04",
       "id": "T03",
-      "title": "Wire up IP Dependency page route, sidebar entry, and widget registry",
-      "status": "pending",
-      "one_liner": "",
-      "narrative": "",
-      "verification_result": "",
+      "title": "Exposed the IP Dependency Analysis chart at /dashboard/ip-dependency and wired it into the admin sidebar and widget registry.",
+      "status": "complete",
+      "one_liner": "Exposed the IP Dependency Analysis chart at /dashboard/ip-dependency and wired it into the admin sidebar and widget registry.",
+      "narrative": "Implemented the final wiring so the IP Dependency Analysis visualization is reachable through the admin dashboard shell and tracked in the widget registry.\n\nFirst I confirmed that `app/dashboard/ip-dependency/page.tsx` already exists and matches the established pattern from the Market Momentum page. It:\n- uses `\"use client\"` and wraps content in `VizPageShell`\n- calls `useThesisGatedData()` to obtain `filtered`, `isLoading`, and `shortlistedIds`\n- renders an `h1` + descriptive paragraph for IP Dependency Analysis\n- shows a tall `Skeleton` while loading, and renders `<IPDependencyChart data={filtered} shortlistedIds={shortlistedIds} className=\"min-h-[500px]\" />` once data is ready.\n\nWith the page confirmed, I wired it into the admin shell:\n- Updated `components/dashboard/sidebar.tsx` to add a new admin entry `{ href: \"/dashboard/ip-dependency\", icon: Shield, label: \"IP Dependency\" }` to `ADMIN_ITEMS` so it appears under the Admin Analytics section for admins.\n- Added `\"/dashboard/ip-dependency\"` to the `ADMIN_VIZ_HREFS` Set so this route is treated as admin-only in the access gating logic.\n\nNext, I registered the widget in the central registry:\n- Updated `lib/widget-registry.ts` to append `{ id: \"ip-dependency\", label: \"IP Dependency Analysis\", scenarios: [], adminOnly: true }` to `ADMIN_WIDGETS`. This ensures admins can surface the IP Dependency widget in their dashboard layouts and that the layout helper functions see it alongside other admin analytics widgets.\n\nFinally, I ran the slice-level verification command:\n- `npm run build && grep -q 'ip-dependency' components/dashboard/sidebar.tsx && grep -q 'ip-dependency' lib/widget-registry.ts`\nThe build completed successfully and the `grep` checks confirmed both the sidebar and widget registry contain the `ip-dependency` identifier. The Next.js route listing includes `/dashboard/ip-dependency`, confirming the page is reachable and compiled.\n\nNo deviations from the plan were needed; all wiring fit into the existing patterns for admin analytics routes and widgets.",
+      "verification_result": "Ran the combined verification command specified in the task plan:\n\n- `npm run build && grep -q 'ip-dependency' components/dashboard/sidebar.tsx && grep -q 'ip-dependency' lib/widget-registry.ts`\n\n`npm run build` succeeded and listed `/dashboard/ip-dependency` in the route table. The `grep` checks verified that `components/dashboard/sidebar.tsx` and `lib/widget-registry.ts` both contain the `ip-dependency` identifiers, confirming the sidebar entry and widget registration are in place.",
       "duration": "",
-      "completed_at": null,
+      "completed_at": "2026-04-03T08:44:42.974Z",
       "blocker_discovered": false,
-      "deviations": "",
-      "known_issues": "",
-      "key_files": [],
-      "key_decisions": [],
-      "full_summary_md": "",
+      "deviations": "None.",
+      "known_issues": "No automated tests were added for sidebar or widget wiring in this task; verification relies on `npm run build` and targeted greps. Future work could add Jest/Vitest coverage for `ADMIN_WIDGETS`, `ADMIN_ITEMS`, and `ADMIN_VIZ_HREFS` to catch regressions when adding new admin views.",
+      "key_files": [
+        "app/dashboard/ip-dependency/page.tsx",
+        "components/dashboard/sidebar.tsx",
+        "lib/widget-registry.ts",
+        ".gsd/milestones/M006/slices/S04/tasks/T03-SUMMARY.md"
+      ],
+      "key_decisions": [
+        "Registered IP Dependency as an admin-only widget and sidebar item to align with other advanced analytics views and keep the visualization scoped to admin users."
+      ],
+      "full_summary_md": "---\nid: T03\nparent: S04\nmilestone: M006\nkey_files:\n  - app/dashboard/ip-dependency/page.tsx\n  - components/dashboard/sidebar.tsx\n  - lib/widget-registry.ts\n  - .gsd/milestones/M006/slices/S04/tasks/T03-SUMMARY.md\nkey_decisions:\n  - Registered IP Dependency as an admin-only widget and sidebar item to align with other advanced analytics views and keep the visualization scoped to admin users.\nduration: \"\"\nverification_result: passed\ncompleted_at: 2026-04-03T08:44:42.974Z\nblocker_discovered: false\n---\n\n# T03: Exposed the IP Dependency Analysis chart at /dashboard/ip-dependency and wired it into the admin sidebar and widget registry.\n\n**Exposed the IP Dependency Analysis chart at /dashboard/ip-dependency and wired it into the admin sidebar and widget registry.**\n\n## What Happened\n\nImplemented the final wiring so the IP Dependency Analysis visualization is reachable through the admin dashboard shell and tracked in the widget registry.\n\nFirst I confirmed that `app/dashboard/ip-dependency/page.tsx` already exists and matches the established pattern from the Market Momentum page. It:\n- uses `\"use client\"` and wraps content in `VizPageShell`\n- calls `useThesisGatedData()` to obtain `filtered`, `isLoading`, and `shortlistedIds`\n- renders an `h1` + descriptive paragraph for IP Dependency Analysis\n- shows a tall `Skeleton` while loading, and renders `<IPDependencyChart data={filtered} shortlistedIds={shortlistedIds} className=\"min-h-[500px]\" />` once data is ready.\n\nWith the page confirmed, I wired it into the admin shell:\n- Updated `components/dashboard/sidebar.tsx` to add a new admin entry `{ href: \"/dashboard/ip-dependency\", icon: Shield, label: \"IP Dependency\" }` to `ADMIN_ITEMS` so it appears under the Admin Analytics section for admins.\n- Added `\"/dashboard/ip-dependency\"` to the `ADMIN_VIZ_HREFS` Set so this route is treated as admin-only in the access gating logic.\n\nNext, I registered the widget in the central registry:\n- Updated `lib/widget-registry.ts` to append `{ id: \"ip-dependency\", label: \"IP Dependency Analysis\", scenarios: [], adminOnly: true }` to `ADMIN_WIDGETS`. This ensures admins can surface the IP Dependency widget in their dashboard layouts and that the layout helper functions see it alongside other admin analytics widgets.\n\nFinally, I ran the slice-level verification command:\n- `npm run build && grep -q 'ip-dependency' components/dashboard/sidebar.tsx && grep -q 'ip-dependency' lib/widget-registry.ts`\nThe build completed successfully and the `grep` checks confirmed both the sidebar and widget registry contain the `ip-dependency` identifier. The Next.js route listing includes `/dashboard/ip-dependency`, confirming the page is reachable and compiled.\n\nNo deviations from the plan were needed; all wiring fit into the existing patterns for admin analytics routes and widgets.\n\n## Verification\n\nRan the combined verification command specified in the task plan:\n\n- `npm run build && grep -q 'ip-dependency' components/dashboard/sidebar.tsx && grep -q 'ip-dependency' lib/widget-registry.ts`\n\n`npm run build` succeeded and listed `/dashboard/ip-dependency` in the route table. The `grep` checks verified that `components/dashboard/sidebar.tsx` and `lib/widget-registry.ts` both contain the `ip-dependency` identifiers, confirming the sidebar entry and widget registration are in place.\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| 1 | `npm run build && grep -q 'ip-dependency' components/dashboard/sidebar.tsx && grep -q 'ip-dependency' lib/widget-registry.ts` | 0 | ✅ pass | 20000ms |\n\n\n## Deviations\n\nNone.\n\n## Known Issues\n\nNo automated tests were added for sidebar or widget wiring in this task; verification relies on `npm run build` and targeted greps. Future work could add Jest/Vitest coverage for `ADMIN_WIDGETS`, `ADMIN_ITEMS`, and `ADMIN_VIZ_HREFS` to catch regressions when adding new admin views.\n\n## Files Created/Modified\n\n- `app/dashboard/ip-dependency/page.tsx`\n- `components/dashboard/sidebar.tsx`\n- `lib/widget-registry.ts`\n- `.gsd/milestones/M006/slices/S04/tasks/T03-SUMMARY.md`\n",
       "description": "Create the page component and register the new view in the admin navigation. This completes the slice by making the chart accessible.\n\n## Steps\n\n1. Create `app/dashboard/ip-dependency/page.tsx` following the exact pattern of `app/dashboard/market-momentum/page.tsx`:\n   - Import `VizPageShell`, `useThesisGatedData`, `IPDependencyChart`, `Skeleton`\n   - Inner component uses `useThesisGatedData()` to get `filtered`, `isLoading`, `shortlistedIds`\n   - Render heading 'IP Dependency Analysis' with description about IP ownership and technology dependencies\n   - Loading state: `<Skeleton className=\"h-[600px] rounded-xl\" />`\n   - Data state: `<IPDependencyChart data={filtered} shortlistedIds={shortlistedIds} className=\"min-h-[500px]\" />`\n   - Wrap in `VizPageShell`\n\n2. Open `components/dashboard/sidebar.tsx`:\n   - Add entry to `ADMIN_ITEMS` array: `{ href: '/dashboard/ip-dependency', icon: Shield, label: 'IP Dependency' }` — Shield icon is already imported (used by tech-independence). If not, import it from lucide-react.\n   - Add `'/dashboard/ip-dependency'` to the `ADMIN_VIZ_HREFS` Set\n\n3. Open `lib/widget-registry.ts`:\n   - Add to `ADMIN_WIDGETS` array: `{ id: 'ip-dependency', label: 'IP Dependency Analysis', scenarios: [], adminOnly: true }`\n\n4. Verify with `npm run build` that the page compiles and all imports resolve.\n\n## Must-Haves\n\n- [ ] Page component at `app/dashboard/ip-dependency/page.tsx` renders IPDependencyChart\n- [ ] Sidebar entry visible in admin items\n- [ ] `ADMIN_VIZ_HREFS` includes the new route\n- [ ] Widget registry includes ip-dependency\n- [ ] `npm run build` passes",
       "estimate": "15m",
       "files": [
@@ -4330,6 +4344,39 @@
       "verdict": "✅ pass",
       "duration_ms": 20800,
       "created_at": "2026-04-03T06:59:52.544Z"
+    },
+    {
+      "id": 129,
+      "task_id": "T02",
+      "slice_id": "S04",
+      "milestone_id": "M006",
+      "command": "npm test -- --watch=false",
+      "exit_code": 1,
+      "verdict": "❌ fail (no test script defined)",
+      "duration_ms": 2000,
+      "created_at": "2026-04-03T08:39:14.295Z"
+    },
+    {
+      "id": 130,
+      "task_id": "T02",
+      "slice_id": "S04",
+      "milestone_id": "M006",
+      "command": "npm run build",
+      "exit_code": 0,
+      "verdict": "✅ pass",
+      "duration_ms": 22000,
+      "created_at": "2026-04-03T08:39:14.295Z"
+    },
+    {
+      "id": 131,
+      "task_id": "T03",
+      "slice_id": "S04",
+      "milestone_id": "M006",
+      "command": "npm run build && grep -q 'ip-dependency' components/dashboard/sidebar.tsx && grep -q 'ip-dependency' lib/widget-registry.ts",
+      "exit_code": 0,
+      "verdict": "✅ pass",
+      "duration_ms": 20000,
+      "created_at": "2026-04-03T08:44:42.974Z"
     }
   ]
 }

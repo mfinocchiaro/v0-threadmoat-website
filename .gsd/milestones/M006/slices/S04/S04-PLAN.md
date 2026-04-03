@@ -34,7 +34,7 @@
   - Estimate: 20m
   - Files: lib/company-data.ts, lib/load-companies-server.ts
   - Verify: npm run build
-- [ ] **T02: Build dual-mode IP Dependency heatmap chart component with D3** — Create the `IPDependencyChart` component following the established M006 heatmap pattern (copy structure from `tech-independence-chart.tsx`). The chart has two view modes controlled by a toggle, configurable Y-axis, and rich tooltips.
+- [x] **T02: Added dual-mode IP Dependency heatmap and dashboard page using thesis-gated data and shortlist-aware tooltips.** — Create the `IPDependencyChart` component following the established M006 heatmap pattern (copy structure from `tech-independence-chart.tsx`). The chart has two view modes controlled by a toggle, configurable Y-axis, and rich tooltips.
 
 ## Steps
 
@@ -94,7 +94,7 @@
   - Estimate: 1h
   - Files: components/charts/ip-dependency-chart.tsx, components/charts/tech-independence-chart.tsx
   - Verify: npm run build
-- [ ] **T03: Wire up IP Dependency page route, sidebar entry, and widget registry** — Create the page component and register the new view in the admin navigation. This completes the slice by making the chart accessible.
+- [x] **T03: Exposed the IP Dependency Analysis chart at /dashboard/ip-dependency and wired it into the admin sidebar and widget registry.** — Create the page component and register the new view in the admin navigation. This completes the slice by making the chart accessible.
 
 ## Steps
 

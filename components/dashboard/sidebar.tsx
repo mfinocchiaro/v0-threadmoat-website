@@ -156,6 +156,7 @@ const ADMIN_ITEMS = [
   { href: "/dashboard/candlestick",     icon: Activity,     label: "Valuation Candlestick" },
   { href: "/dashboard/market-momentum", icon: TrendingUp,   label: "Market Momentum" },
   { href: "/dashboard/customer-profile", icon: UserCircle, label: "Customer Profile" },
+  { href: "/dashboard/ip-dependency",   icon: Shield,     label: "IP Dependency" },
 ];
 
 const BOTTOM_ITEMS = [
@@ -178,6 +179,7 @@ const ADMIN_VIZ_HREFS = new Set([
   "/dashboard/candlestick",
   "/dashboard/market-momentum",
   "/dashboard/customer-profile",
+  "/dashboard/ip-dependency",
 ])
 
 interface SidebarProps {

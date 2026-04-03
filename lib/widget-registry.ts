@@ -44,6 +44,7 @@ export const ADMIN_WIDGETS: WidgetDef[] = [
   { id: "maturity-matrix",     label: "Maturity Matrix",        scenarios: [], adminOnly: true },
   { id: "swot",                label: "SWOT Analysis",          scenarios: [], adminOnly: true },
   { id: "candlestick",         label: "Valuation Candlestick",  scenarios: [], adminOnly: true },
+  { id: "ip-dependency",       label: "IP Dependency Analysis", scenarios: [], adminOnly: true },
 ];
 
 export const ALL_WIDGETS = [...STANDARD_WIDGETS, ...ADMIN_WIDGETS];
