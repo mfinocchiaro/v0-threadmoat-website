@@ -10,6 +10,7 @@ interface IPDependencyChartProps {
   data: Company[]
   className?: string
   shortlistedIds?: Set<string>
+  onCellClick?: (label: string, companyIds: string[]) => void
 }
 
 type ViewMode = "risk-tier" | "vendor-matrix"
@@ -83,7 +84,7 @@ interface CellData {
   companies: CompanyDetail[]
 }
 
-export function IPDependencyChart({ data, className, shortlistedIds }: IPDependencyChartProps) {
+export function IPDependencyChart({ data, className, shortlistedIds, onCellClick }: IPDependencyChartProps) {
   const svgRef = useRef<SVGSVGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
@@ -223,6 +224,9 @@ export function IPDependencyChart({ data, className, shortlistedIds }: IPDepende
           .attr("stroke-width", hasShortlisted ? 2.5 : 0.5)
           .attr("rx", 2)
           .style("cursor", "pointer")
+          .on("click", () => {
+            onCellClick?.(`${cell.xGroup} × ${cell.yGroup}`, cell.companies.map(c => c.id))
+          })
           .on("mouseover", (event) => {
             if (!tooltipRef.current) return
             const lines: string[] = [
@@ -318,7 +322,7 @@ export function IPDependencyChart({ data, className, shortlistedIds }: IPDepende
     legendG.append("text").attr("x", 0).attr("y", 20).attr("fill", axisColor).attr("font-size", "9px").text("0")
     legendG.append("text").attr("x", legendWidth).attr("y", 20).attr("fill", axisColor)
       .attr("font-size", "9px").attr("text-anchor", "end").text(legendLabel)
-  }, [cells, cellLookup, xGroups, yGroups, shortlistedIds, viewMode, maxMetric])
+  }, [cells, cellLookup, xGroups, yGroups, shortlistedIds, viewMode, maxMetric, onCellClick])
 
   return (
     <Card className={cn("flex flex-col", className)}>

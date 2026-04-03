@@ -10,6 +10,7 @@ interface TechIndependenceChartProps {
   data: Company[]
   className?: string
   shortlistedIds?: Set<string>
+  onCellClick?: (label: string, companyIds: string[]) => void
 }
 
 type YAxisKey = "deploymentModel" | "investmentTheses" | "workflowSegment"
@@ -53,7 +54,7 @@ interface CellData {
   companies: { name: string; id: string; score: number }[]
 }
 
-export function TechIndependenceChart({ data, className, shortlistedIds }: TechIndependenceChartProps) {
+export function TechIndependenceChart({ data, className, shortlistedIds, onCellClick }: TechIndependenceChartProps) {
   const svgRef = useRef<SVGSVGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
@@ -156,6 +157,9 @@ export function TechIndependenceChart({ data, className, shortlistedIds }: TechI
           .attr("stroke-width", hasShortlisted ? 2.5 : 0.5)
           .attr("rx", 2)
           .style("cursor", "pointer")
+          .on("click", () => {
+            onCellClick?.(`${cell.bucket} × ${cell.yGroup}`, cell.companies.map(c => c.id))
+          })
           .on("mouseover", (event) => {
             if (!tooltipRef.current) return
             const shortlistedNames = shortlistedIds
@@ -215,7 +219,7 @@ export function TechIndependenceChart({ data, className, shortlistedIds }: TechI
     legendG.append("text").attr("x", 0).attr("y", 20).attr("fill", axisColor).attr("font-size", "9px").text("0")
     legendG.append("text").attr("x", legendWidth).attr("y", 20).attr("fill", axisColor)
       .attr("font-size", "9px").attr("text-anchor", "end").text(`${Math.round(maxVal)} startups`)
-  }, [cells, cellLookup, buckets, yGroups, shortlistedIds])
+  }, [cells, cellLookup, buckets, yGroups, shortlistedIds, onCellClick])
 
   return (
     <Card className={cn("flex flex-col", className)}>

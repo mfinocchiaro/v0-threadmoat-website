@@ -54,6 +54,7 @@ interface TargetCustomerProfileChartProps {
   data: Company[]
   className?: string
   shortlistedIds?: Set<string>
+  onCellClick?: (label: string, companyIds: string[]) => void
 }
 
 // --- Geo region mapping ---
@@ -122,7 +123,7 @@ function getYValues(company: Company, yAxis: YAxisKey): string[] {
 
 // --- Component ---
 
-export function TargetCustomerProfileChart({ data, className, shortlistedIds }: TargetCustomerProfileChartProps) {
+export function TargetCustomerProfileChart({ data, className, shortlistedIds, onCellClick }: TargetCustomerProfileChartProps) {
   const svgRef = useRef<SVGSVGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
@@ -273,6 +274,9 @@ export function TargetCustomerProfileChart({ data, className, shortlistedIds }: 
           .attr("stroke-width", hasShortlisted ? 2.5 : 0.5)
           .attr("rx", 2)
           .style("cursor", "pointer")
+          .on("click", () => {
+            onCellClick?.(`${cell.xGroup} × ${cell.yGroup}`, cell.companies.map(c => c.id))
+          })
           .on("mouseover", (event) => {
             if (!tooltipRef.current) return
             const shortlistedNames = shortlistedIds
@@ -386,7 +390,7 @@ export function TargetCustomerProfileChart({ data, className, shortlistedIds }: 
               ? String(Math.round(maxVal))
               : `$${maxVal.toFixed(0)}M`
       )
-  }, [cells, cellLookup, xGroups, yGroups, valueMode, shortlistedIds])
+  }, [cells, cellLookup, xGroups, yGroups, valueMode, shortlistedIds, onCellClick])
 
   // Summary stats
   const stats = useMemo(() => {

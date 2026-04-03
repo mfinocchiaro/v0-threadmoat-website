@@ -11,6 +11,7 @@ interface IndustryPenetrationChartProps {
   data: Company[]
   className?: string
   shortlistedIds?: Set<string>
+  onCellClick?: (label: string, companyIds: string[]) => void
 }
 
 type YAxisKey = "investmentTheses" | "workflowSegment" | "manufacturingType"
@@ -57,7 +58,7 @@ function getYValues(company: Company, yAxis: YAxisKey): string[] {
   return ["Unknown"]
 }
 
-export function IndustryPenetrationChart({ data, className, shortlistedIds }: IndustryPenetrationChartProps) {
+export function IndustryPenetrationChart({ data, className, shortlistedIds, onCellClick }: IndustryPenetrationChartProps) {
   const svgRef = useRef<SVGSVGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
@@ -206,6 +207,9 @@ export function IndustryPenetrationChart({ data, className, shortlistedIds }: In
           .attr("stroke-width", hasShortlisted ? 2.5 : 0.5)
           .attr("rx", 2)
           .style("cursor", "pointer")
+          .on("click", () => {
+            onCellClick?.(`${cell.industry} × ${cell.yGroup}`, cell.companies.map(c => c.id))
+          })
           .on("mouseover", (event) => {
             if (!tooltipRef.current) return
             const shortlistedNames = shortlistedIds
@@ -304,7 +308,7 @@ export function IndustryPenetrationChart({ data, className, shortlistedIds }: In
     legendG.append("text").attr("x", 0).attr("y", 20).attr("fill", axisColor).attr("font-size", "9px").text(`0 ${labelText}`)
     legendG.append("text").attr("x", legendWidth).attr("y", 20).attr("fill", axisColor).attr("font-size", "9px").attr("text-anchor", "end")
       .text(valueMode === "count" ? String(Math.round(maxVal)) : valueMode === "avgScore" ? maxVal.toFixed(1) : `$${maxVal.toFixed(0)}M`)
-  }, [cells, cellLookup, industries, yGroups, valueMode, shortlistedIds])
+  }, [cells, cellLookup, industries, yGroups, valueMode, shortlistedIds, onCellClick])
 
   // Summary stats
   const stats = useMemo(() => {

@@ -10,6 +10,7 @@ interface GrowthMomentumChartProps {
   data: Company[]
   className?: string
   shortlistedIds?: Set<string>
+  onCellClick?: (label: string, companyIds: string[]) => void
 }
 
 type YAxisKey = "industriesServed" | "investmentTheses" | "workflowSegment"
@@ -44,7 +45,7 @@ interface CellData {
   companies: { name: string; id: string }[]
 }
 
-export function GrowthMomentumChart({ data, className, shortlistedIds }: GrowthMomentumChartProps) {
+export function GrowthMomentumChart({ data, className, shortlistedIds, onCellClick }: GrowthMomentumChartProps) {
   const svgRef = useRef<SVGSVGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
@@ -145,6 +146,9 @@ export function GrowthMomentumChart({ data, className, shortlistedIds }: GrowthM
           .attr("stroke-width", hasShortlisted ? 2.5 : 0.5)
           .attr("rx", 2)
           .style("cursor", "pointer")
+          .on("click", () => {
+            onCellClick?.(`${cell.tier} × ${cell.yGroup}`, cell.companies.map(c => c.id))
+          })
           .on("mouseover", (event) => {
             if (!tooltipRef.current) return
             const shortlistedNames = shortlistedIds
@@ -201,7 +205,7 @@ export function GrowthMomentumChart({ data, className, shortlistedIds }: GrowthM
     legendG.append("text").attr("x", 0).attr("y", 20).attr("fill", axisColor).attr("font-size", "9px").text("0")
     legendG.append("text").attr("x", legendWidth).attr("y", 20).attr("fill", axisColor)
       .attr("font-size", "9px").attr("text-anchor", "end").text(`${Math.round(maxVal)} startups`)
-  }, [cells, cellLookup, tiers, yGroups, shortlistedIds])
+  }, [cells, cellLookup, tiers, yGroups, shortlistedIds, onCellClick])
 
   return (
     <Card className={cn("flex flex-col", className)}>
