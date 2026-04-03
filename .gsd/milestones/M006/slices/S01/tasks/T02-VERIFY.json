@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "taskId": "T02",
+  "unitId": "M006/S01/T02",
+  "timestamp": 1775197649320,
+  "passed": true,
+  "discoverySource": "task-plan",
+  "checks": [
+    {
+      "command": "test -f app/dashboard/market-momentum/page.tsx",
+      "exitCode": 0,
+      "durationMs": 9,
+      "verdict": "pass"
+    },
+    {
+      "command": "grep -q 'market-momentum' components/dashboard/sidebar.tsx",
+      "exitCode": 0,
+      "durationMs": 14,
+      "verdict": "pass"
+    }
+  ]
+}

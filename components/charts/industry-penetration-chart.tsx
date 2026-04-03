@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState, useMemo } from "react"
 import * as d3 from "d3"
 import { Company } from "@/lib/company-data"
+import { parseKnownCustomers } from "@/lib/customer-logos"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 
@@ -20,11 +21,12 @@ const Y_AXES: { value: YAxisKey; label: string }[] = [
   { value: "manufacturingType", label: "Manufacturing Type" },
 ]
 
-type ValueMode = "count" | "avgScore" | "avgFunding"
+type ValueMode = "count" | "avgScore" | "avgFunding" | "customerCount"
 const VALUE_MODES: { value: ValueMode; label: string }[] = [
   { value: "count", label: "Startup Count" },
   { value: "avgScore", label: "Avg. Weighted Score" },
   { value: "avgFunding", label: "Avg. Funding ($M)" },
+  { value: "customerCount", label: "Customer Count" },
 ]
 
 interface CellData {
@@ -33,6 +35,7 @@ interface CellData {
   count: number
   avgScore: number
   avgFunding: number
+  customerCount: number
   companies: { name: string; id: string }[]
 }
 
@@ -73,10 +76,12 @@ export function IndustryPenetrationChart({ data, className, shortlistedIds }: In
         for (const yVal of yValues) {
           const key = `${industry}|||${yVal}`
           const existing = cellMap.get(key)
+          const custCount = parseKnownCustomers(company.knownCustomers).length
           if (existing) {
             existing.count++
             existing.avgScore += company.weightedScore || 0
             existing.avgFunding += company.totalFunding || 0
+            existing.customerCount += custCount
             existing.companies.push({ name: company.name, id: company.id })
           } else {
             cellMap.set(key, {
@@ -85,6 +90,7 @@ export function IndustryPenetrationChart({ data, className, shortlistedIds }: In
               count: 1,
               avgScore: company.weightedScore || 0,
               avgFunding: company.totalFunding || 0,
+              customerCount: custCount,
               companies: [{ name: company.name, id: company.id }],
             })
           }
@@ -163,6 +169,7 @@ export function IndustryPenetrationChart({ data, className, shortlistedIds }: In
     const valueAccessor = (cell: CellData): number => {
       if (valueMode === "count") return cell.count
       if (valueMode === "avgScore") return cell.avgScore
+      if (valueMode === "customerCount") return cell.customerCount
       return cell.avgFunding / 1_000_000 // in millions
     }
 
@@ -213,6 +220,7 @@ export function IndustryPenetrationChart({ data, className, shortlistedIds }: In
               `Startups: ${cell.count}`,
               `Avg Score: ${cell.avgScore.toFixed(1)}`,
               `Avg Funding: ${fundingStr}`,
+              `Known Customers: ${cell.customerCount}`,
               shortlistedNames.length > 0 ? `<br><span style="color:#f59e0b">★ ${shortlistedNames.join(", ")}</span>` : "",
               cell.count <= 8 ? `<br><span style="opacity:0.6">${cell.companies.map(c => c.name).join(", ")}</span>` : "",
             ].filter(Boolean).join("<br>")
@@ -232,7 +240,9 @@ export function IndustryPenetrationChart({ data, className, shortlistedIds }: In
             ? String(cell.count)
             : valueMode === "avgScore"
               ? cell.avgScore.toFixed(1)
-              : `${(cell.avgFunding / 1_000_000).toFixed(0)}`
+              : valueMode === "customerCount"
+                ? String(cell.customerCount)
+                : `${(cell.avgFunding / 1_000_000).toFixed(0)}`
 
           g.append("text")
             .attr("x", x + w / 2)
@@ -290,7 +300,7 @@ export function IndustryPenetrationChart({ data, className, shortlistedIds }: In
       .attr("fill", "url(#industry-penetration-legend-grad)")
       .attr("rx", 2)
 
-    const labelText = valueMode === "count" ? "Startups" : valueMode === "avgScore" ? "Avg Score" : "Avg Funding ($M)"
+    const labelText = valueMode === "count" ? "Startups" : valueMode === "avgScore" ? "Avg Score" : valueMode === "customerCount" ? "Known Customers" : "Avg Funding ($M)"
     legendG.append("text").attr("x", 0).attr("y", 20).attr("fill", axisColor).attr("font-size", "9px").text(`0 ${labelText}`)
     legendG.append("text").attr("x", legendWidth).attr("y", 20).attr("fill", axisColor).attr("font-size", "9px").attr("text-anchor", "end")
       .text(valueMode === "count" ? String(Math.round(maxVal)) : valueMode === "avgScore" ? maxVal.toFixed(1) : `$${maxVal.toFixed(0)}M`)

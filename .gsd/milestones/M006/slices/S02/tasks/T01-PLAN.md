@@ -1,10 +1,12 @@
-# S02: Industry Penetration Heatmap
+---
+estimated_steps: 26
+estimated_files: 1
+skills_used: []
+---
 
-**Goal:** Add a "Customer Count" value mode to the existing Industry Penetration heatmap chart, showing known customer count per cell instead of startup count.
-**Demo:** After this: Heatmap showing which industries each startup has penetrated, measured by known customer count per industry.
+# T01: Add customerCount value mode to IndustryPenetrationChart
 
-## Tasks
-- [x] **T01: Added "Customer Count" value mode to Industry Penetration heatmap showing known customer count per cell via parseKnownCustomers** — Extend the existing Industry Penetration heatmap chart with a fourth value mode that counts known customers per cell using `parseKnownCustomers()` from `lib/customer-logos.ts`.
+Extend the existing Industry Penetration heatmap chart with a fourth value mode that counts known customers per cell using `parseKnownCustomers()` from `lib/customer-logos.ts`.
 
 ## Steps
 
@@ -36,6 +38,17 @@
 - `npx next build` completes with exit code 0
 - `grep -q 'customerCount' components/charts/industry-penetration-chart.tsx` confirms the new mode exists
 - `grep -q 'parseKnownCustomers' components/charts/industry-penetration-chart.tsx` confirms the import is wired
-  - Estimate: 30m
-  - Files: components/charts/industry-penetration-chart.tsx
-  - Verify: npx next build && grep -q 'customerCount' components/charts/industry-penetration-chart.tsx && grep -q 'parseKnownCustomers' components/charts/industry-penetration-chart.tsx
+
+## Inputs
+
+- ``components/charts/industry-penetration-chart.tsx` — existing chart component to extend`
+- ``lib/customer-logos.ts` — read-only dependency providing `parseKnownCustomers()` function`
+- ``lib/company-data.ts` — read-only dependency defining the `Company` interface with `knownCustomers: string` field`
+
+## Expected Output
+
+- ``components/charts/industry-penetration-chart.tsx` — extended with `customerCount` value mode, `parseKnownCustomers` import, updated CellData/valueAccessor/tooltip/legend`
+
+## Verification
+
+npx next build && grep -q 'customerCount' components/charts/industry-penetration-chart.tsx && grep -q 'parseKnownCustomers' components/charts/industry-penetration-chart.tsx

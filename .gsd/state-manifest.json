@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exported_at": "2026-04-03T06:27:26.613Z",
+  "exported_at": "2026-04-03T06:35:16.538Z",
   "milestones": [
     {
       "id": "M001",
@@ -870,14 +870,14 @@
       "milestone_id": "M006",
       "id": "S01",
       "title": "Market Momentum Heatmap",
-      "status": "pending",
+      "status": "complete",
       "risk": "medium",
       "depends": [],
       "demo": "Heatmap showing company momentum based on customer acquisition velocity and growth signals.",
       "created_at": "2026-04-01T21:30:17.307Z",
-      "completed_at": null,
-      "full_summary_md": "",
-      "full_uat_md": "",
+      "completed_at": "2026-04-03T06:28:46.974Z",
+      "full_summary_md": "---\nid: S01\nparent: M006\nmilestone: M006\nprovides:\n  - MarketMomentumHeatmap component pattern for downstream heatmap slices\n  - momentumMultiplier and momentumCap fields on Company interface\nrequires:\n  []\naffects:\n  - S02\n  - S03\nkey_files:\n  - lib/company-data.ts\n  - lib/load-companies-server.ts\n  - components/charts/market-momentum-heatmap.tsx\n  - app/dashboard/market-momentum/page.tsx\n  - components/dashboard/sidebar.tsx\nkey_decisions:\n  - D005: Composite momentum score formula — (growthMetrics/5)*0.4 + (customerSignalScore/8)*0.3 + (momentumMultiplier/2.73)*0.3\n  - YlOrRd color scale for visual distinction from existing YlGn growth momentum chart\n  - Placed Market Momentum last in ADMIN_ITEMS after Valuation Candlestick\npatterns_established:\n  - Heatmap chart pattern with composite scoring, configurable Y-axis grouping, and YlOrRd palette — reusable for Industry Penetration and Target Customer Profile heatmaps in S02/S03\nobservability_surfaces:\n  - none\ndrill_down_paths:\n  - .gsd/milestones/M006/slices/S01/tasks/T01-SUMMARY.md\n  - .gsd/milestones/M006/slices/S01/tasks/T02-SUMMARY.md\nduration: \"\"\nverification_result: passed\ncompleted_at: 2026-04-03T06:28:46.975Z\nblocker_discovered: false\n---\n\n# S01: Market Momentum Heatmap\n\n**Shipped Market Momentum Heatmap with composite scoring (growth metrics 40%, customer signal 30%, momentum multiplier 30%), YlOrRd palette, Y-axis grouping selector, tooltips with component breakdown, shortlist highlighting, and sidebar navigation — accessible at /dashboard/market-momentum.**\n\n## What Happened\n\nExtended the Company data model with `momentumMultiplier` and `momentumCap` fields, wired CSV loading for both columns in `load-companies-server.ts`. Built a complete D3 SVG heatmap chart component (`MarketMomentumHeatmap`) that computes composite momentum scores normalized 0–1, rendered with the YlOrRd color palette to visually distinguish from the existing YlGn growth chart. The chart supports three Y-axis grouping options (industries served, investment theses, workflow segment) via a dropdown selector, rich tooltips showing component score breakdowns, shortlist highlighting per K005, empty cell rendering with muted fills, and theme-aware colors via CSS custom properties.\n\nCreated the dashboard page at `/dashboard/market-momentum` using the established VizPageShell + useThesisGatedData pattern, wired the sidebar navigation entry with TrendingUp icon in both ADMIN_ITEMS and ADMIN_VIZ_HREFS. Build passes clean with zero type errors across both tasks.\n\n## Verification\n\nAll 9 slice-level checks pass: momentumMultiplier and momentumCap in Company interface, Momentum Multiplier CSV loading wired, chart file exists with shortlistedIds prop, page file exists, sidebar wired, chart imported in page, thesis-gated hook used. Next.js build succeeds with zero type errors (verified in both T01 and T02).\n\n## Requirements Advanced\n\nNone.\n\n## Requirements Validated\n\nNone.\n\n## New Requirements Surfaced\n\nNone.\n\n## Requirements Invalidated or Re-scoped\n\nNone.\n\n## Deviations\n\nNone.\n\n## Known Limitations\n\nComposite score weights (40/30/30) are hardcoded — no UI to adjust weighting. MomentumCap field is loaded but not yet used in any visualization logic (available for future use).\n\n## Follow-ups\n\nNone.\n\n## Files Created/Modified\n\n- `lib/company-data.ts` — Added momentumMultiplier and momentumCap fields to Company interface\n- `lib/load-companies-server.ts` — Wired CSV loading for Momentum Multiplier and Momentum Cap columns\n- `components/charts/market-momentum-heatmap.tsx` — New D3 SVG heatmap chart with composite scoring, YlOrRd palette, grouping selector, tooltips, shortlist highlighting\n- `app/dashboard/market-momentum/page.tsx` — New dashboard page with VizPageShell wrapper and useThesisGatedData\n- `components/dashboard/sidebar.tsx` — Added Market Momentum entry to ADMIN_ITEMS and ADMIN_VIZ_HREFS\n",
+      "full_uat_md": "# S01: Market Momentum Heatmap — UAT\n\n**Milestone:** M006\n**Written:** 2026-04-03T06:28:46.975Z\n\n# S01: Market Momentum Heatmap — UAT\n\n**Milestone:** M006\n**Written:** 2026-04-01\n\n## UAT Type\n\n- UAT mode: live-runtime\n- Why this mode is sufficient: The heatmap is a visual D3 chart rendered client-side — must verify in-browser that data loads, cells render, interactions work, and navigation is wired.\n\n## Preconditions\n\n- `npm run dev` running (or `npx next build && npx next start`)\n- Logged in as admin or strategist tier user (needed for dashboard access)\n- CSV data file (`Startups-Grid Full DB View.csv`) contains Momentum Multiplier and Momentum Cap columns\n\n## Smoke Test\n\nNavigate to `/dashboard/market-momentum`. A colored heatmap grid should render with company momentum data — cells colored yellow-to-red by intensity.\n\n## Test Cases\n\n### 1. Page loads and chart renders\n\n1. Navigate to `/dashboard/market-momentum`\n2. Wait for data to load (skeleton should appear briefly)\n3. **Expected:** Heatmap SVG renders with colored cells. X-axis shows growth momentum tiers (Accelerating, High Growth, Steady, Early/Pre-revenue, Stalled, Unknown). Y-axis shows industry/thesis/segment labels. Title reads \"Market Momentum\".\n\n### 2. Y-axis grouping selector works\n\n1. On the Market Momentum page, locate the dropdown in the card header\n2. Switch from default \"Industries Served\" to \"Investment Theses\"\n3. Switch to \"Workflow Segment\"\n4. **Expected:** Y-axis labels change with each selection. Cell colors and counts update to reflect the new grouping. Chart re-renders without errors.\n\n### 3. Tooltip displays component breakdown\n\n1. Hover over a colored (non-empty) cell in the heatmap\n2. **Expected:** Tooltip appears showing: tier × group name, company count, average composite score, component breakdown (growth metrics avg, customer signal avg, momentum multiplier avg). If any shortlisted companies are in that cell, their names appear.\n\n### 4. Empty cells render distinctly\n\n1. Find a cell with no companies (muted/gray fill)\n2. **Expected:** Empty cells have a muted fill with thin border, visually distinct from scored cells. No tooltip data for 0-company cells.\n\n### 5. Shortlist highlighting\n\n1. Add 2-3 companies to the shortlist via the toolbar shortlist feature\n2. Navigate to Market Momentum page\n3. **Expected:** Cells containing shortlisted companies show an amber (#f59e0b) highlight stroke. Tooltip for those cells lists shortlisted company names.\n\n### 6. Sidebar navigation entry\n\n1. Open the dashboard sidebar\n2. **Expected:** \"Market Momentum\" appears in the sidebar navigation list with TrendingUp icon. Clicking it navigates to `/dashboard/market-momentum`. The entry highlights when active.\n\n### 7. Color scale uses YlOrRd (not YlGn)\n\n1. Compare the Market Momentum heatmap colors with the Growth Momentum chart at `/dashboard/growth-momentum`\n2. **Expected:** Market Momentum uses yellow-orange-red palette. Growth Momentum uses yellow-green palette. The two are visually distinct.\n\n## Edge Cases\n\n### No companies match current filters\n\n1. Apply filters that exclude all companies (e.g., a very restrictive thesis filter)\n2. Navigate to Market Momentum page\n3. **Expected:** Chart renders with all empty cells (muted fills). No errors. Page remains functional.\n\n### Companies with zero or missing momentum multiplier\n\n1. Check that companies with missing Momentum Multiplier data still appear in the heatmap\n2. **Expected:** Default fallback of 1.0 is used (not 0), so these companies still contribute to composite scores without zeroing out the calculation.\n\n## Failure Signals\n\n- Page shows perpetual loading skeleton (data fetch failure)\n- No colored cells render (D3 layout computation failed, possibly zero-dimension container)\n- Tooltip shows NaN or undefined values (composite score formula division error)\n- Console errors about null style values (K004 violation — D3 .style() null on HTML)\n- Sidebar entry missing or links to wrong URL\n\n## Not Proven By This UAT\n\n- Composite score formula correctness against SME expectations (weights are engineering estimates)\n- Performance with 1000+ companies (current dataset is ~500)\n- momentumCap field usage (loaded but not visualized yet)\n- PDF export of this chart via Custom Report Builder (separate feature)\n\n## Notes for Tester\n\n- The YlOrRd palette makes low-momentum cells appear yellow and high-momentum cells appear deep red. If all cells look the same color, the score normalization may be off.\n- Composite score is capped 0–1. If tooltip shows scores > 1.0, the normalization formula has a bug.\n- The momentum multiplier range in the CSV is 1.0–2.73. Division by 2.73 normalizes this component. If new data exceeds 2.73, scores could exceed 1.0.\n",
       "goal": "Deliver a Market Momentum Heatmap that visualizes composite momentum intensity (growth metrics, customer signal score, momentum multiplier) across configurable grouping axes, accessible from the dashboard sidebar.",
       "success_criteria": "## Must-Haves\n\n- `momentumMultiplier` and `momentumCap` fields added to `Company` interface and loaded from CSV\n- New `MarketMomentumHeatmap` D3 SVG chart component computing composite momentum score per cell\n- Composite score formula: `(growthMetrics / 5) * 0.4 + (customerSignalScore / 8) * 0.3 + (momentumMultiplier / 2.73) * 0.3` with zero-division guards\n- Configurable Y-axis selector (industries served, investment thesis, workflow segment)\n- X-axis uses `growthMomentumTier` categories\n- Tooltips showing cell company count, average composite score, and component breakdowns\n- Shortlist highlighting via optional `shortlistedIds` prop (per K005)\n- Theme-aware colors using CSS custom properties (per existing heatmap pattern)\n- Empty cell rendering for sparse matrix areas\n- Dashboard page at `/dashboard/market-momentum` using `VizPageShell` + `useThesisGatedData`\n- Sidebar entry in `ADMIN_ITEMS` and `ADMIN_VIZ_HREFS` with `TrendingUp` icon\n- `npx next build` passes with zero errors\n\n## Verification\n\n- `npx next build` — TypeScript compilation confirms no type errors in new fields, chart component, and page\n- `grep -q \"momentumMultiplier\" lib/company-data.ts` — confirms field exists in Company interface\n- `grep -q \"momentumMultiplier\" lib/load-companies-server.ts` — confirms CSV loading\n- `test -f components/charts/market-momentum-heatmap.tsx` — chart component exists\n- `test -f app/dashboard/market-momentum/page.tsx` — page file exists\n- `grep -q \"market-momentum\" components/dashboard/sidebar.tsx` — sidebar entry wired",
       "proof_level": "integration",
@@ -898,11 +898,11 @@
       "completed_at": null,
       "full_summary_md": "",
       "full_uat_md": "",
-      "goal": "Build an Industry Penetration heatmap using Known Customers data crossed with industry classification.",
-      "success_criteria": "Industry Penetration heatmap shows company × industry matrix with customer counts or presence indicators.",
-      "proof_level": "Visual verification",
-      "integration_closure": "Uses existing Known Customers field parsed by industry",
-      "observability_impact": "None",
+      "goal": "Add a \"Customer Count\" value mode to the existing Industry Penetration heatmap chart, showing known customer count per cell instead of startup count.",
+      "success_criteria": "- `npx next build` passes with zero type errors\n- The \"Customer Count\" option appears in the Value dropdown on `/dashboard/industry-penetration`\n- Selecting \"Customer Count\" renders cells with customer counts, color intensity reflects customer density, tooltip shows customer count\n- Companies with known customers (e.g. nTop, aPriori) contribute non-zero customer counts to their industry cells",
+      "proof_level": "Operational — the feature works in the running app with real data.",
+      "integration_closure": "- Upstream: `lib/customer-logos.ts` (`parseKnownCustomers`), `lib/company-data.ts` (`Company` interface with `knownCustomers` field)\n- New wiring: import of `parseKnownCustomers` into the chart component\n- Remaining for milestone: S03, S04 are independent heatmap views",
+      "observability_impact": "None — purely a client-side chart enhancement with no runtime boundaries, async flows, or error paths.",
       "sequence": 0,
       "replan_triggered_at": null
     },
@@ -2386,6 +2386,45 @@
       "sequence": 0
     },
     {
+      "milestone_id": "M006",
+      "slice_id": "S02",
+      "id": "T01",
+      "title": "Added \"Customer Count\" value mode to Industry Penetration heatmap showing known customer count per cell via parseKnownCustomers",
+      "status": "complete",
+      "one_liner": "Added \"Customer Count\" value mode to Industry Penetration heatmap showing known customer count per cell via parseKnownCustomers",
+      "narrative": "Extended the existing Industry Penetration heatmap chart with a fourth value mode (customerCount). Imported parseKnownCustomers from lib/customer-logos, added the mode to the ValueMode type union and VALUE_MODES array, extended CellData with customerCount field, accumulated customer counts in the cell-building useMemo, updated valueAccessor/displayVal/tooltip/legend to handle the new mode. Color scale required no changes — it feeds off valueAccessor automatically.",
+      "verification_result": "npx next build completed with exit code 0 (TypeScript + 102 pages). grep confirmed customerCount and parseKnownCustomers present in the chart file.",
+      "duration": "",
+      "completed_at": "2026-04-03T06:35:16.527Z",
+      "blocker_discovered": false,
+      "deviations": "None.",
+      "known_issues": "None.",
+      "key_files": [
+        "components/charts/industry-penetration-chart.tsx"
+      ],
+      "key_decisions": [
+        "Parse knownCustomers once per company per cell to avoid redundant computation"
+      ],
+      "full_summary_md": "---\nid: T01\nparent: S02\nmilestone: M006\nkey_files:\n  - components/charts/industry-penetration-chart.tsx\nkey_decisions:\n  - Parse knownCustomers once per company per cell to avoid redundant computation\nduration: \"\"\nverification_result: passed\ncompleted_at: 2026-04-03T06:35:16.528Z\nblocker_discovered: false\n---\n\n# T01: Added \"Customer Count\" value mode to Industry Penetration heatmap showing known customer count per cell via parseKnownCustomers\n\n**Added \"Customer Count\" value mode to Industry Penetration heatmap showing known customer count per cell via parseKnownCustomers**\n\n## What Happened\n\nExtended the existing Industry Penetration heatmap chart with a fourth value mode (customerCount). Imported parseKnownCustomers from lib/customer-logos, added the mode to the ValueMode type union and VALUE_MODES array, extended CellData with customerCount field, accumulated customer counts in the cell-building useMemo, updated valueAccessor/displayVal/tooltip/legend to handle the new mode. Color scale required no changes — it feeds off valueAccessor automatically.\n\n## Verification\n\nnpx next build completed with exit code 0 (TypeScript + 102 pages). grep confirmed customerCount and parseKnownCustomers present in the chart file.\n\n## Verification Evidence\n\n| # | Command | Exit Code | Verdict | Duration |\n|---|---------|-----------|---------|----------|\n| 1 | `npx next build` | 0 | ✅ pass | 20900ms |\n| 2 | `grep -q 'customerCount' components/charts/industry-penetration-chart.tsx` | 0 | ✅ pass | 100ms |\n| 3 | `grep -q 'parseKnownCustomers' components/charts/industry-penetration-chart.tsx` | 0 | ✅ pass | 100ms |\n\n\n## Deviations\n\nNone.\n\n## Known Issues\n\nNone.\n\n## Files Created/Modified\n\n- `components/charts/industry-penetration-chart.tsx`\n",
+      "description": "Extend the existing Industry Penetration heatmap chart with a fourth value mode that counts known customers per cell using `parseKnownCustomers()` from `lib/customer-logos.ts`.\n\n## Steps\n\n1. Import `parseKnownCustomers` from `@/lib/customer-logos` at the top of the chart file.\n2. Add `\"customerCount\"` to the `ValueMode` type union: `type ValueMode = \"count\" | \"avgScore\" | \"avgFunding\" | \"customerCount\"`\n3. Add the new entry to the `VALUE_MODES` array: `{ value: \"customerCount\", label: \"Customer Count\" }`\n4. Extend the `CellData` interface with `customerCount: number`.\n5. In the `useMemo` cell-building loop, parse each company's `knownCustomers` string via `parseKnownCustomers(company.knownCustomers)` and accumulate the `.length` into the cell's `customerCount` field. Initialize it to `0` when creating a new cell, and add `parseKnownCustomers(company.knownCustomers).length` for each company added to that cell.\n6. Update the `valueAccessor` function to handle the new mode: `if (valueMode === \"customerCount\") return cell.customerCount`\n7. Update the cell text display (the `displayVal` variable in the D3 rendering) to show `String(cell.customerCount)` when `valueMode === \"customerCount\"`.\n8. Update the tooltip HTML to include a \"Known Customers\" line showing `cell.customerCount` (always, for all modes — it's useful context).\n9. Update the legend label logic: when `valueMode === \"customerCount\"`, use `\"Known Customers\"` as the label text.\n10. Verify the color scale works correctly — `valueAccessor` already feeds into `maxVal` and `colorScale`, so no additional changes needed for color intensity.\n\n## Must-Haves\n\n- [ ] `ValueMode` type includes `\"customerCount\"`\n- [ ] `VALUE_MODES` array includes the Customer Count option\n- [ ] `CellData` interface has `customerCount: number`\n- [ ] Cell-building `useMemo` accumulates customer count via `parseKnownCustomers`\n- [ ] `valueAccessor` returns `cell.customerCount` for the new mode\n- [ ] Cell text displays customer count when that mode is selected\n- [ ] Tooltip shows customer count\n- [ ] Legend label reads \"Known Customers\" for the new mode\n- [ ] `npx next build` passes with zero errors\n\n## Verification\n\n- `npx next build` completes with exit code 0\n- `grep -q 'customerCount' components/charts/industry-penetration-chart.tsx` confirms the new mode exists\n- `grep -q 'parseKnownCustomers' components/charts/industry-penetration-chart.tsx` confirms the import is wired",
+      "estimate": "30m",
+      "files": [
+        "components/charts/industry-penetration-chart.tsx"
+      ],
+      "verify": "npx next build && grep -q 'customerCount' components/charts/industry-penetration-chart.tsx && grep -q 'parseKnownCustomers' components/charts/industry-penetration-chart.tsx",
+      "inputs": [
+        "`components/charts/industry-penetration-chart.tsx` — existing chart component to extend",
+        "`lib/customer-logos.ts` — read-only dependency providing `parseKnownCustomers()` function",
+        "`lib/company-data.ts` — read-only dependency defining the `Company` interface with `knownCustomers: string` field"
+      ],
+      "expected_output": [
+        "`components/charts/industry-penetration-chart.tsx` — extended with `customerCount` value mode, `parseKnownCustomers` import, updated CellData/valueAccessor/tooltip/legend"
+      ],
+      "observability_impact": "",
+      "full_plan_md": "",
+      "sequence": 0
+    },
+    {
       "milestone_id": "M007",
       "slice_id": "S01",
       "id": "T01",
@@ -2669,6 +2708,18 @@
       "choice": "jsPDF + html-to-image client-side generation with offscreen chart capture",
       "rationale": "Avoids server-side rendering complexity (Puppeteer/headless Chrome). Charts need real DOM dimensions for D3 layout, so visibility:hidden offscreen container preserves rendering while toPng() captures at 2x pixel ratio. jsPDF lightweight markdown renderer handles headings/bold/bullets without pulling in a full HTML-to-PDF library. Entire pipeline runs client-side with no API calls.",
       "revisable": "Yes",
+      "made_by": "agent",
+      "superseded_by": null
+    },
+    {
+      "seq": 5,
+      "id": "D005",
+      "when_context": "M006/S01",
+      "scope": "data-model",
+      "decision": "Composite momentum score formula for Market Momentum Heatmap",
+      "choice": "(growthMetrics/5)*0.4 + (customerSignalScore/8)*0.3 + (momentumMultiplier/2.73)*0.3 — all normalized 0–1",
+      "rationale": "Weights growth metrics highest (40%) as the most direct momentum signal, with customer signal and momentum multiplier equally weighted at 30% each. Each component normalized to 0–1 by dividing by its known max (growthMetrics max 5, customerSignalScore max 8, momentumMultiplier max 2.73). Zero-division guarded with fallback defaults.",
+      "revisable": "Yes — weights and normalization ranges can be tuned based on SME feedback",
       "made_by": "agent",
       "superseded_by": null
     }
@@ -3960,6 +4011,39 @@
       "verdict": "✅ pass",
       "duration_ms": 100,
       "created_at": "2026-04-03T06:27:26.600Z"
+    },
+    {
+      "id": 118,
+      "task_id": "T01",
+      "slice_id": "S02",
+      "milestone_id": "M006",
+      "command": "npx next build",
+      "exit_code": 0,
+      "verdict": "✅ pass",
+      "duration_ms": 20900,
+      "created_at": "2026-04-03T06:35:16.527Z"
+    },
+    {
+      "id": 119,
+      "task_id": "T01",
+      "slice_id": "S02",
+      "milestone_id": "M006",
+      "command": "grep -q 'customerCount' components/charts/industry-penetration-chart.tsx",
+      "exit_code": 0,
+      "verdict": "✅ pass",
+      "duration_ms": 100,
+      "created_at": "2026-04-03T06:35:16.527Z"
+    },
+    {
+      "id": 120,
+      "task_id": "T01",
+      "slice_id": "S02",
+      "milestone_id": "M006",
+      "command": "grep -q 'parseKnownCustomers' components/charts/industry-penetration-chart.tsx",
+      "exit_code": 0,
+      "verdict": "✅ pass",
+      "duration_ms": 100,
+      "created_at": "2026-04-03T06:35:16.527Z"
     }
   ]
 }
