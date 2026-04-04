@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "exported_at": "2026-04-04T04:51:38.112Z",
+  "exported_at": "2026-04-04T04:56:53.532Z",
   "milestones": [
     {
       "id": "M001",
@@ -578,6 +578,195 @@
       ],
       "requirement_coverage": "No formal requirements. Addresses the Speed Index performance gap identified in M009 S04.",
       "boundary_map_markdown": "```\\n[S01 Intersection Observer for homepage charts] → independent\\n[S02 Defer CSV loading for hero-first rendering] → depends on S01 pattern\\n[S03 Production Lighthouse validation] → depends on S01, S02\\n```"
+    },
+    {
+      "id": "M011",
+      "title": "Mobile Responsive Dashboard",
+      "status": "queued",
+      "depends_on": [],
+      "created_at": "2026-04-04T04:54:40.283Z",
+      "completed_at": null,
+      "vision": "Make the dashboard usable on tablet and mobile by adding a collapsible sidebar with hamburger menu, ensuring chart containers resize correctly, and fixing any layout overflow issues across the 52 dashboard pages.",
+      "success_criteria": [
+        "Dashboard sidebar collapses to a Sheet/Drawer on screens under 768px with hamburger toggle",
+        "All chart pages render without horizontal overflow on mobile viewport (375px)",
+        "Filter toolbar wraps correctly on narrow screens",
+        "npm run build passes with zero warnings"
+      ],
+      "key_risks": [
+        {
+          "risk": "D3 charts may not resize correctly in narrow containers",
+          "whyItMatters": "Many charts use fixed pixel dimensions in useEffect — they may overflow or clip on mobile"
+        },
+        {
+          "risk": "52 pages to verify — high surface area",
+          "whyItMatters": "Each page may have unique layout issues that aren't caught by fixing the shell alone"
+        }
+      ],
+      "proof_strategy": [
+        {
+          "riskOrUnknown": "Sidebar mobile behavior",
+          "retireIn": "S01",
+          "whatWillBeProven": "Sidebar collapses to Sheet on mobile, hamburger toggles it"
+        },
+        {
+          "riskOrUnknown": "Chart overflow",
+          "retireIn": "S02",
+          "whatWillBeProven": "Representative sample of chart pages render without overflow at 375px"
+        }
+      ],
+      "verification_contract": "Build passes, visual verification at 375px and 768px viewports",
+      "verification_integration": "Dashboard navigation works on mobile — sidebar opens/closes, pages load",
+      "verification_operational": "No layout regressions on desktop",
+      "verification_uat": "Visual spot-check on mobile viewport for representative pages",
+      "definition_of_done": [
+        "Sidebar responsive with Sheet on mobile",
+        "No horizontal overflow on mobile for checked pages",
+        "Build passes with zero warnings"
+      ],
+      "requirement_coverage": "No formal requirements. Addresses the untested mobile experience for a B2B dashboard.",
+      "boundary_map_markdown": "```\\n[S01 Responsive sidebar] → independent\\n[S02 Chart container responsiveness] → depends on S01 shell\\n[S03 Visual verification] → depends on S01, S02\\n```"
+    },
+    {
+      "id": "M012",
+      "title": "Dashboard Analytics & Usage Tracking",
+      "status": "queued",
+      "depends_on": [],
+      "created_at": "2026-04-04T04:55:41.734Z",
+      "completed_at": null,
+      "vision": "Add lightweight, privacy-respecting analytics to understand which dashboard pages and charts users visit most, where they drop off, and which features drive engagement. Use a simple approach — no heavy third-party SDK.",
+      "success_criteria": [
+        "Page view tracking for all dashboard routes with user tier context",
+        "Chart interaction events (filter applied, shortlist toggle, AI narrative generated)",
+        "Analytics dashboard or log query showing top pages and feature usage",
+        "Zero impact on page load performance (async, non-blocking)",
+        "npm run build passes"
+      ],
+      "key_risks": [
+        {
+          "risk": "Third-party analytics SDK could bloat bundle",
+          "whyItMatters": "We just optimized bundle size in M009-M010 — don't want to regress"
+        },
+        {
+          "risk": "GDPR/privacy concerns with tracking",
+          "whyItMatters": "B2B SaaS with EU customers needs compliant tracking"
+        }
+      ],
+      "proof_strategy": [
+        {
+          "riskOrUnknown": "Bundle impact",
+          "retireIn": "S01",
+          "whatWillBeProven": "Analytics adds < 5KB to initial bundle"
+        },
+        {
+          "riskOrUnknown": "Privacy compliance",
+          "retireIn": "S01",
+          "whatWillBeProven": "No PII logged, only anonymized usage events"
+        }
+      ],
+      "verification_contract": "Build passes, events logged, no performance regression",
+      "verification_integration": "Page views and interactions tracked in Vercel function logs or DB",
+      "verification_operational": "Analytics queryable",
+      "verification_uat": "Navigate dashboard, verify events logged",
+      "definition_of_done": [
+        "Analytics tracking active on all dashboard routes",
+        "Key interactions tracked",
+        "Build passes, no Lighthouse regression"
+      ],
+      "requirement_coverage": "No formal requirements. Product insight need.",
+      "boundary_map_markdown": "```\\n[S01 Analytics foundation] → independent\\n[S02 Interaction events] → depends on S01\\n```"
+    },
+    {
+      "id": "M013",
+      "title": "Investor-Side Views & Analysis Pages",
+      "status": "queued",
+      "depends_on": [],
+      "created_at": "2026-04-04T04:56:06.811Z",
+      "completed_at": null,
+      "vision": "Build dedicated investor analysis pages that go beyond the existing investor-network/stats charts. Add investor portfolio overlap analysis, co-investment patterns, and investor-centric company comparison views that help M&A strategists understand the funding landscape.",
+      "success_criteria": [
+        "Investor portfolio page showing all companies backed by a selected investor",
+        "Co-investment heatmap showing which investors frequently co-invest",
+        "Investor comparison view for side-by-side portfolio analysis",
+        "Pages accessible from sidebar navigation under an Investors section",
+        "npm run build passes"
+      ],
+      "key_risks": [
+        {
+          "risk": "Investor data may be sparse in the CSV",
+          "whyItMatters": "Some companies may not have investor data — empty views degrade the product experience"
+        },
+        {
+          "risk": "Co-investment matrix could be computationally expensive",
+          "whyItMatters": "N×N investor matrix with 500+ companies could be slow to compute client-side"
+        }
+      ],
+      "proof_strategy": [
+        {
+          "riskOrUnknown": "Investor data coverage",
+          "retireIn": "S01",
+          "whatWillBeProven": "Audit shows sufficient investor data for meaningful views"
+        },
+        {
+          "riskOrUnknown": "Co-investment computation",
+          "retireIn": "S02",
+          "whatWillBeProven": "Matrix computes in under 500ms client-side"
+        }
+      ],
+      "verification_contract": "Build passes, pages render with data",
+      "verification_integration": "Sidebar links work, pages load correctly",
+      "verification_operational": "No performance regression",
+      "verification_uat": "Visual verification of investor pages",
+      "definition_of_done": [
+        "All investor pages render with data",
+        "Sidebar navigation updated",
+        "Build passes"
+      ],
+      "requirement_coverage": "No formal requirements. Product direction for M&A strategist users.",
+      "boundary_map_markdown": "```\\n[S01 Investor data audit + portfolio page] → independent\\n[S02 Co-investment heatmap] → depends on S01 data audit\\n[S03 Investor comparison view] → depends on S01\\n```"
+    },
+    {
+      "id": "M014",
+      "title": "Authenticated Dashboard Lighthouse & Performance Testing",
+      "status": "queued",
+      "depends_on": [],
+      "created_at": "2026-04-04T04:56:33.469Z",
+      "completed_at": null,
+      "vision": "Capture Lighthouse performance scores for auth-gated dashboard pages using Playwright-based perf testing with cookie injection. Establish a repeatable performance testing pipeline for the dashboard.",
+      "success_criteria": [
+        "Lighthouse scores captured for 5+ auth-gated dashboard pages",
+        "Performance test script that can be re-run for regression detection",
+        "Results documented with page-by-page scores",
+        "npm run build passes"
+      ],
+      "key_risks": [
+        {
+          "risk": "Cookie injection for Lighthouse may not work with NextAuth session tokens",
+          "whyItMatters": "NextAuth uses encrypted JWT cookies — may need a real login flow instead of cookie injection"
+        },
+        {
+          "risk": "Dashboard pages load different amounts of data",
+          "whyItMatters": "Performance varies by page complexity — need representative sampling"
+        }
+      ],
+      "proof_strategy": [
+        {
+          "riskOrUnknown": "Auth cookie approach",
+          "retireIn": "S01",
+          "whatWillBeProven": "Either cookie injection works or Playwright login flow captures valid session"
+        }
+      ],
+      "verification_contract": "Build passes, scores captured",
+      "verification_integration": "Test script runs end-to-end",
+      "verification_operational": "Repeatable test pipeline",
+      "verification_uat": "Scores match expectations for page complexity",
+      "definition_of_done": [
+        "5+ dashboard page Lighthouse scores captured",
+        "Test script documented and repeatable",
+        "Build passes"
+      ],
+      "requirement_coverage": "No formal requirements. Addresses the auth-gated Lighthouse gap from M009.",
+      "boundary_map_markdown": "```\\n[S01 Auth + Lighthouse pipeline] → independent\\n[S02 Dashboard page scores] → depends on S01\\n```"
     }
   ],
   "slices": [
@@ -1431,6 +1620,219 @@
       "proof_level": "Lighthouse output",
       "integration_closure": "Performance baseline updated",
       "observability_impact": "Updated Lighthouse baseline",
+      "sequence": 0,
+      "replan_triggered_at": null
+    },
+    {
+      "milestone_id": "M011",
+      "id": "S01",
+      "title": "Responsive sidebar — Sheet on mobile with hamburger toggle",
+      "status": "pending",
+      "risk": "medium",
+      "depends": [],
+      "demo": "Dashboard sidebar collapses to a Sheet/Drawer on mobile with a hamburger button in the top bar",
+      "created_at": "2026-04-04T04:55:36.682Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Add mobile sidebar using shadcn Sheet component, hide desktop sidebar on small screens, add hamburger toggle",
+      "success_criteria": "Sidebar hidden below 768px. Hamburger button visible. Sheet opens/closes. Desktop layout unchanged.",
+      "proof_level": "build + browser verification at 375px",
+      "integration_closure": "All 52 dashboard pages use the same shell — fixing it once fixes all pages",
+      "observability_impact": "none",
+      "sequence": 0,
+      "replan_triggered_at": null
+    },
+    {
+      "milestone_id": "M011",
+      "id": "S02",
+      "title": "Chart container overflow fixes for mobile",
+      "status": "pending",
+      "risk": "low",
+      "depends": [
+        "S01"
+      ],
+      "demo": "Chart pages render without horizontal scroll at 375px viewport",
+      "created_at": "2026-04-04T04:55:36.682Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Add overflow-hidden and responsive width constraints to chart containers and VizPageShell",
+      "success_criteria": "No horizontal overflow on 10 representative chart pages at 375px. Build passes.",
+      "proof_level": "build + browser verification",
+      "integration_closure": "VizPageShell wrapper handles chart responsiveness for all pages",
+      "observability_impact": "none",
+      "sequence": 0,
+      "replan_triggered_at": null
+    },
+    {
+      "milestone_id": "M011",
+      "id": "S03",
+      "title": "Mobile visual verification across page types",
+      "status": "pending",
+      "risk": "low",
+      "depends": [
+        "S01",
+        "S02"
+      ],
+      "demo": "Visual spot-check at 375px for representative pages documented",
+      "created_at": "2026-04-04T04:55:36.682Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Browser verification of mobile layout for 10+ pages covering all chart types",
+      "success_criteria": "10+ pages verified at 375px with no major layout issues",
+      "proof_level": "browser screenshots",
+      "integration_closure": "Mobile experience verified",
+      "observability_impact": "none",
+      "sequence": 0,
+      "replan_triggered_at": null
+    },
+    {
+      "milestone_id": "M012",
+      "id": "S01",
+      "title": "Lightweight page view tracking via API route + DB",
+      "status": "pending",
+      "risk": "low",
+      "depends": [],
+      "demo": "Every dashboard page navigation logs a page view event with route, user tier, and timestamp to the database",
+      "created_at": "2026-04-04T04:56:02.322Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Create a minimal analytics API route and client-side hook that tracks page views on dashboard navigation",
+      "success_criteria": "Page views logged to DB. < 5KB client overhead. Build passes.",
+      "proof_level": "build + log verification",
+      "integration_closure": "Hook auto-fires on route changes in dashboard layout",
+      "observability_impact": "Page view analytics",
+      "sequence": 0,
+      "replan_triggered_at": null
+    },
+    {
+      "milestone_id": "M012",
+      "id": "S02",
+      "title": "Chart interaction event tracking",
+      "status": "pending",
+      "risk": "low",
+      "depends": [
+        "S01"
+      ],
+      "demo": "Filter applied, shortlist toggle, and AI narrative generation events logged with context",
+      "created_at": "2026-04-04T04:56:02.323Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Add event tracking calls at key interaction points: filter changes, shortlist toggles, AI narrative generation, report export",
+      "success_criteria": "4+ interaction event types tracked. Build passes.",
+      "proof_level": "build + log verification",
+      "integration_closure": "Events logged alongside page views for complete usage picture",
+      "observability_impact": "Interaction analytics",
+      "sequence": 0,
+      "replan_triggered_at": null
+    },
+    {
+      "milestone_id": "M013",
+      "id": "S01",
+      "title": "Investor data audit & portfolio drill-down page",
+      "status": "pending",
+      "risk": "medium",
+      "depends": [],
+      "demo": "Select an investor → see all companies they've backed with scores, funding, and stage breakdown",
+      "created_at": "2026-04-04T04:56:28.550Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Audit investor data coverage in CSV, then build an investor portfolio page with company list, aggregate stats, and stage distribution",
+      "success_criteria": "Page renders for investors with 3+ portfolio companies. Data coverage documented.",
+      "proof_level": "build + data audit + browser verification",
+      "integration_closure": "Sidebar link added under Investors section",
+      "observability_impact": "none",
+      "sequence": 0,
+      "replan_triggered_at": null
+    },
+    {
+      "milestone_id": "M013",
+      "id": "S02",
+      "title": "Co-investment heatmap — which investors frequently co-invest",
+      "status": "pending",
+      "risk": "medium",
+      "depends": [
+        "S01"
+      ],
+      "demo": "Heatmap showing co-investment frequency between top investors",
+      "created_at": "2026-04-04T04:56:28.550Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Build a co-investment matrix from the investor arrays, render as a heatmap chart with drill-down",
+      "success_criteria": "Heatmap renders with top 30 investors. Click cell shows shared companies. Build passes.",
+      "proof_level": "build + browser verification",
+      "integration_closure": "Page added to sidebar",
+      "observability_impact": "none",
+      "sequence": 0,
+      "replan_triggered_at": null
+    },
+    {
+      "milestone_id": "M013",
+      "id": "S03",
+      "title": "Investor comparison — side-by-side portfolio analysis",
+      "status": "pending",
+      "risk": "low",
+      "depends": [
+        "S01"
+      ],
+      "demo": "Select 2-3 investors → see side-by-side comparison of portfolio size, avg scores, sector focus, overlap",
+      "created_at": "2026-04-04T04:56:28.550Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Build a comparison view that lets users select investors and compare their portfolios",
+      "success_criteria": "Comparison renders for 2+ selected investors. Overlap highlighted. Build passes.",
+      "proof_level": "build + browser verification",
+      "integration_closure": "Page added to sidebar",
+      "observability_impact": "none",
+      "sequence": 0,
+      "replan_triggered_at": null
+    },
+    {
+      "milestone_id": "M014",
+      "id": "S01",
+      "title": "Playwright-based authenticated Lighthouse pipeline",
+      "status": "pending",
+      "risk": "medium",
+      "depends": [],
+      "demo": "Script logs into dashboard, captures Lighthouse scores for a configurable list of pages",
+      "created_at": "2026-04-04T04:56:52.464Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Create a Playwright script that authenticates via login flow and runs Lighthouse on dashboard pages",
+      "success_criteria": "Script captures Lighthouse score for at least 1 auth-gated page. Repeatable.",
+      "proof_level": "script output",
+      "integration_closure": "Script can be run locally or in CI",
+      "observability_impact": "Dashboard performance visibility",
+      "sequence": 0,
+      "replan_triggered_at": null
+    },
+    {
+      "milestone_id": "M014",
+      "id": "S02",
+      "title": "Dashboard page performance baseline — 5+ pages",
+      "status": "pending",
+      "risk": "low",
+      "depends": [
+        "S01"
+      ],
+      "demo": "Lighthouse scores documented for 5+ representative dashboard pages with analysis",
+      "created_at": "2026-04-04T04:56:52.464Z",
+      "completed_at": null,
+      "full_summary_md": "",
+      "full_uat_md": "",
+      "goal": "Run the pipeline against 5+ dashboard pages covering different chart types, document scores, identify optimization targets",
+      "success_criteria": "5+ page scores documented. Slowest pages identified. Build passes.",
+      "proof_level": "Lighthouse output + documentation",
+      "integration_closure": "Dashboard performance baseline established",
+      "observability_impact": "Updated performance baseline",
       "sequence": 0,
       "replan_triggered_at": null
     }

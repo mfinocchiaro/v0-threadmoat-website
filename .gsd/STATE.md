@@ -16,6 +16,10 @@
 - ⬜ **M008:** Production Polish & Performance
 - ✅ **M009:** Performance Audit & Bundle Optimization
 - ✅ **M010:** Homepage Speed Index & Deferred Chart Loading
+- ⬜ **M011:** Mobile Responsive Dashboard
+- ⬜ **M012:** Dashboard Analytics & Usage Tracking
+- ⬜ **M013:** Investor-Side Views & Analysis Pages
+- ⬜ **M014:** Authenticated Dashboard Lighthouse & Performance Testing
 
 ## Recent Decisions
 - None recorded
