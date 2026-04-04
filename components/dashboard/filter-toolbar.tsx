@@ -205,7 +205,7 @@ function ActiveFilterChips() {
   }
 
   return (
-    <div className="flex items-center gap-2 px-6 py-2">
+    <div className="flex items-center gap-2 px-3 sm:px-6 py-2">
       <SlidersHorizontal className="h-4 w-4 text-muted-foreground shrink-0" />
       <div className="flex-1 flex flex-wrap gap-1.5 min-h-[28px]">
         {chips.map((chip, i) => (
@@ -261,7 +261,7 @@ export function FilterToolbar() {
   if (isLoading) {
     return (
       <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-border/50">
-        <div className="flex items-center gap-2 px-6 py-2">
+        <div className="flex items-center gap-2 px-3 sm:px-6 py-2">
           <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
           <div className="h-4 w-32 bg-muted/50 rounded animate-pulse" />
         </div>
@@ -278,14 +278,14 @@ export function FilterToolbar() {
       {activeFilterCount > 0 ? (
         <ActiveFilterChips />
       ) : (
-        <div className="flex items-center gap-2 px-6 py-1.5">
+        <div className="flex items-center gap-2 px-3 sm:px-6 py-1.5">
           <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
           <span className="text-xs text-muted-foreground">No filters active</span>
         </div>
       )}
 
       {/* Filter category buttons row */}
-      <div className="flex items-center gap-1.5 px-6 pb-2 flex-wrap">
+      <div className="flex items-center gap-1.5 px-3 sm:px-6 pb-2 flex-wrap">
         <FilterDropdown
           label="Investment List"
           filterKey="investmentLists"

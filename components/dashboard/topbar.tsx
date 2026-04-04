@@ -2,7 +2,7 @@
 
 import { signOut } from "next-auth/react";
 import { useTheme } from "next-themes";
-import { LogOut, Settings, Sun, Moon } from "lucide-react";
+import { LogOut, Settings, Sun, Moon, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -30,9 +30,11 @@ interface TopBarProps {
   user: Session["user"];
   profile?: Profile;
   onEditThesis?: () => void;
+  showMenuButton?: boolean;
+  onMenuClick?: () => void;
 }
 
-export function TopBar({ user, profile, onEditThesis }: TopBarProps) {
+export function TopBar({ user, profile, onEditThesis, showMenuButton, onMenuClick }: TopBarProps) {
   const { theme, setTheme } = useTheme();
   const initials = profile?.full_name
     ? profile.full_name.split(" ").filter(Boolean).slice(0, 2).map(n => n[0].toUpperCase()).join("")
@@ -45,7 +47,19 @@ export function TopBar({ user, profile, onEditThesis }: TopBarProps) {
   }
 
   return (
-    <header className="sticky top-0 z-40 flex h-14 items-center justify-end gap-3 border-b border-border/40 bg-background/80 backdrop-blur-sm px-4">
+    <header className="sticky top-0 z-40 flex h-14 items-center gap-3 border-b border-border/40 bg-background/80 backdrop-blur-sm px-4">
+      {/* Mobile hamburger — visible below md */}
+      {showMenuButton && (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 md:hidden"
+          onClick={onMenuClick}
+          aria-label="Open menu"
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+      )}
       {onEditThesis && <ThesisIndicator onEditThesis={onEditThesis} />}
       <div className="flex-1" />
       <Button
