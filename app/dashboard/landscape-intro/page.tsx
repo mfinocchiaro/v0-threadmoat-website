@@ -53,11 +53,6 @@ const DOMAIN_META: Record<string, { description: string; icon: string }> = {
       "Architecture, engineering, and construction technology \u2014 BIM authoring, clash detection, generative building design, and digital twin platforms for the built environment.",
     icon: "\uD83C\uDFD7\uFE0F",
   },
-  "SW+HW=Innovation (Robotics, Drones)": {
-    description:
-      "Hardware-software convergence: autonomous robotics, drone platforms, sensor fusion, and embodied AI. Companies building the physical intelligence layer for industry.",
-    icon: "\uD83E\uDD16",
-  },
   "Knowledge Engineering (R&D, Learning)": {
     description:
       "Engineering education, R&D knowledge management, and AI-powered learning platforms. Accelerating how teams capture, share, and apply deep technical expertise.",
@@ -211,8 +206,8 @@ function LandscapeIntroInner() {
       <div className="max-w-3xl">
         <h1 className="text-3xl font-bold tracking-tight">Investment Landscape</h1>
         <p className="text-muted-foreground mt-3 text-base leading-relaxed">
-          ThreadMoat maps the engineering software ecosystem across ten domains spanning design,
-          simulation, manufacturing, operations, supply chain, AEC, robotics, and research systems.
+          ThreadMoat maps the engineering software ecosystem across nine domains spanning design,
+          simulation, manufacturing, operations, supply chain, AEC, and research systems.
           Each startup is categorized within one primary investment domain.
         </p>
       </div>

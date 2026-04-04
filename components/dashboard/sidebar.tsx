@@ -73,7 +73,7 @@ interface TabGroup {
 export const TAB_GROUPS: TabGroup[] = [
   {
     key: "market",
-    label: "Market",
+    label: "Market Maps",
     icon: Compass,
     href: "/dashboard/tab/market",
     items: [

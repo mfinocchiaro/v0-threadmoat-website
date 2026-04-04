@@ -62,13 +62,6 @@ const DOMAINS = [
       "Architecture, engineering, and construction technology — BIM authoring, clash detection, generative building design, and digital twin platforms for the built environment.",
   },
   {
-    name: "SW+HW=Innovation (Robotics, Drones)",
-    color: "#0B7A20",
-    icon: "🤖",
-    description:
-      "Hardware-software convergence: autonomous robotics, drone platforms, sensor fusion, and embodied AI. Companies building the physical intelligence layer for industry.",
-  },
-  {
     name: "Knowledge Engineering (R&D, Learning)",
     color: "#7A3FD1",
     icon: "🎓",
@@ -101,8 +94,8 @@ export default function PublicLandscapePage() {
         <div className="max-w-3xl mb-12">
           <h1 className="text-3xl font-bold tracking-tight">Investment Landscape</h1>
           <p className="text-muted-foreground mt-3 text-base leading-relaxed">
-            ThreadMoat maps the engineering software ecosystem across ten domains spanning design,
-            simulation, manufacturing, operations, supply chain, AEC, robotics, and research systems.
+            ThreadMoat maps the engineering software ecosystem across nine domains spanning design,
+            simulation, manufacturing, operations, supply chain, AEC, and research systems.
             Each of our 600+ tracked startups is categorized within one primary investment domain.
           </p>
         </div>
@@ -140,7 +133,7 @@ export default function PublicLandscapePage() {
         {/* CTA */}
         <div className="flex flex-col items-center gap-4 pt-12 pb-8 text-center">
           <p className="text-muted-foreground max-w-lg">
-            Subscribers get full analytics across all 10 domains — company scores, funding data, competitive
+            Subscribers get full analytics across all 9 domains — company scores, funding data, competitive
             positioning, and interactive visualizations for 600+ startups.
           </p>
           <div className="flex gap-3">

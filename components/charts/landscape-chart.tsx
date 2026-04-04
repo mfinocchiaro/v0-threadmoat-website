@@ -8,6 +8,7 @@ import { getInvestmentColor } from "@/lib/investment-colors";
 import { X, ExternalLink, ArrowLeft } from "lucide-react";
 import { CompanyHoverCard } from "@/components/ui/company-hover-card";
 import { useLazyMount } from "@/hooks/use-lazy-mount";
+import { usePlan } from "@/contexts/plan-context";
 import {
     Select,
     SelectContent,
@@ -193,12 +194,13 @@ function SubsegmentDrill({ title, color, subcategories, onBack, drillDetail, onT
 }
 
 // ---------- Lazy-rendered group for progressive DOM building ----------
-function LazyGroup({ macro, macroIdx, onDrill, showHover, hideHover }: {
+function LazyGroup({ macro, macroIdx, onDrill, showHover, hideHover, isAdmin }: {
     macro: { title: string; color: string; subcategories: Array<{ title: string; companies: Company[] }> };
     macroIdx: number;
     onDrill: (target: string) => void;
     showHover: (company: Company, e: React.MouseEvent) => void;
     hideHover: () => void;
+    isAdmin: boolean;
 }) {
     // First 3 groups render immediately; rest lazy-mount on scroll
     const { ref, hasBeenVisible } = useLazyMount("300px");
@@ -228,11 +230,39 @@ function LazyGroup({ macro, macroIdx, onDrill, showHover, hideHover }: {
                             <div className="bg-muted/30 px-1 py-px text-[8px] font-bold text-muted-foreground text-center uppercase border-b border-muted truncate">
                                 {sub.title}
                             </div>
-                            <div className="flex flex-wrap gap-px p-px justify-center content-start">
+                            <div className={cn("flex flex-wrap gap-px p-px content-start", isAdmin ? "flex-col" : "justify-center")}>
                                 {sub.companies.map((company) => {
                                     const normalizedName = normalizeLogoName(company.name);
                                     const logoPath = `/logos/${normalizedName}/logo_sm.png`;
                                     const initials = company.name.split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join("").toUpperCase();
+
+                                    if (isAdmin) {
+                                        // Admin view: full company name as text chip
+                                        return (
+                                            <div
+                                                key={company.id}
+                                                className="flex items-center gap-1 px-1 py-px bg-muted border border-border cursor-pointer hover:bg-primary/10 hover:border-primary transition-colors rounded-sm overflow-hidden"
+                                                onMouseEnter={e => showHover(company, e)}
+                                                onMouseLeave={hideHover}
+                                                onDoubleClick={() => { if (company.url) window.open(company.url, "_blank", "noopener,noreferrer"); }}
+                                            >
+                                                <img
+                                                    src={logoPath}
+                                                    alt=""
+                                                    className="w-4 h-4 object-contain shrink-0"
+                                                    onError={e => { e.currentTarget.style.display = "none" }}
+                                                />
+                                                <span className="text-[8px] font-semibold text-foreground truncate leading-tight">
+                                                    {company.name}
+                                                </span>
+                                                <span className="text-[7px] text-muted-foreground shrink-0 ml-auto">
+                                                    {(company.weightedScore || 0).toFixed(1)}
+                                                </span>
+                                            </div>
+                                        );
+                                    }
+
+                                    // Default view: logo tile with initials fallback
                                     return (
                                         <div
                                             key={company.id}
@@ -272,6 +302,8 @@ function LazyGroup({ macro, macroIdx, onDrill, showHover, hideHover }: {
 // ---------- Main component ----------
 export function LandscapeChart({ data, className }: LandscapeChartProps) {
     const { filterCompany } = useFilter();
+    const { accessTier } = usePlan();
+    const isAdmin = accessTier === "admin";
     const [hoverCard, setHoverCard] = useState<HoverCard | null>(null);
     const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [drillTarget, setDrillTarget] = useState<string | null>(null);
@@ -415,6 +447,7 @@ export function LandscapeChart({ data, className }: LandscapeChartProps) {
                         onDrill={setDrillTarget}
                         showHover={showHover}
                         hideHover={hideHover}
+                        isAdmin={isAdmin}
                     />
                 ))}
             </div>

@@ -237,7 +237,7 @@ export default async function HomePage({ params }: Props) {
             <div><p className="text-4xl font-bold text-primary">35+</p><p className="text-sm text-muted-foreground mt-1">{t('profiles.yearsExperience')}</p></div>
             <div><p className="text-4xl font-bold text-primary">600+</p><p className="text-sm text-muted-foreground mt-1">{t('profiles.startupsInDb')}</p></div>
             <div><p className="text-4xl font-bold text-primary">200+</p><p className="text-sm text-muted-foreground mt-1">{t('profiles.founderInterviews')}</p></div>
-            <NextLink href="/landscape" className="hover:opacity-80 transition-opacity"><p className="text-4xl font-bold text-primary">10</p><p className="text-sm text-muted-foreground mt-1 underline underline-offset-2">{t('profiles.investmentDomains')}</p></NextLink>
+            <NextLink href="/landscape" className="hover:opacity-80 transition-opacity"><p className="text-4xl font-bold text-primary">9</p><p className="text-sm text-muted-foreground mt-1 underline underline-offset-2">{t('profiles.investmentDomains')}</p></NextLink>
           </div>
         </div>
       </section>
